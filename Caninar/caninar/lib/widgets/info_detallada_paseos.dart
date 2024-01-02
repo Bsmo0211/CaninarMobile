@@ -229,17 +229,19 @@ class _InfromacionDetalladaPaseosState
           Column(
             children: productos.map((producto) {
               return CardItemHome(
-                titulo: '1 Paseo',
+                titulo: producto.name!,
                 redireccion: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => FechaPasesoCaninos(),
+                      builder: (context) => FechaPaseosCaninos(),
                     ),
                   );
                 },
                 colorTexto: Colors.black,
-                precios: 'S/ 20.00',
+                precios: 'S/${producto.price}',
+                imageCard: producto.image,
+                
               );
             }).toList(),
           )
