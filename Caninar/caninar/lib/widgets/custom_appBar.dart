@@ -1,4 +1,5 @@
 import 'package:caninar/API/APi.dart';
+import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/widgets/carrito.dart';
 import 'package:flutter/material.dart';
 
@@ -8,6 +9,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      backgroundColor: PrincipalColors.blue,
       elevation: 0,
       title: Image.asset(
         'assets/images/logo.png',

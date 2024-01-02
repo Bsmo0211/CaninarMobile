@@ -21,6 +21,7 @@ class _CalendarioCustomState extends State<CalendarioCustom> {
           child: Padding(
             padding: const EdgeInsets.all(5),
             child: SfDateRangePicker(
+              backgroundColor: Colors.white,
               showNavigationArrow: true,
               monthViewSettings: const DateRangePickerMonthViewSettings(
                 weekendDays: [7, 6],

@@ -145,7 +145,11 @@ class _LoginState extends State<Login> {
               child: SizedBox(
             width: 300,
             child: ElevatedButton(
-              child: const Text('Iniciar Sesión'),
+              style: ButtonStyle(
+                 backgroundColor:
+                      MaterialStatePropertyAll<Color>(PrincipalColors.blue),
+              ),
+              child: const Text('Iniciar Sesión', style: TextStyle(color: Colors.white),),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -163,8 +167,8 @@ class _LoginState extends State<Login> {
                       MaterialStatePropertyAll<Color>(Colors.grey.shade400),
                 ),
                 onPressed: _handleSignIn,
-                icon: const FaIcon(FontAwesomeIcons.google),
-                label: const Text('Iniciar sesión con Google'),
+                icon: const FaIcon(FontAwesomeIcons.google, color: Colors.white),
+                label: const Text('Iniciar sesión con Google', style: TextStyle(color: Colors.white)),
               ),
             ),
           ),
@@ -177,8 +181,8 @@ class _LoginState extends State<Login> {
                       MaterialStatePropertyAll<Color>(Colors.grey.shade400),
                 ),
                 onPressed: _handleSignIn,
-                icon: const FaIcon(FontAwesomeIcons.facebookF),
-                label: const Text('Iniciar sesión con Facebook'),
+                icon: const FaIcon(FontAwesomeIcons.facebookF,color: Colors.white),
+                label: const Text('Iniciar sesión con Facebook', style: TextStyle(color: Colors.white)),
               ),
             ),
           ),
