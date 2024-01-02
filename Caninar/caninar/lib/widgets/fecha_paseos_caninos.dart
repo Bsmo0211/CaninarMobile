@@ -12,14 +12,14 @@ import 'package:latlong2/latlong.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-class FechaPasesoCaninos extends StatefulWidget {
-  FechaPasesoCaninos({Key? key}) : super(key: key);
+class FechaPaseosCaninos extends StatefulWidget {
+  FechaPaseosCaninos({Key? key}) : super(key: key);
 
   @override
-  _FechaPasesoCaninosState createState() => _FechaPasesoCaninosState();
+  _FechaPaseosCaninosState createState() => _FechaPaseosCaninosState();
 }
 
-class _FechaPasesoCaninosState extends State<FechaPasesoCaninos> {
+class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
   DateTime? diaSeleccionado;
   LatLng? initialCenter;
   TextEditingController telefonoCtrl = TextEditingController();
