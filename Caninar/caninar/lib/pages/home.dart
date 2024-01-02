@@ -76,6 +76,7 @@ class _HomeState extends State<Home> {
           CarouselSlider(
             options: CarouselOptions(
               initialPage: 0,
+              viewportFraction: 0.677 ,
               enableInfiniteScroll: true,
               reverse: false,
               autoPlay: true,
