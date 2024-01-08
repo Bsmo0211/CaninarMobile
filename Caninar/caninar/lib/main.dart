@@ -1,8 +1,8 @@
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/constants/routes.dart';
-import 'package:caninar/pages/paseos.dart';
+import 'package:caninar/pages/page_categoria_seleccionada.dart';
 import 'package:caninar/widgets/about_us.dart';
-import 'package:caninar/pages/adiestramiento.dart';
+
 import 'package:caninar/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
