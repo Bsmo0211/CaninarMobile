@@ -23,11 +23,12 @@ class _RegistroState extends State<Registro> {
   Map<String, String> dropdownActividadMap = {
     'Masculino': 'male',
     'Femenino': 'female',
-    // Agrega más correspondencias según sea necesario
   };
   String? dropdownValueActividad;
   bool _acceptTerms = false;
   final formKey1 = GlobalKey<FormState>();
+  bool _showPassword = true;
+  bool _showPassword1 = true;
   TextEditingController correoCtrl = TextEditingController();
   TextEditingController contrasenaCtrl = TextEditingController();
   TextEditingController contrasena2Ctrl = TextEditingController();
@@ -186,6 +187,7 @@ class _RegistroState extends State<Registro> {
                   Padding(
                     padding: const EdgeInsets.only(top: 8, bottom: 8),
                     child: TextFormField(
+                      obscureText: _showPassword,
                       decoration: InputDecoration(
                         floatingLabelBehavior: FloatingLabelBehavior.never,
                         enabledBorder: OutlineInputBorder(
@@ -212,6 +214,19 @@ class _RegistroState extends State<Registro> {
                         border: const OutlineInputBorder(
                           borderSide: BorderSide(
                             width: 3,
+                          ),
+                        ),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _showPassword = !_showPassword;
+                            });
+                          },
+                          icon: Icon(
+                            color: PrincipalColors.blue,
+                            _showPassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                           ),
                         ),
                       ),
@@ -240,6 +255,7 @@ class _RegistroState extends State<Registro> {
                   Padding(
                     padding: const EdgeInsets.only(top: 8, bottom: 8),
                     child: TextFormField(
+                      obscureText: _showPassword1,
                       decoration: InputDecoration(
                         floatingLabelBehavior: FloatingLabelBehavior.never,
                         enabledBorder: OutlineInputBorder(
@@ -266,6 +282,19 @@ class _RegistroState extends State<Registro> {
                         border: const OutlineInputBorder(
                           borderSide: BorderSide(
                             width: 3,
+                          ),
+                        ),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _showPassword1 = !_showPassword1;
+                            });
+                          },
+                          icon: Icon(
+                            color: PrincipalColors.blue,
+                            _showPassword1
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                           ),
                         ),
                       ),
