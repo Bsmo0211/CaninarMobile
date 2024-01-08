@@ -1,11 +1,15 @@
+import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/constants/routes.dart';
+import 'package:caninar/models/user/model.dart';
 import 'package:caninar/widgets/about_us.dart';
 import 'package:caninar/widgets/aliados.dart';
 import 'package:caninar/widgets/atencion_cliente.dart';
 import 'package:caninar/widgets/item_drawer.dart';
 import 'package:caninar/widgets/libro_reclamaciones.dart';
 import 'package:caninar/widgets/login.dart';
+import 'package:caninar/widgets/mis_mascotas.dart';
+import 'package:caninar/widgets/page_registro_mascotas.dart';
 import 'package:caninar/widgets/registro.dart';
 import 'package:caninar/widgets/terminos_condiciones.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +22,23 @@ class CustomDrawer extends StatefulWidget {
 }
 
 class _CustomDrawerState extends State<CustomDrawer> {
+  UserLoginModel? user;
+  getCurrentUser() async {
+    UserLoginModel? userTemp = await API().currentUser();
+
+    setState(() {
+      user = userTemp;
+    });
+
+    print(user?.firstName);
+  }
+
+  @override
+  void initState() {
+    getCurrentUser();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -40,12 +61,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       'assets/images/logo.png',
                       width: 200,
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 15),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15),
                       child: Text(
-                        "Nombre persona",
-                        style: TextStyle(
+                        "${user?.firstName ?? ''} ${user?.lastName ?? ''}",
+                        style: const TextStyle(
                           color: Colors.white,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -57,35 +79,33 @@ class _CustomDrawerState extends State<CustomDrawer> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ItemDrawer(
-                    titulo: '¿Quiénes somos?',
-                    redireccion: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => AboutUs()),
-                      );
-                    },
-                  ),
                   const Divider(
                     height: 2,
                     color: Colors.grey,
                   ),
-                  ItemDrawer(
-                    titulo: 'Tu cuenta',
-                    redireccion: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Login()),
-                      );
-                    },
-                  ),
+                  if (user != null)
+                    ItemDrawer(
+                      titulo: 'Tu cuenta',
+                      redireccion: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Login()),
+                        );
+                      },
+                    ),
                   const Divider(
                     height: 2,
                     color: Colors.grey,
                   ),
                   ItemDrawer(
                     titulo: 'Mascotas',
-                    redireccion: () {},
+                    redireccion: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MisMascotas()),
+                      );
+                    },
                   ),
                   const Divider(
                     height: 2,
@@ -98,6 +118,15 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   const Divider(
                     height: 2,
                     color: Colors.grey,
+                  ),
+                  ItemDrawer(
+                    titulo: '¿Quiénes somos?',
+                    redireccion: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AboutUs()),
+                      );
+                    },
                   ),
                   ItemDrawer(
                     titulo: 'Quiero ser un alidado',
