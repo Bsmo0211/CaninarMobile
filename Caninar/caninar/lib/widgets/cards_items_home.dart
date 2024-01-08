@@ -36,7 +36,6 @@ class CardItemHome extends StatelessWidget {
                 child: imageCard != null
                     ? Image.network(
                         imageCard!,
-                        fit: BoxFit.none,
                       )
                     : Image.asset(
                         'assets/images/wpp.png',
