@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
+import 'package:caninar/models/certificados/model.dart';
 import 'package:caninar/models/productos/model.dart';
 import 'package:caninar/widgets/cards_items_home.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
@@ -12,12 +15,16 @@ class InfromacionDetalladaPaseos extends StatefulWidget {
   String nombre;
   String imagen;
   String id;
-  InfromacionDetalladaPaseos({
-    Key? key,
-    required this.nombre,
-    required this.imagen,
-    required this.id,
-  }) : super(key: key);
+  int rating;
+  List<CertificadosModel> certificados;
+  InfromacionDetalladaPaseos(
+      {Key? key,
+      required this.nombre,
+      required this.imagen,
+      required this.id,
+      required this.rating,
+      required this.certificados})
+      : super(key: key);
 
   @override
   _InfromacionDetalladaPaseosState createState() =>
@@ -144,9 +151,9 @@ class _InfromacionDetalladaPaseosState
                                                   ),
                                                 ),
                                               ),
-                                              const TextSpan(
-                                                text: '--',
-                                                style: TextStyle(
+                                              TextSpan(
+                                                text: '${widget.rating}',
+                                                style: const TextStyle(
                                                   fontSize: 14,
                                                   color: Colors.black,
                                                 ),
@@ -159,63 +166,38 @@ class _InfromacionDetalladaPaseosState
                                   ),
                                 ],
                               ),
-                              const Padding(
-                                padding: EdgeInsets.only(left: 40),
-                                child: Text.rich(
-                                  TextSpan(
-                                    children: [
-                                      WidgetSpan(
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                            right: 20,
-                                            left: 5,
-                                            top: 5,
-                                          ),
-                                          child: Icon(
-                                            Icons.stars_rounded,
-                                            size: 25,
-                                          ),
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: 'Adiestrado canino',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.only(left: 40, bottom: 15),
-                                child: Text.rich(
-                                  TextSpan(
-                                    children: [
-                                      WidgetSpan(
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                            right: 20,
-                                            left: 5,
-                                            top: 10,
-                                          ),
-                                          child: Icon(
-                                            Icons.stars_rounded,
-                                            size: 25,
-                                            color: Colors.red,
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 40, bottom: 20),
+                                child: Column(
+                                    children:
+                                        widget.certificados.map((certificado) {
+                                  return Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        const WidgetSpan(
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                              right: 20,
+                                              left: 5,
+                                              top: 5,
+                                            ),
+                                            child: Icon(
+                                              Icons.stars_rounded,
+                                              size: 25,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      TextSpan(
-                                        text:
-                                            'Especialista en comportamiento canino',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
+                                        TextSpan(
+                                          text: certificado.name,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                }).toList()),
                               ),
                             ],
                           )),
@@ -241,7 +223,6 @@ class _InfromacionDetalladaPaseosState
                 colorTexto: Colors.black,
                 precios: 'S/${producto.price}',
                 imageCard: producto.image,
-                
               );
             }).toList(),
           )
