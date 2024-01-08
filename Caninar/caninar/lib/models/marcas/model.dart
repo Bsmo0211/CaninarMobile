@@ -1,3 +1,5 @@
+import 'package:caninar/models/certificados/model.dart';
+
 class MarcasModel {
   String? deliveryTime;
   String? bussinesName;
@@ -8,6 +10,7 @@ class MarcasModel {
   String? image;
   String? telephone;
   String? id;
+  List<CertificadosModel>? certificates;
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -20,6 +23,7 @@ class MarcasModel {
     data['name'] = name;
     data['telephone'] = telephone;
     data['id'] = id;
+    data['certificates'] = certificates;
 
     return data;
   }
@@ -38,5 +42,8 @@ class MarcasModel {
     name = json['name'];
     telephone = json['telephone'];
     id = json['id'];
+    certificates = (json['certificates'] as List<dynamic>?)
+        ?.map((cert) => CertificadosModel.fromJson(cert))
+        .toList();
   }
 }
