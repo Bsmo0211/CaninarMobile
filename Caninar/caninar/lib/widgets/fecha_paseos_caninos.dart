@@ -6,7 +6,9 @@ import 'package:caninar/widgets/carrito.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/modal_map.dart';
+import 'package:caninar/widgets/modal_registro_mascota.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
+import 'package:caninar/widgets/registro_mascota.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -215,7 +217,14 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
                 ),
                 Center(
                   child: GestureDetector(
-                    onTap: () async {},
+                    onTap: () async {
+                      showDialog(
+                        context: context,
+                        builder: ((BuildContext context) {
+                          return const ModalRegistroMascota();
+                        }),
+                      );
+                    },
                     child: Text(
                       '+ Añadir Mascota',
                       style: TextStyle(
