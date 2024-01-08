@@ -3,8 +3,8 @@ import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/constants/routes.dart';
 import 'package:caninar/models/carrusel/model.dart';
 import 'package:caninar/models/categorias/model.dart';
-import 'package:caninar/pages/adiestramiento.dart';
-import 'package:caninar/pages/paseos.dart';
+
+import 'package:caninar/pages/page_categoria_seleccionada.dart';
 import 'package:caninar/widgets/cards_items_home.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class Home extends StatefulWidget {
-  Home({Key? key}) : super(key: key);
+  const Home({Key? key}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
@@ -76,7 +76,7 @@ class _HomeState extends State<Home> {
           CarouselSlider(
             options: CarouselOptions(
               initialPage: 0,
-              viewportFraction: 0.677 ,
+              viewportFraction: 0.677,
               enableInfiniteScroll: true,
               reverse: false,
               autoPlay: true,
@@ -119,26 +119,15 @@ class _HomeState extends State<Home> {
                 titulo: '${categoria.name}',
                 imageCard: categoria.image,
                 redireccion: () {
-                  if (categoria.slug!.contains('alimentos-snacks')) {
-                  } else if (categoria.slug!
-                      .contains('adiestramiento-canino')) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AdiestramientoPage(),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PageCategoriaSeleccionada(
+                        slugCategoria: categoria.slug ?? '',
+                        name: categoria.name!,
                       ),
-                    );
-                  } else if (categoria.slug!.contains('juguetes-acessorios')) {
-                  } else {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PaseosPage(
-                          slugCategoria: categoria.slug ?? '',
-                        ),
-                      ),
-                    );
-                  }
+                    ),
+                  );
                 },
               );
             }).toList(),
