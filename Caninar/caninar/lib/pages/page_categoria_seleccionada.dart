@@ -6,7 +6,7 @@ import 'package:caninar/widgets/card_adiestrador.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/info_detallada_adiestrador.dart';
-import 'package:caninar/widgets/info_detallada_paseos.dart';
+import 'package:caninar/widgets/info_detallada_productos_empresa.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
 
@@ -108,7 +108,7 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => InfromacionDetalladaPaseos(
+                      builder: (context) => InformacionDetalladaPaseos(
                         nombre: marca.name!,
                         imagen: marca.image!,
                         id: marca.id!,
