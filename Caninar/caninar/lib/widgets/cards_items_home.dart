@@ -36,9 +36,23 @@ class CardItemHome extends StatelessWidget {
                 child: imageCard != null
                     ? Image.network(
                         imageCard!,
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) {
+                            return child;
+                          } else {
+                            return const Center(
+                              child: SizedBox(
+                                width: 20.0,
+                                height: 20.0,
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          }
+                        },
                       )
                     : Image.asset(
-                        'assets/images/wpp.png',
+                        'assets/images/logo.png',
                       ),
               ),
               Container(
