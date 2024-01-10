@@ -1,10 +1,13 @@
 import 'package:caninar/constants/principals_colors.dart';
+import 'package:caninar/models/user/model.dart';
+import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class FinalizarCompra extends StatefulWidget {
   FinalizarCompra({Key? key}) : super(key: key);
@@ -14,6 +17,15 @@ class FinalizarCompra extends StatefulWidget {
 }
 
 class _FinalizarCompraState extends State<FinalizarCompra> {
+  UserLoginModel? user;
+  getCurrentUser() async {
+    UserLoginModel? userTemp = await Shared().currentUser();
+
+    setState(() {
+      user = userTemp;
+    });
+  }
+
   void _launchURL(BuildContext context) async {
     try {
       await launch(
@@ -40,6 +52,12 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
       // An exception is thrown if browser app is not installed on Android device.
       debugPrint(e.toString());
     }
+  }
+
+  @override
+  void initState() {
+    getCurrentUser();
+    super.initState();
   }
 
   @override
@@ -280,7 +298,14 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
               ),
               BotonCustom(
                   funcion: () {
-                    _launchURL(context);
+                    if (user != null) {
+                      _launchURL(context);
+                    } else {
+                      Fluttertoast.showToast(
+                        msg: 'Su sesión se ha expirado',
+                        backgroundColor: Colors.red,
+                      );
+                    }
                   },
                   texto: 'Finalizar Compra')
             ],
