@@ -4,6 +4,7 @@ import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/pages/home.dart';
+import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/finalizar_compra.dart';
@@ -179,14 +180,8 @@ class _LoginState extends State<Login> {
                 ),
                 onPressed: () async {
                   if (validate()) {
-                    UserLoginModel? usuario = await API()
+                    UserLoginModel? usuario = await Shared()
                         .login(correoCtrl.text, contrasenaCtrl.text, context);
-
-                    if (usuario != null) {
-                      print(usuario.toJson());
-                    } else {
-                      print("El usuario es nulo");
-                    }
                   }
                 },
               ),
