@@ -15,7 +15,9 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class FechaPaseosCaninos extends StatefulWidget {
-  FechaPaseosCaninos({Key? key}) : super(key: key);
+  String tituloProducto;
+  FechaPaseosCaninos({Key? key, required this.tituloProducto})
+      : super(key: key);
 
   @override
   _FechaPaseosCaninosState createState() => _FechaPaseosCaninosState();
@@ -56,7 +58,7 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          RedireccionAtras(nombre: '1 Paseo Canino'),
+          RedireccionAtras(nombre: widget.tituloProducto),
           Expanded(
             child: ListView(
               children: [
