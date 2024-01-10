@@ -71,7 +71,6 @@ class _RegistroState extends State<Registro> {
       data: jsonBody,
     )
         .then((value) async {
-      print(value);
       if (value.statusCode == 200) {
         Fluttertoast.showToast(
           msg: 'Usuario registrado con exito',
@@ -83,7 +82,6 @@ class _RegistroState extends State<Registro> {
         Response response = await dio.get(link);
 
         if (response.statusCode == 200) {
-          print(response.data);
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -99,8 +97,6 @@ class _RegistroState extends State<Registro> {
           backgroundColor: Colors.red,
           textColor: Colors.black);
     });
-
-    print(jsonBody);
   }
 
   @override
