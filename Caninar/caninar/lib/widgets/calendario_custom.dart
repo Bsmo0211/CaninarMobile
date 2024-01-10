@@ -24,8 +24,12 @@ class _CalendarioCustomState extends State<CalendarioCustom> {
               backgroundColor: Colors.white,
               showNavigationArrow: true,
               monthViewSettings: const DateRangePickerMonthViewSettings(
-                weekendDays: [7, 6],
+                weekendDays: [6, 7],
               ),
+              selectableDayPredicate: (DateTime date) {
+                return date.weekday != DateTime.saturday &&
+                    date.weekday != DateTime.sunday;
+              },
               onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
                 setState(() {
                   if (args.value is DateTime) {
