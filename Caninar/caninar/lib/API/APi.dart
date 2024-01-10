@@ -13,15 +13,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class API {
   static Dio dio = Dio();
   static UserLoginModel? userLoginModelFinal;
-
-  currentUser() {
-    UserLoginModel? userLoginModel = userLoginModelFinal;
-    return userLoginModel;
-  }
 
   Future<void> launchWhatsApp(String phoneNumber, {String message = ""}) async {
     try {
@@ -153,49 +149,5 @@ class API {
           backgroundColor: Colors.red,
           textColor: Colors.black);
     });
-  }
-
-  Future<UserLoginModel?> login(
-      String email, String pass, BuildContext context) async {
-    UserLoginModel? userLoginModel;
-    Map<String, dynamic> login = {
-      "email": email,
-      "password": pass,
-    };
-
-    String jsonBody = jsonEncode(login);
-
-    await dio
-        .post(
-      'https://gc1hfo9hl0.execute-api.us-east-1.amazonaws.com/dev/auth/login',
-      data: jsonBody,
-    )
-        .then((value) async {
-      if (value.statusCode == 200) {
-        dynamic jsonData = json.decode(value.toString());
-
-        UserLoginModel userLoginModelTemp =
-            UserLoginModel.fromJson(jsonData['user']);
-
-        userLoginModel = userLoginModelTemp;
-
-        userLoginModelFinal = userLoginModel;
-
-        Fluttertoast.showToast(
-          msg: 'Bienvenido ${userLoginModel?.firstName}',
-          backgroundColor: Colors.green,
-        );
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => FinalizarCompra()),
-        );
-      }
-    }).catchError((e) {
-      Fluttertoast.showToast(
-          msg: 'Correo o contraseña incorrecto',
-          backgroundColor: Colors.red,
-          textColor: Colors.black);
-    });
-    return userLoginModel;
   }
 }
