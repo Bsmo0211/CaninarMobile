@@ -2,6 +2,7 @@ import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/constants/routes.dart';
 import 'package:caninar/models/user/model.dart';
+import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/about_us.dart';
 import 'package:caninar/widgets/aliados.dart';
 import 'package:caninar/widgets/atencion_cliente.dart';
@@ -24,13 +25,11 @@ class CustomDrawer extends StatefulWidget {
 class _CustomDrawerState extends State<CustomDrawer> {
   UserLoginModel? user;
   getCurrentUser() async {
-    UserLoginModel? userTemp = await API().currentUser();
+    UserLoginModel? userTemp = await Shared().currentUser();
 
     setState(() {
       user = userTemp;
     });
-
-    print(user?.firstName);
   }
 
   @override
@@ -62,12 +61,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       width: 200,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 15),
+                      padding: const EdgeInsets.only(top: 35),
                       child: Text(
                         "${user?.firstName ?? ''} ${user?.lastName ?? ''}",
                         style: const TextStyle(
                           color: Colors.white,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -79,10 +77,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Divider(
-                    height: 2,
-                    color: Colors.grey,
-                  ),
                   if (user != null)
                     ItemDrawer(
                       titulo: 'Tu cuenta',
@@ -128,6 +122,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       );
                     },
                   ),
+                  const Divider(
+                    height: 2,
+                    color: Colors.grey,
+                  ),
                   ItemDrawer(
                     titulo: 'Quiero ser un alidado',
                     redireccion: () {
@@ -158,6 +156,30 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 ],
               ),
             ),
+            if (user != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 20, 5),
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: SizedBox(
+                    height: 40,
+                    child: ListTile(
+                      title: const Text(
+                        'Cerrar sesión',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          color: Colors.red,
+                        ),
+                      ),
+                      onTap: () async {
+                        await Shared().logout();
+                        Navigator.of(context).pop();
+                        // Ci
+                      },
+                    ),
+                  ),
+                ),
+              ),
             ItemDrawer(
                 titulo: 'Términos y Condiciones',
                 redireccion: () {
