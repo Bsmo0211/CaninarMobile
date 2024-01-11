@@ -10,6 +10,7 @@ class MarcasModel {
   String? image;
   String? telephone;
   String? id;
+  int? ruc;
   List<CertificadosModel>? certificates;
 
   Map<String, dynamic> toJson() {
@@ -24,6 +25,7 @@ class MarcasModel {
     data['telephone'] = telephone;
     data['id'] = id;
     data['certificates'] = certificates;
+    data['RUC'] = ruc;
 
     return data;
   }
@@ -40,6 +42,7 @@ class MarcasModel {
     }
     image = json['image'];
     name = json['name'];
+    ruc = json['RUC'];
     telephone = json['telephone'];
     id = json['id'];
     certificates = (json['certificates'] as List<dynamic>?)
