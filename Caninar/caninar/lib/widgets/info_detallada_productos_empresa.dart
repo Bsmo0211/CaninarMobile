@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/certificados/model.dart';
+import 'package:caninar/models/marcas/model.dart';
 import 'package:caninar/models/productos/model.dart';
 import 'package:caninar/widgets/cards_items_home.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
@@ -12,19 +13,13 @@ import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
 
 class InformacionDetalladaPaseos extends StatefulWidget {
-  String nombre;
-  String imagen;
-  String id;
-  int rating;
   List<CertificadosModel> certificados;
-  InformacionDetalladaPaseos(
-      {Key? key,
-      required this.nombre,
-      required this.imagen,
-      required this.id,
-      required this.rating,
-      required this.certificados})
-      : super(key: key);
+  MarcasModel marca;
+  InformacionDetalladaPaseos({
+    Key? key,
+    required this.certificados,
+    required this.marca,
+  }) : super(key: key);
 
   @override
   _InformacionDetalladaPaseosState createState() =>
@@ -36,7 +31,8 @@ class _InformacionDetalladaPaseosState
   List<ProductoModel> productos = [];
 
   getData() async {
-    List<ProductoModel> result = await API().getProductosbymarca(widget.id);
+    List<ProductoModel> result =
+        await API().getProductosbymarca(widget.marca.id!);
 
     setState(() {
       productos = result;
@@ -56,7 +52,7 @@ class _InformacionDetalladaPaseosState
       drawer: CustomDrawer(),
       body: ListView(
         children: [
-          RedireccionAtras(nombre: widget.nombre),
+          RedireccionAtras(nombre: widget.marca.name!),
           LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
               double cardWidth = constraints.maxWidth;
@@ -70,7 +66,7 @@ class _InformacionDetalladaPaseosState
                   child: Column(
                     children: [
                       Image.network(
-                        widget.imagen,
+                        widget.marca.image!,
                         width: 200,
                       ),
                       Container(
@@ -152,7 +148,7 @@ class _InformacionDetalladaPaseosState
                                                 ),
                                               ),
                                               TextSpan(
-                                                text: '${widget.rating}',
+                                                text: '${widget.marca.rating}',
                                                 style: const TextStyle(
                                                   fontSize: 14,
                                                   color: Colors.black,
@@ -217,6 +213,7 @@ class _InformacionDetalladaPaseosState
                     context,
                     MaterialPageRoute(
                       builder: (context) => FechaPaseosCaninos(
+                        marca: widget.marca,
                         tituloProducto: producto.name!,
                       ),
                     ),
