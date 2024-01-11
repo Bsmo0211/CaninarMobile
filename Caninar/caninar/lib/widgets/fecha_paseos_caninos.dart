@@ -1,5 +1,10 @@
+import 'package:caninar/API/APi.dart';
 import 'package:caninar/client/mapa.dart';
 import 'package:caninar/constants/principals_colors.dart';
+import 'package:caninar/models/marcas/model.dart';
+import 'package:caninar/models/mascotas/model.dart';
+import 'package:caninar/models/user/model.dart';
+import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/calendario_custom.dart';
 import 'package:caninar/widgets/carrito.dart';
@@ -16,8 +21,13 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class FechaPaseosCaninos extends StatefulWidget {
   String tituloProducto;
-  FechaPaseosCaninos({Key? key, required this.tituloProducto})
-      : super(key: key);
+  MarcasModel marca;
+
+  FechaPaseosCaninos({
+    Key? key,
+    required this.tituloProducto,
+    required this.marca,
+  }) : super(key: key);
 
   @override
   _FechaPaseosCaninosState createState() => _FechaPaseosCaninosState();
@@ -31,7 +41,36 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
 
   List<int> hours = List.generate(23, (index) => index + 1);
   int selectedHour = 1;
+  String? selectedOptionMascota;
   int? selectedOption;
+
+  List<MascotasModel> mascotas = [];
+  UserLoginModel? user;
+
+  getCurrentUser() async {
+    UserLoginModel? userTemp = await Shared().currentUser();
+
+    setState(() {
+      user = userTemp;
+    });
+
+    await getMascotas();
+  }
+
+  void refreshMascotas() async {
+    await getMascotas();
+  }
+
+  getMascotas() async {
+    if (user != null) {
+      List<MascotasModel> mascotasTemp =
+          await API().getMascotasByUser(user!.id!);
+
+      setState(() {
+        mascotas = mascotasTemp;
+      });
+    }
+  }
 
   getUbicacion() async {
     LatLng ubicacionActual = await Mapa().getLocation();
@@ -42,6 +81,7 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
 
   @override
   void initState() {
+    getCurrentUser();
     super.initState();
   }
 
@@ -190,32 +230,40 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
                     ),
                   ),
                 ),
-                //map para perros
-                ListTile(
-                  title: Row(
-                    children: [
-                      ClipOval(
-                        child: Image.asset(
-                          'assets/images/wpp.png',
-                          width: 70, // Ajusta el tamaño según tus necesidades
-                          height: 70,
-                          fit: BoxFit.cover,
-                        ),
+                Column(
+                  children: mascotas.map((mascota) {
+                    return RadioListTile<String>(
+                      // Especifica el tipo genérico String aquí
+                      title: Row(
+                        children: [
+                          ClipOval(
+                            child: Image.asset(
+                              'assets/images/Recurso 7.png',
+                              width: 70,
+                              height: 70,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 5,
+                            ),
+                            child: Text('${mascota.name}'),
+                          )
+                        ],
                       ),
-                      const Text('Perro 1')
-                    ],
-                  ),
-                  leading: Radio(
-                    activeColor: Colors.black,
-                    value: 1,
-                    groupValue: selectedOption,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedOption = value as int?;
-                        print("Button value: $value");
-                      });
-                    },
-                  ),
+                      value: mascota
+                          .name!, // Asumiendo que mascota.id es de tipo String
+                      groupValue: selectedOptionMascota,
+                      onChanged: (String? value) {
+                        // Especifica el tipo String en la firma de la función onChanged
+                        setState(() {
+                          selectedOptionMascota = value;
+                          print("Selected value: $value");
+                        });
+                      },
+                    );
+                  }).toList(),
                 ),
                 Center(
                   child: GestureDetector(
@@ -223,9 +271,12 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
                       showDialog(
                         context: context,
                         builder: ((BuildContext context) {
-                          return const ModalRegistroMascota();
+                          return ModalRegistroMascota(
+                            funcionRefresh: refreshMascotas,
+                          );
                         }),
                       );
+                      //  await getMascotas();
                     },
                     child: Text(
                       '+ Añadir Mascota',
@@ -389,7 +440,41 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CarritoCompras(),
+                        builder: (context) => CarritoCompras(
+                          dato: {
+                            "id_user": '${user?.id}',
+                            "user": {
+                              "addresses": const [
+                                {
+                                  "default": 1,
+                                  "id_district": "3949",
+                                  "inside": "304",
+                                  "name": "Av. Emancipacion 153 Int. 304"
+                                }
+                              ],
+                              "create_at": "1593236409.7052283",
+                              "document_number": "${user?.documentNumber}",
+                              "document_type": user?.documentType,
+                              "email": "${user?.email}",
+                              "first_name": "${user?.firstName}",
+                              "company": {
+                                "bussines_name":
+                                    "${widget.marca.bussinesName}", //supplier proovedor
+                                "ruc": "${widget.marca.ruc}"
+                              },
+                              "id":
+                                  "a9f18fd4-b838-11ea-b615-7aba6fe2de4b", // id
+                              "id_cart": "${user?.idCart}",
+                              "last_name": user?.lastName,
+                              "password": "12345678",
+                              "satus": 1,
+                              "telephone": user?.telephone,
+                              "type": 1,
+                              "update_at": "1593236409.7052283",
+                              "updated_at": 1596765563770
+                            }
+                          },
+                        ),
                       ),
                     );
                   },
