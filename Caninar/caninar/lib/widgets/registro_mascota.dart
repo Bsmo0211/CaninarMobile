@@ -1,16 +1,24 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:caninar/constants/principals_colors.dart';
+import 'package:caninar/models/user/model.dart';
 import 'package:caninar/pages/home.dart';
+import 'package:caninar/shared_Preferences/shared.dart';
+import 'package:caninar/widgets/mis_mascotas.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:snippet_coder_utils/multi_images_utils.dart';
+import 'package:dio/dio.dart';
 
 class RegistroMascota extends StatefulWidget {
+  Function refresh;
   bool registro;
   RegistroMascota({
     super.key,
     required this.registro,
+    required this.refresh,
   });
 
   @override
@@ -21,20 +29,79 @@ class _RegistroMascotaState extends State<RegistroMascota> {
   TextEditingController nombresCtrl = TextEditingController();
   TextEditingController razaCtrl = TextEditingController();
   final formKey1 = GlobalKey<FormState>();
+  UserLoginModel? user;
   File? _imageFile;
   bool esterilizado = false;
   String? dropdownValueSexo;
   Map<String, String> dropdownSexoMap = {
-    'Macho': 'male',
-    'Hembra': 'female',
+    'Macho': 'Macho',
+    'Hembra': 'Hembra',
   };
   String? dropdownValueTamano;
   Map<String, String> dropdownTamanoMap = {
-    'Pequeño (1kg - 8Kg)': 'pequeño',
-    'Mediano (-kg - -Kg)': 'mediano',
+    'Pequeño (1kg - 8Kg)': 'Pequeño',
+    'Mediano (-kg - -Kg)': 'Mediano',
   };
 
+  submit() async {
+    Dio dio = Dio();
+    Map<String, dynamic> createPet = {
+      "user_id": '${user?.id}',
+      "name": nombresCtrl.text,
+      "gender": dropdownValueSexo,
+      "sterilized": esterilizado,
+      "pet_size": dropdownValueTamano,
+      "race": razaCtrl.text,
+      "image": 'Prueba.com',
+    };
+
+    String jsonBody = jsonEncode(createPet);
+
+    print(jsonBody);
+
+    await dio
+        .post(
+      'https://5sl6737lhc.execute-api.us-east-1.amazonaws.com/dev/pet',
+      data: jsonBody,
+    )
+        .then((value) async {
+      if (value.statusCode == 200) {
+        Fluttertoast.showToast(
+          msg: 'Mascota registrado con exito',
+          backgroundColor: Colors.green,
+        );
+
+        widget.refresh!();
+
+        Navigator.pop(
+          context,
+        );
+      }
+    }).catchError((e) {
+      print(e);
+      Fluttertoast.showToast(
+          msg: 'Ha ocurrido un error',
+          backgroundColor: Colors.red,
+          textColor: Colors.black);
+    });
+  }
+
   Future<void> _getImage() async {}
+
+  getCurrentUser() async {
+    UserLoginModel? userTemp = await Shared().currentUser();
+
+    setState(() {
+      user = userTemp;
+    });
+    print(user?.id);
+  }
+
+  @override
+  void initState() {
+    getCurrentUser();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -326,11 +393,10 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                           color: Colors.white,
                         ),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Home()),
-                        );
+                      onPressed: () async {
+                        if (user != null) {
+                          await submit();
+                        }
                       },
                     ),
                   ),

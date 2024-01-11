@@ -5,11 +5,11 @@ import 'package:caninar/widgets/registro_mascota.dart';
 import 'package:flutter/material.dart';
 
 class PageRegistroMascotas extends StatefulWidget {
+  Function refresh;
   bool registro;
-  PageRegistroMascotas({
-    super.key,
-    required this.registro,
-  });
+
+  PageRegistroMascotas(
+      {super.key, required this.registro, required this.refresh});
 
   @override
   State<PageRegistroMascotas> createState() => _PageRegistroMascotasState();
@@ -27,6 +27,7 @@ class _PageRegistroMascotasState extends State<PageRegistroMascotas> {
           Expanded(
               child: RegistroMascota(
             registro: widget.registro,
+            refresh: widget.refresh,
           ))
         ],
       ),
