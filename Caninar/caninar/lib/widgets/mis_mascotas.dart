@@ -1,4 +1,7 @@
+import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
+import 'package:caninar/models/mascotas/model.dart';
+import 'package:caninar/models/user/model.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/cards_items_home.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
@@ -8,14 +11,38 @@ import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
 
 class MisMascotas extends StatefulWidget {
-  const MisMascotas({super.key});
+  UserLoginModel user;
+  MisMascotas({
+    super.key,
+    required this.user,
+  });
 
   @override
   State<MisMascotas> createState() => _MisMascotasState();
 }
 
 class _MisMascotasState extends State<MisMascotas> {
-  List<String> mascotas = [];
+  List<MascotasModel> mascotas = [];
+
+  void refreshMascotas() async {
+    await getMascotas();
+  }
+
+  getMascotas() async {
+    List<MascotasModel> mascotasTemp =
+        await API().getMascotasByUser(widget.user.id!);
+
+    setState(() {
+      mascotas = mascotasTemp;
+    });
+  }
+
+  @override
+  void initState() {
+    getMascotas();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +50,7 @@ class _MisMascotasState extends State<MisMascotas> {
       drawer: CustomDrawer(),
       body: Column(
         children: [
-          RedireccionAtras(nombre: 'Mis mascotas'),
+          RedireccionAtras(nombre: 'Mis Mascotas'),
           mascotas.isEmpty
               ? Center(
                   child: SizedBox(
@@ -41,8 +68,10 @@ class _MisMascotasState extends State<MisMascotas> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              PageRegistroMascotas(registro: true),
+                          builder: (context) => PageRegistroMascotas(
+                            registro: true,
+                            refresh: refreshMascotas,
+                          ),
                         ),
                       );
                     },
@@ -52,14 +81,15 @@ class _MisMascotasState extends State<MisMascotas> {
                   child: ListView(
                   children: [
                     Column(
-                      children: mascotas.map((producto) {
+                      children: mascotas.map((mascota) {
                         return CardItemHome(
-                          titulo: '',
+                          titulo: mascota.name!,
                           redireccion: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => PageRegistroMascotas(
+                                  refresh: refreshMascotas,
                                   registro: false,
                                 ),
                               ),
@@ -85,8 +115,10 @@ class _MisMascotasState extends State<MisMascotas> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  PageRegistroMascotas(registro: true),
+                              builder: (context) => PageRegistroMascotas(
+                                registro: true,
+                                refresh: refreshMascotas,
+                              ),
                             ),
                           );
                         },
