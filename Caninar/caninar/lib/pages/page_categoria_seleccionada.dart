@@ -109,10 +109,7 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => InformacionDetalladaPaseos(
-                        nombre: marca.name!,
-                        imagen: marca.image!,
-                        id: marca.id!,
-                        rating: marca.rating!,
+                        marca: marca,
                         certificados: marca.certificates != null
                             ? marca.certificates!
                             : [],
