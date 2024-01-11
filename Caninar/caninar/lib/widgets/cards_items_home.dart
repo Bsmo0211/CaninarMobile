@@ -52,7 +52,7 @@ class CardItemHome extends StatelessWidget {
                         },
                       )
                     : Image.asset(
-                        'assets/images/logo.png',
+                        'assets/images/Recurso 7.png',
                       ),
               ),
               Container(
