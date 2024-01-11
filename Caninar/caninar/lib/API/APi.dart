@@ -5,6 +5,7 @@ import 'package:caninar/models/categorias/model.dart';
 import 'package:caninar/models/certificados/model.dart';
 import 'package:caninar/models/distritos/model.dart';
 import 'package:caninar/models/marcas/model.dart';
+import 'package:caninar/models/mascotas/model.dart';
 import 'package:caninar/models/productos/model.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/widgets/finalizar_compra.dart';
@@ -118,6 +119,20 @@ class API {
     }
 
     return productos;
+  }
+
+  Future<List<MascotasModel>> getMascotasByUser(String id) async {
+    String link =
+        'https://5sl6737lhc.execute-api.us-east-1.amazonaws.com/dev/pet/list/$id';
+    Response response = await dio.get(link);
+
+    List<MascotasModel> mascotas = [];
+
+    for (Map<String, dynamic> mascota in response.data) {
+      mascotas.add(MascotasModel.fromJson(mascota));
+    }
+
+    return mascotas;
   }
 
   passRecovery(String email, BuildContext context) async {
