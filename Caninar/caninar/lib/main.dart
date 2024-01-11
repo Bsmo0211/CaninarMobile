@@ -36,6 +36,10 @@ class MyApp extends StatelessWidget {
       ],
       title: 'Caninar',
       theme: ThemeData().copyWith(
+        cardTheme: const CardTheme(
+          surfaceTintColor: Colors.white,
+        ),
+        useMaterial3: false,
         colorScheme: ThemeData().colorScheme.copyWith(
               primary: PrincipalColors.blue,
             ),
@@ -43,9 +47,9 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       locale: const Locale('es'),
-      home: Home(),
+      home: const Home(),
       routes: {
-        Routes.home.name: (_) => Home(),
+        Routes.home.name: (_) => const Home(),
       },
     );
   }
