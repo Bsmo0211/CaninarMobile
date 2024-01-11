@@ -7,7 +7,8 @@ import 'package:caninar/widgets/login.dart';
 import 'package:flutter/material.dart';
 
 class CarritoCompras extends StatefulWidget {
-  CarritoCompras({Key? key}) : super(key: key);
+  Map<String, dynamic>? dato;
+  CarritoCompras({Key? key, this.dato}) : super(key: key);
 
   @override
   _CarritoComprasState createState() => _CarritoComprasState();
