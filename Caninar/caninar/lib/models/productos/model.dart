@@ -6,11 +6,13 @@ class ProductoModel {
   String? description;
   String? price;
   String? id;
+  int? typePro;
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['slug'] = slug;
     data['stock'] = stock;
+    data['type_pro'] = typePro;
     data['image'] = image;
     data['name'] = name;
     data['description'] = description;
@@ -26,6 +28,11 @@ class ProductoModel {
       stock = int.parse(json['stock']);
     } else {
       stock = json['stock'];
+    }
+    if (json['type_pro'].runtimeType == String) {
+      typePro = int.parse(json['type_pro']);
+    } else {
+      typePro = json['type_pro'];
     }
     image = json['image'];
     name = json['name'];

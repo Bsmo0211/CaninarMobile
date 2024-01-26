@@ -1,3 +1,5 @@
+import 'package:caninar/models/direcciones/model.dart';
+
 class UserLoginModel {
   String? documentType;
   int? createdAt;
@@ -14,7 +16,8 @@ class UserLoginModel {
   String? id;
   String? idCart;
   int? type;
-  //TODO:terminan modelo
+  List<DireccionModel> addresses = [];
+
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['document_type'] = documentType;
@@ -26,6 +29,9 @@ class UserLoginModel {
     data['telephone'] = telephone;
     data['id'] = id;
     data['id_cart'] = idCart;
+    data['gender'] = gender;
+    data['addresses'] =
+        addresses.map((direccion) => direccion.toJson()).toList();
 
     return data;
   }
@@ -36,9 +42,22 @@ class UserLoginModel {
     email = json['email'];
     idCart = json['id_cart'];
     profilePhoto = json['profile_photo'];
+    firstName = json['first_name'];
     lastName = json['last_name'];
     telephone = json['telephone'];
+    gender = json['gender'];
     id = json['id'];
-    firstName = json['first_name'];
+    if (json['addresses'] != null) {
+      addresses = List<DireccionModel>.from(json['addresses']
+          .map((direccion) => DireccionModel.fromJson(direccion)));
+    }
+  }
+
+  addAdress(String address, String optionalData, String district) {
+    addresses.add(DireccionModel(
+      idDistrict: district,
+      name: address,
+      inside: optionalData,
+    ));
   }
 }
