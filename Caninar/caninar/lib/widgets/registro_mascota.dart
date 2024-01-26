@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:caninar/constants/access_keys.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/pages/home.dart';
@@ -11,6 +12,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:snippet_coder_utils/multi_images_utils.dart';
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:aws_s3_upload/aws_s3_upload.dart';
 
 class RegistroMascota extends StatefulWidget {
   Function refresh;
@@ -30,9 +33,10 @@ class _RegistroMascotaState extends State<RegistroMascota> {
   TextEditingController razaCtrl = TextEditingController();
   final formKey1 = GlobalKey<FormState>();
   UserLoginModel? user;
-  File? _imageFile;
+  File? imageMascota;
   bool esterilizado = false;
   String? dropdownValueSexo;
+  final ImagePicker _picker = ImagePicker();
   Map<String, String> dropdownSexoMap = {
     'Macho': 'Macho',
     'Hembra': 'Hembra',
@@ -44,6 +48,13 @@ class _RegistroMascotaState extends State<RegistroMascota> {
   };
 
   submit() async {
+    String recorteUrl = imageMascota!.path;
+    List<String> segmentos = recorteUrl.split("/");
+    String ultimoSegmento = segmentos.last;
+
+    String imagen =
+        'https://caninar-images.s3.amazonaws.com/pets/$ultimoSegmento';
+
     Dio dio = Dio();
     Map<String, dynamic> createPet = {
       "user_id": '${user?.id}',
@@ -52,12 +63,10 @@ class _RegistroMascotaState extends State<RegistroMascota> {
       "sterilized": esterilizado,
       "pet_size": dropdownValueTamano,
       "race": razaCtrl.text,
-      "image": 'Prueba.com',
+      "image": imagen,
     };
 
     String jsonBody = jsonEncode(createPet);
-
-    print(jsonBody);
 
     await dio
         .post(
@@ -71,7 +80,7 @@ class _RegistroMascotaState extends State<RegistroMascota> {
           backgroundColor: Colors.green,
         );
 
-        widget.refresh!();
+        widget.refresh();
 
         Navigator.pop(
           context,
@@ -86,7 +95,25 @@ class _RegistroMascotaState extends State<RegistroMascota> {
     });
   }
 
-  Future<void> _getImage() async {}
+  tomarFoto() async {
+    XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+    if (photo != null) {
+      File photofile = File(photo.path);
+
+      setState(() {
+        imageMascota = photofile;
+      });
+
+      AwsS3.uploadFile(
+        accessKey: Keys.awsAccessKey,
+        secretKey: Keys.awsSecretKey,
+        file: File(imageMascota!.path),
+        bucket: "caninar-images",
+        region: "us-east-1",
+        destDir: "pets",
+      );
+    }
+  }
 
   getCurrentUser() async {
     UserLoginModel? userTemp = await Shared().currentUser();
@@ -94,7 +121,6 @@ class _RegistroMascotaState extends State<RegistroMascota> {
     setState(() {
       user = userTemp;
     });
-    print(user?.id);
   }
 
   @override
@@ -112,17 +138,22 @@ class _RegistroMascotaState extends State<RegistroMascota> {
             children: [
               Center(
                 child: GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    tomarFoto();
+                  },
                   child: CircleAvatar(
-                      radius: 80.0,
-                      backgroundColor: Colors.grey[300],
-                      backgroundImage:
-                          _imageFile != null ? FileImage(_imageFile!) : null,
-                      child: const Icon(
-                        Icons.camera_alt,
-                        size: 40.0,
-                        color: Colors.white,
-                      )),
+                    radius: 80.0,
+                    backgroundColor: Colors.grey[300],
+                    backgroundImage:
+                        imageMascota != null ? FileImage(imageMascota!) : null,
+                    child: imageMascota != null
+                        ? null
+                        : const Icon(
+                            Icons.camera_alt,
+                            size: 40.0,
+                            color: Colors.white,
+                          ),
+                  ),
                 ),
               ),
               const Padding(
