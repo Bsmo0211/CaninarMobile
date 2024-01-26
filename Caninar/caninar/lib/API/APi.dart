@@ -165,4 +165,25 @@ class API {
           textColor: Colors.black);
     });
   }
+
+  updateUser(Map<String, dynamic> dataSend, String id) async {
+    String link =
+        'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users/$id';
+
+    String jsonBody = jsonEncode(dataSend);
+    await dio.put(link, data: jsonBody).then((value) async {
+      if (value.statusCode == 200) {
+        Fluttertoast.showToast(
+            msg: 'Dirección creada con éxito',
+            backgroundColor: Colors.green,
+            textColor: Colors.white);
+      }
+    }).catchError((e) {
+      print(e);
+      Fluttertoast.showToast(
+          msg: 'Ha ocurrido con la creación de la dirección',
+          backgroundColor: Colors.red,
+          textColor: Colors.black);
+    });
+  }
 }
