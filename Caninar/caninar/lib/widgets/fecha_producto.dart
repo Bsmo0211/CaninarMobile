@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/client/mapa.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/marcas/model.dart';
 import 'package:caninar/models/mascotas/model.dart';
+import 'package:caninar/models/productos/model.dart';
 import 'package:caninar/models/user/model.dart';
+import 'package:caninar/providers/cart_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/calendario_custom.dart';
@@ -14,38 +18,107 @@ import 'package:caninar/widgets/modal_map.dart';
 import 'package:caninar/widgets/modal_registro_mascota.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:caninar/widgets/registro_mascota.dart';
+import 'package:caninar/widgets/selecion_direccion.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-class FechaPaseosCaninos extends StatefulWidget {
-  String tituloProducto;
+class FechaProductos extends StatefulWidget {
+  ProductoModel producto;
   MarcasModel marca;
+  int type;
 
-  FechaPaseosCaninos({
+  FechaProductos({
     Key? key,
-    required this.tituloProducto,
+    required this.producto,
     required this.marca,
+    required this.type,
   }) : super(key: key);
 
   @override
-  _FechaPaseosCaninosState createState() => _FechaPaseosCaninosState();
+  _FechaProductosState createState() => _FechaProductosState();
 }
 
-class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
+class _FechaProductosState extends State<FechaProductos> {
   DateTime? diaSeleccionado;
   LatLng? initialCenter;
   TextEditingController telefonoCtrl = TextEditingController();
   bool isApiCallProcess = false;
-
   List<int> hours = List.generate(23, (index) => index + 1);
   int selectedHour = 1;
   String? selectedOptionMascota;
-  int? selectedOption;
-
+  String? nameSelectedOptionMascota;
+  String? selectedAdress;
+  String? horaInicial;
+  String? horaFinal;
   List<MascotasModel> mascotas = [];
   UserLoginModel? user;
+  List<String> direcciones = [];
+  List<int> selectedHours = [1];
+  String? selectedDistritoName;
+  String? selectedInside;
+
+  agregarCarrito() {
+    CartProvider cartProvider =
+        Provider.of<CartProvider>(context, listen: false);
+
+    Map<String, dynamic> nuevoItem = {
+      "id": "${widget.marca.id}", // id
+      "name": "${widget.marca.name}",
+      "email": "${widget.marca.bussinesName}", //no esta
+      "contact": "${widget.marca.contact}",
+      "telephone": "${widget.marca.telephone}",
+      "delivery_cost": "${widget.marca.deliveryTime}", //no esta
+      "delivery_time": "${widget.marca.deliveryTime}",
+      "total": "95.45", //no esta
+      "pet_name": {
+        // modulo para perris crud
+        "pet_id": selectedOptionMascota,
+        "name": nameSelectedOptionMascota,
+      },
+      "schedule": {
+        "supplier_id": "41d754dc-9c9b-11ea-b0a7-b2df1b7c602d", //preguntar
+        "time": {
+          "date": "07/11/2023",
+          "hour": {
+            "star": horaInicial,
+            "end": horaFinal,
+          }
+        },
+        "pet_id": selectedOptionMascota //no deberia ir
+      },
+      "items": [
+        {
+          "id": "${widget.producto.id}",
+          "name": "${widget.producto.name}",
+          "units": "Hours",
+          "quantity": 1,
+          "price": "${widget.producto.price}"
+        }
+      ]
+    };
+
+    print("Before adding to cart: ${cartProvider.cartItems}");
+    cartProvider.addToCart(nuevoItem);
+    print("After adding to cart: ${cartProvider.cartItems}");
+  }
+
+  void updateUserWithNewAddress(
+      String address, String optionalData, String district) async {
+    if (user != null) {
+      user!.addAdress(address, optionalData, district);
+
+      await API().updateUser(user!.toJson(), user!.id!);
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('user_data', jsonEncode(user!.toJson()));
+      setState(() {});
+    }
+  }
 
   getCurrentUser() async {
     UserLoginModel? userTemp = await Shared().currentUser();
@@ -72,13 +145,6 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
     }
   }
 
-  getUbicacion() async {
-    LatLng ubicacionActual = await Mapa().getLocation();
-    setState(() {
-      initialCenter = ubicacionActual;
-    });
-  }
-
   @override
   void initState() {
     getCurrentUser();
@@ -88,7 +154,7 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
   @override
   Widget build(BuildContext context) {
     if (isApiCallProcess) {
-      EasyLoading.show(status: 'Cargando');
+      EasyLoading.show(status: 'Cargando', dismissOnTap: true);
     } else {
       EasyLoading.dismiss();
     }
@@ -98,7 +164,7 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          RedireccionAtras(nombre: widget.tituloProducto),
+          RedireccionAtras(nombre: widget.producto.name!),
           Expanded(
             child: ListView(
               children: [
@@ -122,7 +188,10 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
                     ),
                   ),
                 ),
-                CalendarioCustom(diaSeleccionado: diaSeleccionado),
+                CalendarioCustom(
+                  diaSeleccionado: diaSeleccionado,
+                  type: widget.type,
+                ),
                 const Padding(
                   padding: EdgeInsets.only(left: 20, top: 15, bottom: 15),
                   child: Text(
@@ -133,32 +202,54 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
                     ),
                   ),
                 ),
-                Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: PrincipalColors
-                          .blueDrops, // Color de fondo del cuadro
-                      // Bordes redondeados
-                    ),
-                    child: DropdownButton<int>(
-                      padding: const EdgeInsets.only(left: 25, right: 25),
-                      value: selectedHour,
-                      items: hours.map((hour) {
-                        return DropdownMenuItem<int>(
-                          value: hour,
-                          child: Text(
-                            '$hour:00 - ${hour + 1}:00',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        for (int index = 0;
+                            index < selectedHours.length;
+                            index++)
+                          Container(
+                            decoration: BoxDecoration(
+                              color: PrincipalColors.blueDrops,
+                            ),
+                            child: DropdownButton<int>(
+                              padding:
+                                  const EdgeInsets.only(left: 25, right: 25),
+                              value: selectedHours[index],
+                              items: hours.map((hour) {
+                                return DropdownMenuItem<int>(
+                                  value: hour,
+                                  child: Text(
+                                    '$hour:00 - ${hour + 1}:00',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedHours[index] = value!;
+                                });
+                              },
+                            ),
                           ),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedHour = value!;
-                        });
-                      },
+                        if (widget.type == 2)
+                          IconButton(
+                            icon: Icon(
+                              Icons.add,
+                              color: PrincipalColors.blue,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                selectedHours.add(1);
+                              });
+                            },
+                          ),
+                      ],
                     ),
-                  ),
+                  ],
                 ),
                 const Padding(
                   padding: EdgeInsets.only(left: 20, top: 15, bottom: 5),
@@ -170,44 +261,81 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
                     ),
                   ),
                 ),
-                //column map para mas de una dirección
-                ListTile(
-                  title: const Text('Direccion'),
-                  leading: Radio(
-                    activeColor: Colors.black,
-                    value: 1,
-                    groupValue: selectedOption,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedOption = value as int?;
-                        print("Button value: $value");
-                      });
-                    },
+                if (user != null)
+                  Column(
+                    children: user!.addresses.map((direccion) {
+                      return RadioListTile<String>(
+                        title: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                left: 5,
+                              ),
+                              child: Text(
+                                  '${direccion.name!},${direccion.idDistrict}'),
+                            )
+                          ],
+                        ),
+                        value: direccion.name!,
+                        groupValue: selectedAdress,
+                        onChanged: (String? value) {
+                          setState(() {
+                            selectedAdress = value;
+                            selectedDistritoName = direccion.idDistrict;
+                            selectedInside = direccion.inside;
+                          });
+                        },
+                      );
+                    }).toList(),
                   ),
-                ),
                 Center(
                   child: GestureDetector(
                     onTap: () async {
-                      setState(() {
+                      /*  setState(() {
                         isApiCallProcess = true;
                       });
                       await getUbicacion();
                       setState(() {
                         isApiCallProcess = false;
-                      });
-
-                      // ignore: use_build_context_synchronously
+                      }); */
                       showDialog(
                         context: context,
                         builder: ((BuildContext context) {
-                          return ModalMap(
-                            initialCenter: initialCenter,
+                          return Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.cancel,
+                                      color: PrincipalColors.blue,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(15, 0, 15, 10),
+                                  child: SeleccionDireccion(
+                                    updateDireccion: true,
+                                    agregarDireccion: updateUserWithNewAddress,
+                                  ),
+                                )
+                              ],
+                            ),
                           );
                         }),
                       );
                     },
                     child: Text(
-                      'Cambiar dirección',
+                      '+ Agregar dirección',
                       style: TextStyle(
                         color: PrincipalColors.orange,
                         fontSize: 11,
@@ -237,8 +365,8 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
                       title: Row(
                         children: [
                           ClipOval(
-                            child: Image.asset(
-                              'assets/images/Recurso 7.png',
+                            child: Image.network(
+                              mascota.image!,
                               width: 70,
                               height: 70,
                               fit: BoxFit.cover,
@@ -252,14 +380,12 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
                           )
                         ],
                       ),
-                      value: mascota
-                          .name!, // Asumiendo que mascota.id es de tipo String
+                      value: mascota.id!,
                       groupValue: selectedOptionMascota,
                       onChanged: (String? value) {
-                        // Especifica el tipo String en la firma de la función onChanged
                         setState(() {
+                          nameSelectedOptionMascota = mascota.name;
                           selectedOptionMascota = value;
-                          print("Selected value: $value");
                         });
                       },
                     );
@@ -389,14 +515,14 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
                                     ),
                                   ),
                                 ),
-                                const Padding(
-                                  padding: EdgeInsets.only(
+                                Padding(
+                                  padding: const EdgeInsets.only(
                                     top: 5,
                                     bottom: 20,
                                   ),
                                   child: Text(
-                                    'Paseo Canino',
-                                    style: TextStyle(
+                                    '${widget.producto.name}',
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -418,11 +544,12 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
                                     ),
                                   ),
                                 ),
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 5, bottom: 20),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 5, bottom: 20),
                                   child: Text(
-                                    '35.00',
-                                    style: TextStyle(
+                                    '${widget.producto.price}',
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -437,46 +564,21 @@ class _FechaPaseosCaninosState extends State<FechaPaseosCaninos> {
                 ),
                 BotonCustom(
                   funcion: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CarritoCompras(
-                          dato: {
-                            "id_user": '${user?.id}',
-                            "user": {
-                              "addresses": const [
-                                {
-                                  "default": 1,
-                                  "id_district": "3949",
-                                  "inside": "304",
-                                  "name": "Av. Emancipacion 153 Int. 304"
-                                }
-                              ],
-                              "create_at": "1593236409.7052283",
-                              "document_number": "${user?.documentNumber}",
-                              "document_type": user?.documentType,
-                              "email": "${user?.email}",
-                              "first_name": "${user?.firstName}",
-                              "company": {
-                                "bussines_name":
-                                    "${widget.marca.bussinesName}", //supplier proovedor
-                                "ruc": "${widget.marca.ruc}"
-                              },
-                              "id":
-                                  "a9f18fd4-b838-11ea-b615-7aba6fe2de4b", // id
-                              "id_cart": "${user?.idCart}",
-                              "last_name": user?.lastName,
-                              "password": "12345678",
-                              "satus": 1,
-                              "telephone": user?.telephone,
-                              "type": 1,
-                              "update_at": "1593236409.7052283",
-                              "updated_at": 1596765563770
-                            }
-                          },
+                    if (selectedAdress != null &&
+                        selectedOptionMascota != null) {
+                      agregarCarrito();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CarritoCompras(),
                         ),
-                      ),
-                    );
+                      );
+                    } else {
+                      Fluttertoast.showToast(
+                          msg: 'Debe Seleccionar todos los campos requeridos',
+                          backgroundColor: Colors.red,
+                          textColor: Colors.black);
+                    }
                   },
                   texto: 'Agregar al carrito',
                 )
