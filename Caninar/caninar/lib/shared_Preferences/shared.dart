@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:caninar/models/user/model.dart';
-import 'package:caninar/widgets/finalizar_compra.dart';
+import 'package:caninar/pages/home.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -54,7 +54,7 @@ class Shared {
         );
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => FinalizarCompra()),
+          MaterialPageRoute(builder: (context) => Home()),
         );
       }
     }).catchError((e) {
