@@ -108,7 +108,7 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => InformacionDetalladaPaseos(
+                      builder: (context) => InformacionDetalladaProductos(
                         marca: marca,
                         certificados: marca.certificates != null
                             ? marca.certificates!

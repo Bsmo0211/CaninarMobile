@@ -5,30 +5,34 @@ import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/certificados/model.dart';
 import 'package:caninar/models/marcas/model.dart';
 import 'package:caninar/models/productos/model.dart';
+import 'package:caninar/models/user/model.dart';
+import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/cards_items_home.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
-import 'package:caninar/widgets/fecha_paseos_caninos.dart';
+import 'package:caninar/widgets/fecha_producto.dart';
+import 'package:caninar/widgets/login.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
 
-class InformacionDetalladaPaseos extends StatefulWidget {
+class InformacionDetalladaProductos extends StatefulWidget {
   List<CertificadosModel> certificados;
   MarcasModel marca;
-  InformacionDetalladaPaseos({
+  InformacionDetalladaProductos({
     Key? key,
     required this.certificados,
     required this.marca,
   }) : super(key: key);
 
   @override
-  _InformacionDetalladaPaseosState createState() =>
-      _InformacionDetalladaPaseosState();
+  _InformacionDetalladaProductosState createState() =>
+      _InformacionDetalladaProductosState();
 }
 
-class _InformacionDetalladaPaseosState
-    extends State<InformacionDetalladaPaseos> {
+class _InformacionDetalladaProductosState
+    extends State<InformacionDetalladaProductos> {
   List<ProductoModel> productos = [];
+  UserLoginModel? user;
 
   getData() async {
     List<ProductoModel> result =
@@ -39,8 +43,18 @@ class _InformacionDetalladaPaseosState
     });
   }
 
+  getCurrentUser() async {
+    UserLoginModel? userTemp = await Shared().currentUser();
+
+    setState(() {
+      user = userTemp;
+    });
+    print(user);
+  }
+
   @override
   void initState() {
+    getCurrentUser();
     getData();
     super.initState();
   }
@@ -209,15 +223,28 @@ class _InformacionDetalladaPaseosState
               return CardItemHome(
                 titulo: producto.name!,
                 redireccion: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => FechaPaseosCaninos(
-                        marca: widget.marca,
-                        tituloProducto: producto.name!,
+                  if (user != null) {
+                    if (producto.typePro == 3) {
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FechaProductos(
+                            marca: widget.marca,
+                            producto: producto,
+                            type: producto.typePro!,
+                          ),
+                        ),
+                      );
+                    }
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Login(),
                       ),
-                    ),
-                  );
+                    );
+                  }
                 },
                 colorTexto: Colors.black,
                 precios: 'S/${producto.price}',
