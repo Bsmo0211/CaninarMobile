@@ -1,16 +1,25 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:caninar/API/APi.dart';
+import 'package:caninar/constants/access_keys.dart';
 import 'package:caninar/constants/principals_colors.dart';
+import 'package:caninar/models/distritos/model.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
+import 'package:caninar/widgets/login.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:caninar/widgets/registro_completo.dart';
+import 'package:caninar/widgets/selecion_direccion.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:snippet_coder_utils/multi_images_utils.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:aws_s3_upload/aws_s3_upload.dart';
 
 class Registro extends StatefulWidget {
   Registro({Key? key}) : super(key: key);
@@ -25,6 +34,9 @@ class _RegistroState extends State<Registro> {
     'Femenino': 'female',
   };
   String? dropdownValueActividad;
+  String? distritoDireccion;
+  String? direccionSeleccionada;
+  String? datosOpcionalesSeleccionados;
   bool _acceptTerms = false;
   final formKey1 = GlobalKey<FormState>();
   bool _showPassword = true;
@@ -35,12 +47,44 @@ class _RegistroState extends State<Registro> {
   TextEditingController nombresCtrl = TextEditingController();
   TextEditingController apellidosCtrl = TextEditingController();
   TextEditingController telefonoCtrl = TextEditingController();
-  TextEditingController direccionCtrl = TextEditingController();
+
   TextEditingController identificacionCtrl = TextEditingController();
   RegExp expRegNum = RegExp(r'[0-9]');
+  final ImagePicker _picker = ImagePicker();
+  File? imagenPersona;
+
+  List<Map<String, dynamic>> direcciones = [];
+
+  tomarFoto() async {
+    XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+    if (photo != null) {
+      File photofile = File(photo.path);
+
+      setState(() {
+        imagenPersona = photofile;
+      });
+
+      AwsS3.uploadFile(
+        accessKey: Keys.awsAccessKey,
+        secretKey: Keys.awsSecretKey,
+        file: File(imagenPersona!.path),
+        bucket: "caninar-images",
+        region: "us-east-1",
+        destDir: "users",
+      );
+    }
+  }
 
   submit() async {
     Dio dio = Dio();
+
+    String recorteUrl = imagenPersona!.path;
+    List<String> segmentos = recorteUrl.split("/");
+    String ultimoSegmento = segmentos.last;
+
+    String imagen =
+        'https://caninar-images.s3.amazonaws.com/users/$ultimoSegmento';
+
     Map<String, dynamic> createUser = {
       "type": 1,
       "first_name": nombresCtrl.text,
@@ -51,19 +95,13 @@ class _RegistroState extends State<Registro> {
       "document_number": identificacionCtrl.text,
       "telephone": telefonoCtrl.text,
       "password": contrasena2Ctrl.text,
-      //TODO:arreglar envio de direcciones
-      "addresses": [
-        {
-          "name": "Av. Emancipación 153",
-          "inside": "int 304",
-          "id_district": "1",
-          "default": "true"
-        },
-      ],
-      "profile_photo": "s3.com"
+      "addresses": direcciones,
+      "profile_photo": imagen
     };
 
     String jsonBody = jsonEncode(createUser);
+
+    print(jsonBody);
 
     await dio
         .post(
@@ -85,7 +123,7 @@ class _RegistroState extends State<Registro> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const RegistroCompleto(),
+              builder: (context) => Login(),
             ),
           );
         }
@@ -116,13 +154,34 @@ class _RegistroState extends State<Registro> {
               child: ListView(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: Text(
                       'Datos de Inicio de Sesión',
                       style: TextStyle(
                         color: Colors.grey.shade700,
                         fontWeight: FontWeight.bold,
                         fontSize: 17,
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        tomarFoto();
+                      },
+                      child: CircleAvatar(
+                        radius: 80.0,
+                        backgroundColor: Colors.grey[300],
+                        backgroundImage: imagenPersona != null
+                            ? FileImage(imagenPersona!)
+                            : null,
+                        child: imagenPersona != null
+                            ? null
+                            : const Icon(
+                                Icons.camera_alt,
+                                size: 40.0,
+                                color: Colors.white,
+                              ),
                       ),
                     ),
                   ),
@@ -557,50 +616,62 @@ class _RegistroState extends State<Registro> {
                       },
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 15),
-                    child: Text('Dirección *'),
-                  ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 8, bottom: 8),
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        floatingLabelBehavior: FloatingLabelBehavior.never,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            width: 1.5,
-                            color: PrincipalColors.blue,
-                          ),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            width: 1.5,
-                            color: PrincipalColors.blue,
-                          ),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 5.0,
-                          horizontal: 15.0,
-                        ),
-                        labelStyle: const TextStyle(
-                          color: Colors.black,
-                        ),
-                        border: const OutlineInputBorder(
-                          borderSide: BorderSide(
-                            width: 3,
-                          ),
+                    padding: const EdgeInsets.only(
+                      top: 10,
+                    ),
+                    child: Text(
+                      'Datos sobre direccion',
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                      ),
+                    ),
+                  ),
+                  SeleccionDireccion(
+                    updateDireccion: false,
+                    agregarDireccion: (distrito, direccion, datosOpcionales) {
+                      setState(() {
+                        distritoDireccion = distrito;
+                        direccionSeleccionada = direccion;
+                        datosOpcionalesSeleccionados = datosOpcionales;
+                      });
+
+                      direcciones.add({
+                        "name": direccion,
+                        "inside": datosOpcionales,
+                        "id_district": "1",
+                        "default": "true",
+                      });
+                    },
+                  ),
+                  if (direcciones.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 10,
+                      ),
+                      child: Text(
+                        'Direcciones agregadas',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17,
                         ),
                       ),
-                      controller: direccionCtrl,
-                      validator: (direccionCtrl) {
-                        if (direccionCtrl == null || direccionCtrl.isEmpty) {
-                          return 'El campo es obligatorio';
-                        } else {}
-                        return null;
-                      },
                     ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: direcciones.map((direccion) {
+                      return Padding(
+                        padding:
+                            const EdgeInsets.only(top: 5, bottom: 5, left: 5),
+                        child: Text(
+                          '${direccion["name"]}, $distritoDireccion',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      );
+                    }).toList(),
                   ),
                   CheckboxListTile(
                     activeColor: PrincipalColors.blue,
@@ -656,8 +727,11 @@ class _RegistroState extends State<Registro> {
 
   bool validate() {
     final form = formKey1.currentState;
+
     if (form!.validate()) {
-      form.save();
+      if (direcciones.isNotEmpty) {
+        form.save();
+      }
       return true;
     } else {
       return false;
