@@ -4,7 +4,14 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CalendarioCustom extends StatefulWidget {
   DateTime? diaSeleccionado;
-  CalendarioCustom({Key? key, this.diaSeleccionado}) : super(key: key);
+  int type;
+  Function(DateTime selectedDay)? onDiaSeleccionado;
+  CalendarioCustom({
+    Key? key,
+    this.diaSeleccionado,
+    required this.type,
+    this.onDiaSeleccionado,
+  }) : super(key: key);
 
   @override
   _CalendarioCustomState createState() => _CalendarioCustomState();
@@ -36,7 +43,7 @@ class _CalendarioCustomState extends State<CalendarioCustom> {
                     widget.diaSeleccionado = args.value;
                     print('Selected Date: ${widget.diaSeleccionado}');
                   } else if (args.value is List<DateTime>) {
-                    // Handle range selection if needed
+                  
                   }
                 });
               },
@@ -62,6 +69,9 @@ class _CalendarioCustomState extends State<CalendarioCustom> {
                 textAlign: TextAlign.center,
               ),
               enablePastDates: false,
+              selectionMode: widget.type == 1
+                  ? DateRangePickerSelectionMode.single
+                  : DateRangePickerSelectionMode.multiple,
             ),
           ),
         ),
