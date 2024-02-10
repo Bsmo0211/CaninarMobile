@@ -82,6 +82,7 @@ class API {
       String district, String categoria) async {
     String link =
         'https://w7lje56t6h.execute-api.us-east-1.amazonaws.com/dev/suppliers/district/$district/category/$categoria';
+    // https://ozstkosm6b.execute-api.us-east-1.amazonaws.com/dev/products/district/{district_slug}/supplier/{supplier-slug}/category/{category_slug}
     Response response = await dio.get(link);
 
     List<MarcasModel> marcas = [];
@@ -107,14 +108,17 @@ class API {
     return marcas;
   }
 
-  Future<List<ProductoModel>> getProductosbymarca(String id) async {
+  Future<List<ProductoModel>> getProductosbymarca(
+      String district, String categoria, String marca) async {
     String link =
-        'https://ozstkosm6b.execute-api.us-east-1.amazonaws.com/dev/products?id_supplier=$id';
+        'https://ozstkosm6b.execute-api.us-east-1.amazonaws.com/dev/products/district/$district/supplier/$marca/category/$categoria';
     Response response = await dio.get(link);
 
     List<ProductoModel> productos = [];
 
-    for (Map<String, dynamic> producto in response.data) {
+    List<dynamic> productList = response.data['products'];
+
+    for (Map<String, dynamic> producto in productList) {
       productos.add(ProductoModel.fromJson(producto));
     }
 
@@ -174,7 +178,7 @@ class API {
     await dio.put(link, data: jsonBody).then((value) async {
       if (value.statusCode == 200) {
         Fluttertoast.showToast(
-            msg: 'Dirección creada con éxito',
+            msg: 'Información actualizada con éxito',
             backgroundColor: Colors.green,
             textColor: Colors.white);
       }
