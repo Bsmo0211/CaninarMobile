@@ -23,6 +23,8 @@ class _CarritoComprasState extends State<CarritoCompras> {
   String? priceProduct;
   UserLoginModel? user;
   int? cantidad;
+  double totalGeneral = 0.0;
+  double subtotal = 0.0; // Inicializa subtotal como 0.0
 
   getCurrentUser() async {
     UserLoginModel? userTemp = await Shared().currentUser();
@@ -45,6 +47,8 @@ class _CarritoComprasState extends State<CarritoCompras> {
 
     setState(() {
       dataList = cartProvider.cartItems;
+      // Calcula el subtotal al actualizar la lista
+      calculateSubtotal();
     });
 
     return Scaffold(
@@ -76,13 +80,13 @@ class _CarritoComprasState extends State<CarritoCompras> {
                   children: dataList.asMap().entries.map((entry) {
                     int index = entry.key;
                     Map<String, dynamic> data = entry.value;
+
                     String nombreProveedor = data['name'];
 
                     List<dynamic> items = data['items'];
 
                     for (var item in items) {
                       nameProduct = item['name'];
-
                       cantidad = item['quantity'];
                       priceProduct = item['price'];
                     }
@@ -231,7 +235,7 @@ class _CarritoComprasState extends State<CarritoCompras> {
                   }).toList(),
                 ),
                 dataList.isNotEmpty
-                    ? const Align(
+                    ? Align(
                         alignment: Alignment.center,
                         child: Column(
                           children: [
@@ -244,11 +248,11 @@ class _CarritoComprasState extends State<CarritoCompras> {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.fromLTRB(40, 20, 40, 10),
-                                  child: Text('S/ precio'),
+                                  child: Text('S/ $subtotal'),
                                 ),
                               ],
                             ),
-                            Row(
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Padding(
@@ -261,7 +265,7 @@ class _CarritoComprasState extends State<CarritoCompras> {
                                 ),
                               ],
                             ),
-                            Row(
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Padding(
@@ -274,7 +278,7 @@ class _CarritoComprasState extends State<CarritoCompras> {
                                 ),
                               ],
                             ),
-                            Row(
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Padding(
@@ -288,7 +292,7 @@ class _CarritoComprasState extends State<CarritoCompras> {
                                 Padding(
                                   padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
                                   child: Text(
-                                    'S/ precio',
+                                    'total',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -314,7 +318,11 @@ class _CarritoComprasState extends State<CarritoCompras> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => FinalizarCompra(),
+                          builder: (context) => FinalizarCompra(
+                              subTotal: subtotal,
+                              deliveriFee: '',
+                              impuesto: '',
+                              total: ''),
                         ),
                       );
                     },
@@ -326,5 +334,17 @@ class _CarritoComprasState extends State<CarritoCompras> {
         ],
       ),
     );
+  }
+
+  void calculateSubtotal() {
+    // Inicializa el subtotal como 0.0 antes de calcularlo
+    subtotal = 0.0;
+    // Itera sobre dataList y suma los precios de todos los productos
+    for (var data in dataList) {
+      List<dynamic> items = data['items'];
+      for (var item in items) {
+        subtotal += double.parse(item['price']);
+      }
+    }
   }
 }
