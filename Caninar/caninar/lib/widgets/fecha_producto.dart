@@ -14,11 +14,13 @@ import 'package:caninar/widgets/calendario_custom.dart';
 import 'package:caninar/widgets/carrito.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
+import 'package:caninar/widgets/image_network_propio.dart';
 import 'package:caninar/widgets/modal_map.dart';
 import 'package:caninar/widgets/modal_registro_mascota.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:caninar/widgets/registro_mascota.dart';
 import 'package:caninar/widgets/selecion_direccion.dart';
+import 'package:convert/convert.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:latlong2/latlong.dart';
@@ -26,17 +28,20 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:intl/intl.dart';
 
 class FechaProductos extends StatefulWidget {
   ProductoModel producto;
   MarcasModel marca;
   int type;
+  String idCategoria;
 
   FechaProductos({
     Key? key,
     required this.producto,
     required this.marca,
     required this.type,
+    required this.idCategoria,
   }) : super(key: key);
 
   @override
@@ -45,6 +50,7 @@ class FechaProductos extends StatefulWidget {
 
 class _FechaProductosState extends State<FechaProductos> {
   DateTime? diaSeleccionado;
+  String? diaFormateado;
   LatLng? initialCenter;
   TextEditingController telefonoCtrl = TextEditingController();
   bool isApiCallProcess = false;
@@ -67,6 +73,14 @@ class _FechaProductosState extends State<FechaProductos> {
         Provider.of<CartProvider>(context, listen: false);
 
     Map<String, dynamic> nuevoItem = {
+      "address": {
+        // enviar m
+        "name": '$selectedAdress',
+        "inside": '$selectedInside',
+        "name_district": '$selectedDistritoName', //enviar distrito
+        "id_district": "1",
+        "default": "true"
+      },
       "id": "${widget.marca.id}", // id
       "name": "${widget.marca.name}",
       "email": "${widget.marca.bussinesName}", //no esta
@@ -81,9 +95,10 @@ class _FechaProductosState extends State<FechaProductos> {
         "name": nameSelectedOptionMascota,
       },
       "schedule": {
-        "supplier_id": "41d754dc-9c9b-11ea-b0a7-b2df1b7c602d", //preguntar
+        "category_id": widget.idCategoria,
+        "status": 'pending',
         "time": {
-          "date": "07/11/2023",
+          "date": diaFormateado,
           "hour": {
             "star": horaInicial,
             "end": horaFinal,
@@ -102,9 +117,7 @@ class _FechaProductosState extends State<FechaProductos> {
       ]
     };
 
-    print("Before adding to cart: ${cartProvider.cartItems}");
     cartProvider.addToCart(nuevoItem);
-    print("After adding to cart: ${cartProvider.cartItems}");
   }
 
   void updateUserWithNewAddress(
@@ -189,8 +202,15 @@ class _FechaProductosState extends State<FechaProductos> {
                   ),
                 ),
                 CalendarioCustom(
-                  diaSeleccionado: diaSeleccionado,
                   type: widget.type,
+                  onDiaSeleccionado: ((selectedDay) {
+                    String formattedDate =
+                        DateFormat('dd/MM/yyyy').format(selectedDay);
+                    setState(() {
+                      diaFormateado = formattedDate;
+                    });
+                    print(formattedDate);
+                  }),
                 ),
                 const Padding(
                   padding: EdgeInsets.only(left: 20, top: 15, bottom: 15),
@@ -204,12 +224,10 @@ class _FechaProductosState extends State<FechaProductos> {
                 ),
                 Column(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        for (int index = 0;
-                            index < selectedHours.length;
-                            index++)
+                    for (int index = 0; index < selectedHours.length; index++)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
                           Container(
                             decoration: BoxDecoration(
                               color: PrincipalColors.blueDrops,
@@ -224,31 +242,41 @@ class _FechaProductosState extends State<FechaProductos> {
                                   child: Text(
                                     '$hour:00 - ${hour + 1}:00',
                                     style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 );
                               }).toList(),
                               onChanged: (value) {
                                 setState(() {
                                   selectedHours[index] = value!;
+                                  int horainicialTemp = selectedHours[index];
+                                  int horafinalTemp = horainicialTemp + 1;
+
+                                  horaInicial = '$horainicialTemp:00';
+                                  horaFinal = '$horafinalTemp:00';
                                 });
+
+                                print(horaInicial);
+                                print(horaFinal);
                               },
                             ),
                           ),
-                        if (widget.type == 2)
-                          IconButton(
-                            icon: Icon(
-                              Icons.add,
-                              color: PrincipalColors.blue,
+                          if (widget.type == 2 &&
+                              index == selectedHours.length - 1)
+                            IconButton(
+                              icon: Icon(
+                                Icons.add,
+                                color: PrincipalColors.blue,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  selectedHours.add(1);
+                                });
+                              },
                             ),
-                            onPressed: () {
-                              setState(() {
-                                selectedHours.add(1);
-                              });
-                            },
-                          ),
-                      ],
-                    ),
+                        ],
+                      ),
                   ],
                 ),
                 const Padding(
@@ -365,13 +393,12 @@ class _FechaProductosState extends State<FechaProductos> {
                       title: Row(
                         children: [
                           ClipOval(
-                            child: Image.network(
-                              mascota.image!,
-                              width: 70,
-                              height: 70,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                              child: ImageNetworkPropio(
+                            imagen: mascota.image!,
+                            width: 70,
+                            height: 70,
+                            fit: BoxFit.cover,
+                          )),
                           Padding(
                             padding: const EdgeInsets.only(
                               left: 5,
