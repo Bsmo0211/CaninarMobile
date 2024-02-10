@@ -1,14 +1,15 @@
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
-import 'package:caninar/constants/routes.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/about_us.dart';
 import 'package:caninar/widgets/aliados.dart';
 import 'package:caninar/widgets/atencion_cliente.dart';
+import 'package:caninar/widgets/editar_perfil.dart';
 import 'package:caninar/widgets/item_drawer.dart';
 import 'package:caninar/widgets/libro_reclamaciones.dart';
 import 'package:caninar/widgets/login.dart';
+import 'package:caninar/widgets/mis_citas.dart';
 import 'package:caninar/widgets/mis_mascotas.dart';
 import 'package:caninar/widgets/page_registro_mascotas.dart';
 import 'package:caninar/widgets/registro.dart';
@@ -83,7 +84,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       redireccion: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Login()),
+                          MaterialPageRoute(
+                              builder: (context) => EditarPerfil()),
                         );
                       },
                     ),
@@ -100,6 +102,21 @@ class _CustomDrawerState extends State<CustomDrawer> {
                           builder: (context) => MisMascotas(
                             user: user!,
                           ),
+                        ),
+                      );
+                    },
+                  ),
+                  const Divider(
+                    height: 2,
+                    color: Colors.grey,
+                  ),
+                  ItemDrawer(
+                    titulo: 'Mis Citas',
+                    redireccion: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MisCitas(),
                         ),
                       );
                     },
@@ -175,9 +192,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         ),
                       ),
                       onTap: () async {
-                        await Shared().logout();
-                        Navigator.of(context).pop();
-                        // Ci
+                        await Shared().logout(context);
                       },
                     ),
                   ),
