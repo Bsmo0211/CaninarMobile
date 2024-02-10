@@ -1,4 +1,5 @@
 import 'package:caninar/constants/principals_colors.dart';
+import 'package:caninar/widgets/image_network_propio.dart';
 import 'package:flutter/material.dart';
 
 class CardItemHome extends StatelessWidget {
@@ -22,7 +23,7 @@ class CardItemHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
       child: GestureDetector(
         child: Card(
           elevation: 4,
@@ -34,23 +35,7 @@ class CardItemHome extends StatelessWidget {
               AspectRatio(
                 aspectRatio: 16 / 9,
                 child: imageCard != null
-                    ? Image.network(
-                        imageCard!,
-                        loadingBuilder: (BuildContext context, Widget child,
-                            ImageChunkEvent? loadingProgress) {
-                          if (loadingProgress == null) {
-                            return child;
-                          } else {
-                            return const Center(
-                              child: SizedBox(
-                                width: 20.0,
-                                height: 20.0,
-                                child: CircularProgressIndicator(),
-                              ),
-                            );
-                          }
-                        },
-                      )
+                    ? ImageNetworkPropio(imagen: imageCard!)
                     : Image.asset(
                         'assets/images/Recurso 7.png',
                       ),
