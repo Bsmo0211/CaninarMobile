@@ -1,16 +1,36 @@
+import 'dart:async';
+
+import 'package:caninar/API/Mercado_pago.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/user/model.dart';
+import 'package:caninar/providers/cart_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/boton_custom.dart';
+import 'package:caninar/widgets/compra_finalizada.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
+import 'package:uni_links/uni_links.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
+import 'package:provider/provider.dart';
 
 class FinalizarCompra extends StatefulWidget {
-  FinalizarCompra({Key? key}) : super(key: key);
+  double subTotal;
+  String deliveriFee;
+  String impuesto;
+  String total;
+  FinalizarCompra(
+      {Key? key,
+      required this.deliveriFee,
+      required this.impuesto,
+      required this.subTotal,
+      required this.total})
+      : super(key: key);
 
   @override
   _FinalizarCompraState createState() => _FinalizarCompraState();
@@ -18,6 +38,48 @@ class FinalizarCompra extends StatefulWidget {
 
 class _FinalizarCompraState extends State<FinalizarCompra> {
   UserLoginModel? user;
+  List<Map<String, dynamic>> dataList = [];
+  StreamSubscription? _sub;
+  int? cantidad;
+  String? nameProduct;
+  String? priceProduct;
+
+  getDataPago() {
+    Map<String, dynamic> nuevoItem = {
+      "id_user": '${user?.id}',
+      "user": {
+        "addresses":
+            user?.addresses.map((direccion) => direccion.toJson()).toList(),
+        "create_at": "1593236409.7052283",
+        "document_number": "${user?.documentNumber}",
+        "document_type": user?.documentType,
+        "email": "${user!.email}",
+        "first_name": "${user?.firstName}",
+        "id": '${user?.id}', // id
+        "id_cart": "${user?.idCart}",
+        "last_name": user?.lastName,
+        "password": "12345678", //no enviaria
+        "satus": 1,
+        "telephone": user?.telephone,
+        "type": 1,
+        "update_at": "1593236409.7052283",
+        "updated_at": 1596765563770
+      },
+      "products": dataList,
+      "reciever": const {
+        //llenar
+        "names": "",
+        "last_names": "",
+        "dni": ""
+      },
+      /*  
+      "total": "${widget.producto.price}",
+      "id_transaction": "dd43f434f34f4f4f" */
+    };
+
+    print(nuevoItem);
+  }
+
   getCurrentUser() async {
     UserLoginModel? userTemp = await Shared().currentUser();
 
@@ -26,12 +88,14 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
     });
   }
 
-  void _launchURL(BuildContext context) async {
+  void _launchURL(BuildContext context, String id) async {
+    String url =
+        'https://www.mercadopago.com.pe/checkout/v1/redirect?pref_id=$id';
     try {
       await launch(
-        'https://manjaro.org/',
+        url,
         customTabsOption: CustomTabsOption(
-          toolbarColor: Theme.of(context).primaryColor,
+          toolbarColor: PrincipalColors.blue,
           enableDefaultShare: true,
           enableUrlBarHiding: true,
           showPageTitle: true,
@@ -49,7 +113,6 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
         ),
       );
     } catch (e) {
-      // An exception is thrown if browser app is not installed on Android device.
       debugPrint(e.toString());
     }
   }
@@ -61,7 +124,19 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
   }
 
   @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+    setState(() {
+      dataList = cartProvider.cartItems;
+    });
+
+    print(dataList.toString());
     return Scaffold(
       appBar: const CustomAppBar(),
       drawer: CustomDrawer(),
@@ -72,7 +147,21 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
               child: ListView(
             children: [
               Column(
-                children: [1, 2].map((e) {
+                children: dataList.asMap().entries.map((entry) {
+                  int index = entry.key;
+                  Map<String, dynamic> data = entry.value;
+                  Map<String, dynamic> address = data['address'];
+                  String nombreProveedor = data['name'];
+                  String nombreDireccion = address['name'];
+
+                  List<dynamic> items = data['items'];
+
+                  for (var item in items) {
+                    nameProduct = item['name'];
+
+                    cantidad = item['quantity'];
+                    priceProduct = item['price'];
+                  }
                   return Column(
                     children: [
                       Container(
@@ -82,12 +171,13 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Padding(
-                              padding:
-                                  EdgeInsets.only(left: 35, top: 15, bottom: 5),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 35, top: 15, bottom: 5),
                               child: Text(
-                                'Nombre Proovedor',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                nombreProveedor,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               ),
                             ),
                             Row(
@@ -106,12 +196,12 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                                           ),
                                         ),
                                       ),
-                                      const Padding(
-                                        padding:
-                                            EdgeInsets.only(top: 5, bottom: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 5, bottom: 20),
                                         child: Text(
-                                          'data',
-                                          style: TextStyle(
+                                          '$cantidad',
+                                          style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -133,12 +223,12 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                                           ),
                                         ),
                                       ),
-                                      const Padding(
-                                        padding:
-                                            EdgeInsets.only(top: 5, bottom: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 5, bottom: 20),
                                         child: Text(
-                                          'data',
-                                          style: TextStyle(
+                                          '$nameProduct',
+                                          style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -160,12 +250,12 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                                           ),
                                         ),
                                       ),
-                                      const Padding(
-                                        padding:
-                                            EdgeInsets.only(top: 5, bottom: 20),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 5, bottom: 20),
                                         child: Text(
-                                          'data',
-                                          style: TextStyle(
+                                          '$priceProduct',
+                                          style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -192,32 +282,13 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                                   ),
                                 ),
                                 Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: 35,
-                                      top: 5,
-                                      bottom: 15,
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        const Text('Direccion'),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 5),
-                                          child: GestureDetector(
-                                            onTap: () async {},
-                                            child: Text(
-                                              'Cambiar dirección',
-                                              style: TextStyle(
-                                                color: PrincipalColors.orange,
-                                                fontSize: 11,
-                                                decoration:
-                                                    TextDecoration.underline,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ))
+                                  padding: const EdgeInsets.only(
+                                    left: 35,
+                                    top: 5,
+                                    bottom: 15,
+                                  ),
+                                  child: Text(nombreDireccion),
+                                )
                               ],
                             ),
                           ],
@@ -231,53 +302,53 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                   );
                 }).toList(),
               ),
-              const Align(
+              Align(
                 alignment: Alignment.center,
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.fromLTRB(10, 20, 40, 10),
                           child: Text('Subtotal'),
                         ),
                         Padding(
-                          padding: EdgeInsets.fromLTRB(40, 20, 40, 10),
-                          child: Text('S/ precio'),
+                          padding: const EdgeInsets.fromLTRB(40, 20, 40, 10),
+                          child: Text('S/ ${widget.subTotal}'),
                         ),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.fromLTRB(10, 0, 40, 10),
                           child: Text('Service Fee'),
                         ),
                         Padding(
-                          padding: EdgeInsets.fromLTRB(40, 0, 40, 10),
-                          child: Text('S/ precio'),
+                          padding: const EdgeInsets.fromLTRB(40, 0, 40, 10),
+                          child: Text('S/ ${widget.impuesto}'),
                         ),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.fromLTRB(10, 0, 40, 10),
                           child: Text('Delivery'),
                         ),
                         Padding(
-                          padding: EdgeInsets.fromLTRB(40, 0, 40, 10),
-                          child: Text('S/ precio'),
+                          padding: const EdgeInsets.fromLTRB(40, 0, 40, 10),
+                          child: Text('S/ ${widget.deliveriFee}'),
                         ),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.fromLTRB(10, 10, 40, 10),
                           child: Text(
                             'Total',
@@ -285,10 +356,10 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
+                          padding: const EdgeInsets.fromLTRB(40, 10, 40, 10),
                           child: Text(
-                            'S/ precio',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            'S/ ${widget.total}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
                       ],
@@ -297,9 +368,72 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                 ),
               ),
               BotonCustom(
-                  funcion: () {
+                  funcion: () async {
                     if (user != null) {
-                      _launchURL(context);
+                      String id =
+                          await MercadoPago().ejecutarMercadoPago(context);
+                      String urlString =
+                          'https://www.mercadopago.com.pe/checkout/v1/redirect?pref_id=$id';
+
+                      Uri url = Uri.parse(urlString);
+
+                      final controller = WebViewController()
+                        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                        ..loadRequest(url);
+
+                      // ignore: use_build_context_synchronously
+                      showDialog(
+                        barrierDismissible: false,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                            elevation: 0.0,
+                            backgroundColor: Colors.transparent,
+                            child: Stack(
+                              children: [
+                                Column(
+                                  children: [
+                                    SizedBox(
+                                      height:
+                                          600, // Tamaño específico para el WebViewWidget
+                                      child: WebViewWidget(
+                                        controller: controller,
+                                      ),
+                                    ),
+                                    BotonCustom(
+                                      funcion: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const CompraFinalizada()),
+                                        );
+                                        cartProvider.clearCart();
+                                      },
+                                      texto: 'Continuar',
+                                    ),
+                                  ],
+                                ),
+                                Positioned(
+                                    right: 5,
+                                    child: IconButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        icon: Icon(
+                                          Icons.close,
+                                          color: PrincipalColors.blue,
+                                        )))
+                              ],
+                            ),
+                          );
+                        },
+                      );
+
+                      //await MercadoPago().consultarPago(id);
                     } else {
                       Fluttertoast.showToast(
                         msg: 'Su sesión se ha expirado',
