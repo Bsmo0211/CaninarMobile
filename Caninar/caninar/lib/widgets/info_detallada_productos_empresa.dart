@@ -11,6 +11,7 @@ import 'package:caninar/widgets/cards_items_home.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/fecha_producto.dart';
+import 'package:caninar/widgets/interfaz_marker.dart';
 import 'package:caninar/widgets/login.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +19,17 @@ import 'package:flutter/material.dart';
 class InformacionDetalladaProductos extends StatefulWidget {
   List<CertificadosModel> certificados;
   MarcasModel marca;
-  InformacionDetalladaProductos({
-    Key? key,
-    required this.certificados,
-    required this.marca,
-  }) : super(key: key);
+  String distrito;
+  String categoria;
+  String categoriaId;
+  InformacionDetalladaProductos(
+      {Key? key,
+      required this.certificados,
+      required this.marca,
+      required this.distrito,
+      required this.categoria,
+      required this.categoriaId})
+      : super(key: key);
 
   @override
   _InformacionDetalladaProductosState createState() =>
@@ -35,8 +42,8 @@ class _InformacionDetalladaProductosState
   UserLoginModel? user;
 
   getData() async {
-    List<ProductoModel> result =
-        await API().getProductosbymarca(widget.marca.id!);
+    List<ProductoModel> result = await API().getProductosbymarca(
+        widget.distrito, widget.categoria, widget.marca.slug!);
 
     setState(() {
       productos = result;
@@ -49,7 +56,6 @@ class _InformacionDetalladaProductosState
     setState(() {
       user = userTemp;
     });
-    print(user);
   }
 
   @override
@@ -225,6 +231,16 @@ class _InformacionDetalladaProductosState
                 redireccion: () {
                   if (user != null) {
                     if (producto.typePro == 3) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => InterfazMarker(
+                            marca: widget.marca,
+                            producto: producto,
+                            idCategoria: widget.categoriaId,
+                          ),
+                        ),
+                      );
                     } else {
                       Navigator.push(
                         context,
@@ -233,6 +249,7 @@ class _InformacionDetalladaProductosState
                             marca: widget.marca,
                             producto: producto,
                             type: producto.typePro!,
+                            idCategoria: widget.categoriaId,
                           ),
                         ),
                       );
