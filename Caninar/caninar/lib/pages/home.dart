@@ -1,13 +1,15 @@
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
-import 'package:caninar/constants/routes.dart';
+
 import 'package:caninar/models/carrusel/model.dart';
 import 'package:caninar/models/categorias/model.dart';
 
 import 'package:caninar/pages/page_categoria_seleccionada.dart';
 import 'package:caninar/widgets/cards_items_home.dart';
+import 'package:caninar/widgets/carrousel_propio.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
+import 'package:caninar/widgets/image_network_propio.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -23,6 +25,8 @@ class _HomeState extends State<Home> {
   bool isApiCallProcess = false;
   List<CategoriasModel> categorias = [];
   List<CarruselModel> imagenes = [];
+  PageController? _pageController;
+  int _currentPage = 0;
 
   getData() async {
     setState(() {
@@ -43,6 +47,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     getData();
+    _pageController = PageController(initialPage: _currentPage);
     super.initState();
   }
 
@@ -73,31 +78,7 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-          CarouselSlider(
-            options: CarouselOptions(
-              initialPage: 0,
-              viewportFraction: 0.677,
-              enableInfiniteScroll: true,
-              reverse: false,
-              autoPlay: true,
-              autoPlayInterval: const Duration(seconds: 3),
-              autoPlayAnimationDuration: const Duration(milliseconds: 800),
-              autoPlayCurve: Curves.fastOutSlowIn,
-              enlargeCenterPage: true,
-              scrollDirection: Axis.horizontal,
-            ),
-            items: imagenes.map((i) {
-              return Builder(
-                builder: (BuildContext context) {
-                  return SizedBox(
-                    child: Image.network(
-                      i.imageMobile!,
-                    ),
-                  );
-                },
-              );
-            }).toList(),
-          ),
+          CarrouselPropio(images: imagenes),
           Padding(
             padding: const EdgeInsets.only(
               top: 15,
@@ -125,6 +106,7 @@ class _HomeState extends State<Home> {
                       builder: (context) => PageCategoriaSeleccionada(
                         slugCategoria: categoria.slug ?? '',
                         name: categoria.name!,
+                        idCategoria: categoria.id!,
                       ),
                     ),
                   );
