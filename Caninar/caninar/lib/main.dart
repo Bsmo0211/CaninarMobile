@@ -5,8 +5,10 @@ import 'package:caninar/providers/cart_provider.dart';
 import 'package:caninar/widgets/about_us.dart';
 
 import 'package:caninar/pages/home.dart';
+import 'package:caninar/widgets/finalizar_compra.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_localizations/syncfusion_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -15,13 +17,22 @@ import 'package:location/location.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Location().requestPermission();
-  runApp(const MyApp());
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
 
-  // This widget is the root of your application.
+  final router = GoRouter(
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (_, __) => const Home(),
+      ),
+    ],
+  );
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -30,7 +41,8 @@ class MyApp extends StatelessWidget {
           create: (context) => (CartProvider()),
         ),
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
+        routerConfig: router,
         builder: EasyLoading.init(),
         localizationsDelegates: const [
           SfGlobalLocalizations.delegate,
@@ -55,12 +67,7 @@ class MyApp extends StatelessWidget {
         ),
         debugShowCheckedModeBanner: false,
         locale: const Locale('es'),
-        home: const Home(),
-        routes: {
-          Routes.home.name: (_) => const Home(),
-        },
       ),
     );
-    ;
   }
 }
