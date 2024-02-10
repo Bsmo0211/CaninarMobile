@@ -15,6 +15,7 @@ class Shared {
 
     if (userDataString != null && userDataString.isNotEmpty) {
       Map<String, dynamic> userDataMap = json.decode(userDataString);
+      //print(userDataMap);
       return UserLoginModel.fromJson(userDataMap);
     } else {
       return null;
@@ -66,9 +67,13 @@ class Shared {
     return userLoginModel;
   }
 
-  Future<void> logout() async {
+  Future<void> logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     prefs.remove('user_data');
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Home()),
+    );
   }
 }
