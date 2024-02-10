@@ -101,8 +101,6 @@ class _RegistroState extends State<Registro> {
 
     String jsonBody = jsonEncode(createUser);
 
-    print(jsonBody);
-
     await dio
         .post(
       'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users',
