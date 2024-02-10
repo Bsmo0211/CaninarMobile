@@ -13,8 +13,12 @@ import 'package:flutter/material.dart';
 class PageCategoriaSeleccionada extends StatefulWidget {
   String slugCategoria;
   String name;
+  String idCategoria;
   PageCategoriaSeleccionada(
-      {Key? key, required this.slugCategoria, required this.name})
+      {Key? key,
+      required this.slugCategoria,
+      required this.name,
+      required this.idCategoria})
       : super(key: key);
 
   @override
@@ -23,7 +27,7 @@ class PageCategoriaSeleccionada extends StatefulWidget {
 }
 
 class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
-  String? dropdownvalue;
+  String? dropdownValueDistrito;
   List<MarcasModel> marcas = [];
   List<DropdownMenuItem<String>> distritos = [];
 
@@ -48,9 +52,9 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
   }
 
   getMarcas() async {
-    if (dropdownvalue != null) {
-      List<MarcasModel> marcasTemp =
-          await API().getMarcasByDistrito(dropdownvalue!, widget.slugCategoria);
+    if (dropdownValueDistrito != null) {
+      List<MarcasModel> marcasTemp = await API()
+          .getMarcasByDistrito(dropdownValueDistrito!, widget.slugCategoria);
 
       setState(() {
         marcas = marcasTemp;
@@ -88,12 +92,12 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
                 dropdownColor: Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(30.0),
                 underline: Container(),
-                value: dropdownvalue,
+                value: dropdownValueDistrito,
                 icon: const Icon(Icons.keyboard_arrow_down),
                 items: distritos,
                 onChanged: (String? newValue) async {
                   setState(() {
-                    dropdownvalue = newValue!;
+                    dropdownValueDistrito = newValue!;
                   });
                   await getMarcas();
                 },
@@ -109,6 +113,9 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => InformacionDetalladaProductos(
+                        distrito: dropdownValueDistrito!,
+                        categoria: widget.slugCategoria,
+                        categoriaId: widget.idCategoria,
                         marca: marca,
                         certificados: marca.certificates != null
                             ? marca.certificates!
