@@ -27,18 +27,20 @@ class PageCategoriaSeleccionada extends StatefulWidget {
 }
 
 class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
-  String? dropdownValueDistrito;
+  DistritosModel? dropdownValueDistrito;
+  String? slugDsitrito;
+  String? idDistrito;
   List<MarcasModel> marcas = [];
-  List<DropdownMenuItem<String>> distritos = [];
+  List<DropdownMenuItem<DistritosModel>> distritos = [];
 
   getDistritos() async {
-    List<DropdownMenuItem<String>> temp = [];
+    List<DropdownMenuItem<DistritosModel>> temp = [];
     List<DistritosModel> distritosTemp = await API().getDistritos();
 
     for (DistritosModel distrito in distritosTemp) {
       temp.add(
         DropdownMenuItem(
-          value: distrito.slug,
+          value: distrito,
           child: Text(
             '${distrito.name}',
             style: const TextStyle(fontSize: 15),
@@ -53,8 +55,8 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
 
   getMarcas() async {
     if (dropdownValueDistrito != null) {
-      List<MarcasModel> marcasTemp = await API()
-          .getMarcasByDistrito(dropdownValueDistrito!, widget.slugCategoria);
+      List<MarcasModel> marcasTemp =
+          await API().getMarcasByDistrito(slugDsitrito!, widget.slugCategoria);
 
       setState(() {
         marcas = marcasTemp;
@@ -87,7 +89,7 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
                 ),
                 borderRadius: BorderRadius.circular(30.0),
               ),
-              child: DropdownButton(
+              child: DropdownButton<DistritosModel>(
                 isDense: true,
                 dropdownColor: Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(30.0),
@@ -95,10 +97,13 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
                 value: dropdownValueDistrito,
                 icon: const Icon(Icons.keyboard_arrow_down),
                 items: distritos,
-                onChanged: (String? newValue) async {
+                onChanged: (DistritosModel? newValue) async {
                   setState(() {
-                    dropdownValueDistrito = newValue!;
+                    dropdownValueDistrito = newValue;
+                    slugDsitrito = newValue?.slug;
+                    idDistrito = newValue?.id;
                   });
+                  print(idDistrito);
                   await getMarcas();
                 },
               ),
