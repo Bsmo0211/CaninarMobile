@@ -90,6 +90,7 @@ class _MisMascotasState extends State<MisMascotas> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => PageRegistroMascotas(
+                                  mascota: mascota,
                                   refresh: refreshMascotas,
                                   registro: false,
                                 ),
