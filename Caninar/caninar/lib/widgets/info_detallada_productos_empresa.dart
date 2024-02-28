@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/certificados/model.dart';
+import 'package:caninar/models/distritos/model.dart';
 import 'package:caninar/models/marcas/model.dart';
 import 'package:caninar/models/productos/model.dart';
 import 'package:caninar/models/user/model.dart';
@@ -19,7 +20,7 @@ import 'package:flutter/material.dart';
 class InformacionDetalladaProductos extends StatefulWidget {
   List<CertificadosModel> certificados;
   MarcasModel marca;
-  String distrito;
+  DistritosModel distrito;
   String categoria;
   String categoriaId;
   InformacionDetalladaProductos(
@@ -43,7 +44,7 @@ class _InformacionDetalladaProductosState
 
   getData() async {
     List<ProductoModel> result = await API().getProductosbymarca(
-        widget.distrito, widget.categoria, widget.marca.slug!);
+        widget.distrito.slug!, widget.categoria, widget.marca.slug!);
 
     setState(() {
       productos = result;
@@ -238,6 +239,7 @@ class _InformacionDetalladaProductosState
                             marca: widget.marca,
                             producto: producto,
                             idCategoria: widget.categoriaId,
+                            idDistrito: widget.distrito.id!,
                           ),
                         ),
                       );
@@ -250,6 +252,7 @@ class _InformacionDetalladaProductosState
                             producto: producto,
                             type: producto.typePro!,
                             idCategoria: widget.categoriaId,
+                            idDistrito: widget.distrito.id!,
                           ),
                         ),
                       );
