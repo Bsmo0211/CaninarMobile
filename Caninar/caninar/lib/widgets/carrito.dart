@@ -1,6 +1,7 @@
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/providers/cart_provider.dart';
+import 'package:caninar/providers/orden_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
@@ -21,10 +22,12 @@ class _CarritoComprasState extends State<CarritoCompras> {
   List<Map<String, dynamic>> dataList = [];
   String? nameProduct;
   String? priceProduct;
+
   UserLoginModel? user;
   int? cantidad;
   double totalGeneral = 0.0;
-  double subtotal = 0.0; // Inicializa subtotal como 0.0
+  double subtotal = 0.0;
+  double deliveryCost = 0.0;
 
   getCurrentUser() async {
     UserLoginModel? userTemp = await Shared().currentUser();
@@ -43,10 +46,10 @@ class _CarritoComprasState extends State<CarritoCompras> {
 
   @override
   Widget build(BuildContext context) {
-    CartProvider cartProvider = Provider.of<CartProvider>(context);
+    OrdenProvider ordenProvider = Provider.of<OrdenProvider>(context);
 
     setState(() {
-      dataList = cartProvider.cartItems;
+      dataList = ordenProvider.ordenList;
       // Calcula el subtotal al actualizar la lista
       calculateSubtotal();
     });
@@ -208,8 +211,7 @@ class _CarritoComprasState extends State<CarritoCompras> {
                                               top: 10, bottom: 15),
                                           child: IconButton(
                                             onPressed: () {
-                                              cartProvider
-                                                  .removeFromCart(index);
+                                              ordenProvider.removeOrder(index);
                                             },
                                             icon: Icon(
                                               Icons.delete_outlined,
@@ -242,12 +244,13 @@ class _CarritoComprasState extends State<CarritoCompras> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Padding(
+                                const Padding(
                                   padding: EdgeInsets.fromLTRB(10, 20, 40, 10),
                                   child: Text('Subtotal'),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.fromLTRB(40, 20, 40, 10),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(40, 20, 40, 10),
                                   child: Text('S/ $subtotal'),
                                 ),
                               ],
@@ -261,27 +264,28 @@ class _CarritoComprasState extends State<CarritoCompras> {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.fromLTRB(40, 0, 40, 10),
-                                  child: Text('S/ precio'),
+                                  child: Text('S/ 0'),
                                 ),
                               ],
                             ),
-                            const Row(
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Padding(
+                                const Padding(
                                   padding: EdgeInsets.fromLTRB(10, 0, 40, 10),
                                   child: Text('Delivery'),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.fromLTRB(40, 0, 40, 10),
-                                  child: Text('S/ precio'),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(40, 0, 40, 10),
+                                  child: Text('S/ $deliveryCost'),
                                 ),
                               ],
                             ),
-                            const Row(
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Padding(
+                                const Padding(
                                   padding: EdgeInsets.fromLTRB(10, 10, 40, 10),
                                   child: Text(
                                     'Total',
@@ -290,10 +294,11 @@ class _CarritoComprasState extends State<CarritoCompras> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(40, 10, 40, 10),
                                   child: Text(
-                                    'total',
-                                    style: TextStyle(
+                                    'S/ $totalGeneral',
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -337,14 +342,17 @@ class _CarritoComprasState extends State<CarritoCompras> {
   }
 
   void calculateSubtotal() {
-    // Inicializa el subtotal como 0.0 antes de calcularlo
     subtotal = 0.0;
-    // Itera sobre dataList y suma los precios de todos los productos
+    deliveryCost = 0.0;
+
     for (var data in dataList) {
+      deliveryCost += double.parse(data['delivery_cost']);
+
       List<dynamic> items = data['items'];
       for (var item in items) {
         subtotal += double.parse(item['price']);
       }
+      totalGeneral = deliveryCost + subtotal;
     }
   }
 }
