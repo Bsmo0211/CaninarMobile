@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:aws_s3_upload/aws_s3_upload.dart';
@@ -12,6 +13,7 @@ import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditarPerfil extends StatefulWidget {
   const EditarPerfil({super.key});
@@ -53,6 +55,13 @@ class _EditarPerfilState extends State<EditarPerfil> {
   void initState() {
     getCurrentUser();
     super.initState();
+  }
+
+  updateUser(UserLoginModel updatedUser) async {
+    await API().updateUser(updatedUser.toJson(), user!.id!);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('user_data', jsonEncode(user!.toJson()));
+    setState(() {});
   }
 
   @override
@@ -331,10 +340,7 @@ class _EditarPerfilState extends State<EditarPerfil> {
                         updatedUser.telephone != user?.telephone ||
                         updatedUser.profilePhoto != user?.profilePhoto) {
                       // Actualizar el usuario solo si hay cambios
-
-                      print(updatedUser.toJson());
-                      await API().updateUser(updatedUser.toJson(), user!.id!);
-                      setState(() {});
+                      updateUser(updatedUser);
                     } else {
                       print(
                           "No se han realizado cambios en la información del usuario.");
