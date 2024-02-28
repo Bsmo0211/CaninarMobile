@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:caninar/models/carrusel/model.dart';
 import 'package:caninar/models/categorias/model.dart';
 import 'package:caninar/models/certificados/model.dart';
+import 'package:caninar/models/citas/model_current.dart';
+import 'package:caninar/models/citas/model_history.dart';
+import 'package:caninar/models/citas/model_pending.dart';
 import 'package:caninar/models/distritos/model.dart';
 import 'package:caninar/models/marcas/model.dart';
 import 'package:caninar/models/mascotas/model.dart';
@@ -100,7 +103,6 @@ class API {
             certificates.add(CertificadosModel.fromJson(certificate));
           }
         }
-
         marcas.add(MarcasModel.fromJson(marca));
       }
     }
@@ -189,5 +191,62 @@ class API {
           backgroundColor: Colors.red,
           textColor: Colors.black);
     });
+  }
+
+  Future<String?> createCarrito(Map<String, dynamic> datosCarrito) async {
+    String jsonBody = jsonEncode(datosCarrito);
+    String? idCart;
+
+    await dio
+        .post(
+      'https://xcgb8jo8r3.execute-api.us-east-1.amazonaws.com/dev/cart',
+      data: jsonBody,
+    )
+        .then((value) async {
+      if (value.statusCode == 200) {
+        idCart = value.data['id'];
+      }
+    }).catchError((e) {
+      Fluttertoast.showToast(
+        msg: 'Ha ocurrido un error',
+        backgroundColor: Colors.red,
+        textColor: Colors.black,
+      );
+    });
+
+    return idCart;
+  }
+
+  Future<Map<String, dynamic>> getCitas(String? id) async {
+    String link =
+        'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users/datings/$id';
+
+    Response response = await dio.get(link);
+
+    print(response.data);
+
+    return response.data;
+  }
+
+  Future<MarcasModel> getSupplierById(String id) async {
+    final response = await dio.get(
+        'https://w7lje56t6h.execute-api.us-east-1.amazonaws.com/dev/suppliers/$id');
+
+    if (response.statusCode == 200) {
+      return MarcasModel.fromJson(response.data);
+    } else {
+      throw Exception('Failed to load supplier');
+    }
+  }
+
+  Future<MascotasModel> getPetById(String id) async {
+    final response = await dio.get(
+        'https://5sl6737lhc.execute-api.us-east-1.amazonaws.com/dev/pet/$id');
+
+    if (response.statusCode == 200) {
+      return MascotasModel.fromJson(response.data);
+    } else {
+      throw Exception('Failed to load supplier');
+    }
   }
 }
