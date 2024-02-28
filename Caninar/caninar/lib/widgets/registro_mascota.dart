@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:caninar/constants/access_keys.dart';
 import 'package:caninar/constants/principals_colors.dart';
+import 'package:caninar/models/mascotas/model.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/pages/home.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
@@ -18,10 +19,12 @@ import 'package:aws_s3_upload/aws_s3_upload.dart';
 class RegistroMascota extends StatefulWidget {
   Function refresh;
   bool registro;
+  MascotasModel? mascota;
   RegistroMascota({
     super.key,
     required this.registro,
     required this.refresh,
+    this.mascota,
   });
 
   @override
@@ -164,6 +167,7 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                 padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                 child: TextFormField(
                   decoration: InputDecoration(
+                    labelText: widget.mascota?.name,
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
@@ -209,6 +213,7 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                 padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                 child: DropdownButtonFormField<String>(
                   decoration: InputDecoration(
+                    labelText: widget.mascota?.gender,
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
@@ -321,6 +326,7 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                 padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                 child: DropdownButtonFormField<String>(
                   decoration: InputDecoration(
+                    labelText: widget.mascota?.petSize,
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
@@ -375,6 +381,7 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                 padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                 child: TextFormField(
                   decoration: InputDecoration(
+                    labelText: widget.mascota?.race,
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
