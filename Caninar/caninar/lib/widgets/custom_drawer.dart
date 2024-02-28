@@ -89,46 +89,52 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         );
                       },
                     ),
-                  const Divider(
-                    height: 2,
-                    color: Colors.grey,
-                  ),
-                  ItemDrawer(
-                    titulo: 'Mascotas',
-                    redireccion: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MisMascotas(
-                            user: user!,
+                  if (user != null)
+                    const Divider(
+                      height: 2,
+                      color: Colors.grey,
+                    ),
+                  if (user != null)
+                    ItemDrawer(
+                      titulo: 'Mascotas',
+                      redireccion: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MisMascotas(
+                              user: user!,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                  const Divider(
-                    height: 2,
-                    color: Colors.grey,
-                  ),
-                  ItemDrawer(
-                    titulo: 'Mis Citas',
-                    redireccion: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MisCitas(),
-                        ),
-                      );
-                    },
-                  ),
-                  const Divider(
-                    height: 2,
-                    color: Colors.grey,
-                  ),
-                  ItemDrawer(
-                    titulo: 'Pedidos',
-                    redireccion: () {},
-                  ),
+                        );
+                      },
+                    ),
+                  if (user != null)
+                    const Divider(
+                      height: 2,
+                      color: Colors.grey,
+                    ),
+                  if (user != null)
+                    ItemDrawer(
+                      titulo: 'Mis Citas',
+                      redireccion: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MisCitas(),
+                          ),
+                        );
+                      },
+                    ),
+                  if (user != null)
+                    const Divider(
+                      height: 2,
+                      color: Colors.grey,
+                    ),
+                  if (user != null)
+                    ItemDrawer(
+                      titulo: 'Pedidos',
+                      redireccion: () {},
+                    ),
                   const Divider(
                     height: 2,
                     color: Colors.grey,
