@@ -2,6 +2,7 @@ import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/constants/routes.dart';
 import 'package:caninar/pages/page_categoria_seleccionada.dart';
 import 'package:caninar/providers/cart_provider.dart';
+import 'package:caninar/providers/orden_provider.dart';
 import 'package:caninar/widgets/about_us.dart';
 
 import 'package:caninar/pages/home.dart';
@@ -39,6 +40,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (context) => (CartProvider()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => (OrdenProvider()),
         ),
       ],
       child: MaterialApp.router(
