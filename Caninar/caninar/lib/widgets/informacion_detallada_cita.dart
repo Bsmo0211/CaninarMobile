@@ -1,4 +1,6 @@
+import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
+import 'package:caninar/models/mascotas/model.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/image_network_propio.dart';
@@ -8,7 +10,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 class InformacionDetalladaCita extends StatefulWidget {
-  const InformacionDetalladaCita({super.key});
+  String nombreMarca;
+  String petId;
+  InformacionDetalladaCita({
+    super.key,
+    required this.nombreMarca,
+    required this.petId,
+  });
 
   @override
   State<InformacionDetalladaCita> createState() =>
@@ -17,16 +25,21 @@ class InformacionDetalladaCita extends StatefulWidget {
 
 class _InformacionDetalladaCitaState extends State<InformacionDetalladaCita> {
   GoogleMapController? _mapController;
-
   final Location _location = Location();
   LatLng _initialCameraPosition = const LatLng(0.0, 0.0);
   bool _isLocationLoaded = false;
+  MascotasModel? mascota;
+
+  getInformacionById() async {
+    MascotasModel mascotaTemp = await API().getPetById(widget.petId);
+    setState(() {
+      mascota = mascotaTemp;
+    });
+  }
 
   Future<void> getLocation() async {
     try {
       LocationData locationData = await _location.getLocation();
-      print(locationData.latitude);
-      print(locationData.longitude);
       setState(() {
         _initialCameraPosition =
             LatLng(locationData.latitude!, locationData.longitude!);
@@ -39,6 +52,7 @@ class _InformacionDetalladaCitaState extends State<InformacionDetalladaCita> {
 
   @override
   void initState() {
+    getInformacionById();
     getLocation();
     super.initState();
   }
@@ -51,7 +65,7 @@ class _InformacionDetalladaCitaState extends State<InformacionDetalladaCita> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            RedireccionAtras(nombre: 'Nombre paseador'),
+            RedireccionAtras(nombre: widget.nombreMarca),
             SizedBox(
               height: 200,
               child: _isLocationLoaded
@@ -86,14 +100,14 @@ class _InformacionDetalladaCitaState extends State<InformacionDetalladaCita> {
                       ),
                       ClipOval(
                         child: ImageNetworkPropio(
-                          imagen: '',
+                          imagen: '${mascota?.image}',
                           width: 50,
                           height: 50,
                           fit: BoxFit.cover,
                         ),
                       ),
                       const SizedBox(width: 10),
-                      const Text('Nombre mascota'),
+                      Text('${mascota?.name}'),
                     ],
                   ),
                 ),
@@ -136,7 +150,7 @@ class _InformacionDetalladaCitaState extends State<InformacionDetalladaCita> {
               ],
             ),
             Padding(
-              padding: EdgeInsets.only(top: 30),
+              padding: const EdgeInsets.only(top: 30),
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.grey.shade300,
@@ -192,14 +206,14 @@ class _InformacionDetalladaCitaState extends State<InformacionDetalladaCita> {
                                   ),
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(
+                              const Padding(
+                                padding: EdgeInsets.only(
                                   top: 5,
                                   bottom: 20,
                                 ),
                                 child: Text(
                                   'producto',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -221,12 +235,11 @@ class _InformacionDetalladaCitaState extends State<InformacionDetalladaCita> {
                                   ),
                                 ),
                               ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 5, bottom: 20),
+                              const Padding(
+                                padding: EdgeInsets.only(top: 5, bottom: 20),
                                 child: Text(
                                   'precio',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),

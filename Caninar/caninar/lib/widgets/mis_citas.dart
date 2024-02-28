@@ -1,6 +1,11 @@
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
+import 'package:caninar/models/citas/model_current.dart';
+import 'package:caninar/models/citas/model_history.dart';
+import 'package:caninar/models/citas/model_pending.dart';
+import 'package:caninar/models/user/model.dart';
 import 'package:caninar/providers/cart_provider.dart';
+import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/cards_items_home.dart';
 import 'package:caninar/widgets/carrito.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
@@ -20,8 +25,54 @@ class MisCitas extends StatefulWidget {
 }
 
 class _MisCitasState extends State<MisCitas> {
+  UserLoginModel? user;
+  PendingModel? pendingModel;
+  HistoryModel? historyModel;
+  CurrentModel? currentModel;
+
+  getCurrentUser() async {
+    UserLoginModel? userTemp = await Shared().currentUser();
+
+    setState(() {
+      user = userTemp;
+    });
+
+    await getCitas();
+  }
+
+  getCitas() async {
+    Map<String, dynamic> citasData = await API().getCitas(user?.id);
+
+    PendingModel? pendingModelTemp;
+    HistoryModel? historyModelTemp;
+    CurrentModel? currentModelTemp;
+
+    if (citasData.containsKey('pending')) {
+      pendingModelTemp = PendingModel.fromJson(citasData['pending']);
+    }
+
+    if (citasData.containsKey('history')) {
+      historyModelTemp = HistoryModel.fromJson(citasData['history']);
+    }
+
+    if (citasData.containsKey('current')) {
+      currentModelTemp = CurrentModel.fromJson(citasData['current']);
+    }
+
+    setState(() {
+      pendingModel = pendingModelTemp;
+      historyModel = historyModelTemp;
+      currentModel = currentModelTemp;
+    });
+
+    print(historyModel?.dataCita.length);
+    print(pendingModel?.dataCita.length);
+    print(currentModel?.dataCita.length);
+  }
+
   @override
   void initState() {
+    getCurrentUser();
     super.initState();
   }
 
@@ -48,12 +99,6 @@ class _MisCitasState extends State<MisCitas> {
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ),
-          Tab(
-            child: Text(
-              'Próximas',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-            ),
-          ),
         ],
       );
 
@@ -61,7 +106,7 @@ class _MisCitasState extends State<MisCitas> {
   Widget build(BuildContext context) {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
     return DefaultTabController(
-        length: 4,
+        length: 3,
         child: Scaffold(
           appBar: AppBar(
             iconTheme: const IconThemeData(
@@ -108,9 +153,7 @@ class _MisCitasState extends State<MisCitas> {
             ],
             bottom: PreferredSize(
               preferredSize: _tabBar.preferredSize,
-              child: Material(
-                  color: Colors.white, //<-- SEE HERE
-                  child: _tabBar),
+              child: Material(color: Colors.white, child: _tabBar),
             ),
           ),
           drawer: CustomDrawer(),
@@ -118,63 +161,83 @@ class _MisCitasState extends State<MisCitas> {
             children: [
               ListView(children: [
                 RedireccionAtras(nombre: 'Mis citas'),
-                Column(
-                    children: [1, 2, 3].map((e) {
-                  return CardItemHome(
-                      titulo: 'Prueba pendiente',
-                      redireccion: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const InformacionCitas()),
-                        );
-                      });
-                }).toList()),
+                pendingModel != null
+                    ? Column(
+                        children: pendingModel!.dataCita.map((e) {
+                        return CardItemHome(
+                            imageCard: e.image,
+                            titulo: e.name!,
+                            redireccion: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => InformacionCitas(
+                                    titulo: e.name,
+                                    informacionDetalle: e.infoDetalladaCita,
+                                  ),
+                                ),
+                              );
+                            });
+                      }).toList())
+                    : const Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('No tiene citas pendientes en este momento ')
+                        ],
+                      ),
               ]),
               ListView(children: [
                 RedireccionAtras(nombre: 'Mis citas'),
-                Column(
-                    children: [1, 2, 3].map((e) {
-                  return CardItemHome(
-                      titulo: 'Prueba Historial',
-                      redireccion: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const InformacionCitas()),
-                        );
-                      });
-                }).toList()),
+                historyModel != null
+                    ? Column(
+                        children: historyModel!.dataCita.map((e) {
+                        return CardItemHome(
+                            imageCard: e.image,
+                            titulo: e.name!,
+                            redireccion: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => InformacionCitas(
+                                    titulo: e.name,
+                                    informacionDetalle: e.infoDetalladaCita,
+                                  ),
+                                ),
+                              );
+                            });
+                      }).toList())
+                    : const Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [Text('No tiene un historial de citas ')],
+                      ),
               ]),
               ListView(children: [
                 RedireccionAtras(nombre: 'Mis citas'),
-                Column(
-                    children: [1, 2, 3].map((e) {
-                  return CardItemHome(
-                      titulo: 'Prueba En curso',
-                      redireccion: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const InformacionCitas()),
-                        );
-                      });
-                }).toList()),
-              ]),
-              ListView(children: [
-                RedireccionAtras(nombre: 'Mis citas'),
-                Column(
-                    children: [1, 2, 3].map((e) {
-                  return CardItemHome(
-                      titulo: 'Prueba Próximas',
-                      redireccion: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const InformacionCitas()),
-                        );
-                      });
-                }).toList()),
+                currentModel != null
+                    ? Column(
+                        children: currentModel!.dataCita.map((e) {
+                        return CardItemHome(
+                            imageCard: e.image,
+                            titulo: e.name!,
+                            redireccion: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => InformacionCitas(
+                                    titulo: e.name,
+                                    informacionDetalle: e.infoDetalladaCita,
+                                  ),
+                                ),
+                              );
+                            });
+                      }).toList())
+                    : const Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [Text('No tiene ninguna cita en curso')],
+                      ),
               ]),
             ],
           ),
