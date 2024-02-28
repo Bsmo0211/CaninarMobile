@@ -14,7 +14,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class Login extends StatefulWidget {
   Login({Key? key}) : super(key: key);
@@ -28,14 +27,6 @@ class _LoginState extends State<Login> {
   bool _showPassword = true;
   TextEditingController correoCtrl = TextEditingController();
   TextEditingController contrasenaCtrl = TextEditingController();
-
-  Future<void> _handleSignIn() async {
-    try {
-      await GoogleSignIn().signIn();
-    } catch (error) {
-      print('Error al iniciar sesión con Google: $error');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
