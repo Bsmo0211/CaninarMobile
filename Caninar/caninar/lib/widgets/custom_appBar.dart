@@ -1,6 +1,7 @@
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/providers/cart_provider.dart';
+import 'package:caninar/providers/orden_provider.dart';
 import 'package:caninar/widgets/carrito.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +11,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    CartProvider cartProvider = Provider.of<CartProvider>(context);
+    OrdenProvider orderProvider = Provider.of<OrdenProvider>(context);
 
     return AppBar(
       iconTheme: const IconThemeData(
@@ -37,7 +38,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             right: 8,
           ),
           child: Badge.count(
-            count: cartProvider.cartItems.length,
+            count: orderProvider.ordenList.length,
             backgroundColor: PrincipalColors.orange,
             child: IconButton(
               icon: const Icon(
