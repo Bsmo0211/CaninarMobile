@@ -1,5 +1,7 @@
 import 'package:caninar/pages/home.dart';
 import 'package:caninar/providers/cart_provider.dart';
+import 'package:caninar/providers/orden_provider.dart';
+import 'package:caninar/providers/producto_provider.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
@@ -16,6 +18,28 @@ class CompraFinalizada extends StatefulWidget {
 }
 
 class _CompraFinalizadaState extends State<CompraFinalizada> {
+  @override
+  void initState() {
+    super.initState();
+    // Limpia todos los proveedores al inicializar la pantalla
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      clearProviders();
+    });
+  }
+
+  void clearProviders() {
+    final OrdenProvider ordenProvider =
+        Provider.of<OrdenProvider>(context, listen: false);
+    final CartProvider carritoProvider =
+        Provider.of<CartProvider>(context, listen: false);
+    final ProductoProvider productoProvider =
+        Provider.of<ProductoProvider>(context, listen: false);
+
+    carritoProvider.clearCart();
+    ordenProvider.clearOrder();
+    productoProvider.clearProducto();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
