@@ -1,12 +1,16 @@
 import 'dart:async';
 
+import 'package:caninar/API/APi.dart';
 import 'package:caninar/API/Mercado_pago.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/providers/cart_provider.dart';
+import 'package:caninar/providers/orden_provider.dart';
+import 'package:caninar/providers/producto_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/compra_finalizada.dart';
+import 'package:caninar/widgets/compra_rechazada.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
@@ -21,9 +25,9 @@ import 'package:provider/provider.dart';
 
 class FinalizarCompra extends StatefulWidget {
   double subTotal;
-  String deliveriFee;
-  String impuesto;
-  String total;
+  double deliveriFee;
+  double impuesto;
+  double total;
   FinalizarCompra(
       {Key? key,
       required this.deliveriFee,
@@ -38,47 +42,13 @@ class FinalizarCompra extends StatefulWidget {
 
 class _FinalizarCompraState extends State<FinalizarCompra> {
   UserLoginModel? user;
-  List<Map<String, dynamic>> dataList = [];
+  Map<String, dynamic> ordenList = {};
+  List<Map<String, dynamic>> cartProvider = [];
+  List<Map<String, dynamic>> productoList = [];
   StreamSubscription? _sub;
   int? cantidad;
   String? nameProduct;
   String? priceProduct;
-
-  getDataPago() {
-    Map<String, dynamic> nuevoItem = {
-      "id_user": '${user?.id}',
-      "user": {
-        "addresses":
-            user?.addresses.map((direccion) => direccion.toJson()).toList(),
-        "create_at": "1593236409.7052283",
-        "document_number": "${user?.documentNumber}",
-        "document_type": user?.documentType,
-        "email": "${user!.email}",
-        "first_name": "${user?.firstName}",
-        "id": '${user?.id}', // id
-        "id_cart": "${user?.idCart}",
-        "last_name": user?.lastName,
-        "password": "12345678", //no enviaria
-        "satus": 1,
-        "telephone": user?.telephone,
-        "type": 1,
-        "update_at": "1593236409.7052283",
-        "updated_at": 1596765563770
-      },
-      "products": dataList,
-      "reciever": const {
-        //llenar
-        "names": "",
-        "last_names": "",
-        "dni": ""
-      },
-      /*  
-      "total": "${widget.producto.price}",
-      "id_transaction": "dd43f434f34f4f4f" */
-    };
-
-    print(nuevoItem);
-  }
 
   getCurrentUser() async {
     UserLoginModel? userTemp = await Shared().currentUser();
@@ -86,35 +56,6 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
     setState(() {
       user = userTemp;
     });
-  }
-
-  void _launchURL(BuildContext context, String id) async {
-    String url =
-        'https://www.mercadopago.com.pe/checkout/v1/redirect?pref_id=$id';
-    try {
-      await launch(
-        url,
-        customTabsOption: CustomTabsOption(
-          toolbarColor: PrincipalColors.blue,
-          enableDefaultShare: true,
-          enableUrlBarHiding: true,
-          showPageTitle: true,
-          extraCustomTabs: const <String>[
-            'org.mozilla.firefox',
-            'com.microsoft.emmx',
-          ],
-        ),
-        safariVCOption: SafariViewControllerOption(
-          preferredBarTintColor: Theme.of(context).primaryColor,
-          preferredControlTintColor: Colors.white,
-          barCollapsingEnabled: true,
-          entersReaderIfAvailable: false,
-          dismissButtonStyle: SafariViewControllerDismissButtonStyle.close,
-        ),
-      );
-    } catch (e) {
-      debugPrint(e.toString());
-    }
   }
 
   @override
@@ -131,12 +72,15 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
 
   @override
   Widget build(BuildContext context) {
-    CartProvider cartProvider = Provider.of<CartProvider>(context);
+    OrdenProvider ordenProvider = Provider.of<OrdenProvider>(context);
+    CartProvider carritoProvider = Provider.of<CartProvider>(context);
+    ProductoProvider productoProvider = Provider.of<ProductoProvider>(context);
     setState(() {
-      dataList = cartProvider.cartItems;
+      ordenList = ordenProvider.ordenList;
+      cartProvider = carritoProvider.cartItems;
+      productoList = productoProvider.productoList;
     });
 
-    print(dataList.toString());
     return Scaffold(
       appBar: const CustomAppBar(),
       drawer: CustomDrawer(),
@@ -147,12 +91,12 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
               child: ListView(
             children: [
               Column(
-                children: dataList.asMap().entries.map((entry) {
-                  int index = entry.key;
+                children: productoList.asMap().entries.map((entry) {
                   Map<String, dynamic> data = entry.value;
-                  Map<String, dynamic> address = data['address'];
+                  Map<String, String> address = Map<String, String>.from(
+                      ordenList['address'] as Map<String, dynamic>);
                   String nombreProveedor = data['name'];
-                  String nombreDireccion = address['name'];
+                  String? nombreDireccion = address['name'];
 
                   List<dynamic> items = data['items'];
 
@@ -287,7 +231,7 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                                     top: 5,
                                     bottom: 15,
                                   ),
-                                  child: Text(nombreDireccion),
+                                  child: Text(nombreDireccion!),
                                 )
                               ],
                             ),
@@ -370,13 +314,32 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
               BotonCustom(
                   funcion: () async {
                     if (user != null) {
-                      String id =
-                          await MercadoPago().ejecutarMercadoPago(context);
+                      Map<String, dynamic> nuevoItem = {
+                        "coupon": {
+                          "updated_at": '',
+                          "code": "",
+                          "create_at": '',
+                          "status": '',
+                          "amount": "",
+                          "expiration_date": '',
+                          "id": "",
+                          "id_campaign": "",
+                          "id_cart": ""
+                        },
+                        "suppliers": cartProvider,
+                        "use_company": false,
+                        "status": 1,
+                        "id_user": '${user?.id}',
+                        "total": widget.total //arreglar total
+                      };
+                      String? idCart = await API().createCarrito(nuevoItem);
+                      String? idOrden = await API().createOrden(ordenList);
                       String urlString =
-                          'https://www.mercadopago.com.pe/checkout/v1/redirect?pref_id=$id';
+                          'https://dev.caninar.com/payment/excute?user_id=${user?.id}&&cart_id=$idCart&&total=${widget.total}&&id_orden=$idOrden';
+
+                      print(urlString);
 
                       Uri url = Uri.parse(urlString);
-
                       final controller = WebViewController()
                         ..setJavaScriptMode(JavaScriptMode.unrestricted)
                         ..loadRequest(url);
@@ -404,14 +367,27 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                                       ),
                                     ),
                                     BotonCustom(
-                                      funcion: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const CompraFinalizada()),
-                                        );
-                                        cartProvider.clearCart();
+                                      funcion: () async {
+                                        String? estadoOrden =
+                                            await API().getOrdenById(idOrden!);
+
+                                        if (estadoOrden == 'approved') {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const CompraFinalizada()),
+                                          );
+                                        }
+                                        if (estadoOrden == 'rejected') {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const CompraRechazada()),
+                                          );
+                                        }
+                                        // await MercadoPago().getPago();
                                       },
                                       texto: 'Continuar',
                                     ),
@@ -425,7 +401,7 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                                         },
                                         icon: Icon(
                                           Icons.close,
-                                          color: PrincipalColors.blue,
+                                          color: PrincipalColors.orange,
                                         )))
                               ],
                             ),
