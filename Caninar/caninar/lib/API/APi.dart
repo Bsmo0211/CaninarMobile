@@ -217,6 +217,31 @@ class API {
     return idCart;
   }
 
+  Future<String?> createOrden(Map<String, dynamic> datosOrden) async {
+    String jsonBody = jsonEncode(datosOrden);
+    String? idOrden;
+
+    await dio
+        .post(
+      'https://0v7g8z5804.execute-api.us-east-1.amazonaws.com/dev/orders',
+      data: jsonBody,
+    )
+        .then((value) async {
+      if (value.statusCode == 200) {
+        idOrden = value.data['id_order'];
+      }
+    }).catchError((e) {
+      print(e);
+      Fluttertoast.showToast(
+        msg: 'Ha ocurrido un error',
+        backgroundColor: Colors.red,
+        textColor: Colors.black,
+      );
+    });
+
+    return idOrden;
+  }
+
   Future<Map<String, dynamic>> getCitas(String? id) async {
     String link =
         'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users/datings/$id';
@@ -247,6 +272,19 @@ class API {
       return MascotasModel.fromJson(response.data);
     } else {
       throw Exception('Failed to load supplier');
+    }
+  }
+
+  Future<String?> getOrdenById(String id) async {
+    String? estado;
+    final response = await dio.get(
+        'https://0v7g8z5804.execute-api.us-east-1.amazonaws.com/dev/orders/$id');
+
+    if (response.statusCode == 200) {
+      estado = response.data['payment_status'];
+      return estado;
+    } else {
+      throw Exception('error');
     }
   }
 }
