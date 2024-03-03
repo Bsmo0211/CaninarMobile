@@ -3,11 +3,16 @@ import 'dart:convert';
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/client/mapa.dart';
 import 'package:caninar/constants/principals_colors.dart';
+import 'package:caninar/models/coverage/model.dart';
 import 'package:caninar/models/marcas/model.dart';
 import 'package:caninar/models/mascotas/model.dart';
 import 'package:caninar/models/productos/model.dart';
 import 'package:caninar/models/user/model.dart';
+import 'package:caninar/providers/calendario_provider.dart';
 import 'package:caninar/providers/cart_provider.dart';
+import 'package:caninar/providers/direccion_provider.dart';
+import 'package:caninar/providers/orden_provider.dart';
+import 'package:caninar/providers/producto_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/calendario_custom.dart';
@@ -35,14 +40,16 @@ class FechaProductos extends StatefulWidget {
   MarcasModel marca;
   int type;
   String idCategoria;
+  String idDistrito;
 
-  FechaProductos({
-    Key? key,
-    required this.producto,
-    required this.marca,
-    required this.type,
-    required this.idCategoria,
-  }) : super(key: key);
+  FechaProductos(
+      {Key? key,
+      required this.producto,
+      required this.marca,
+      required this.type,
+      required this.idCategoria,
+      required this.idDistrito})
+      : super(key: key);
 
   @override
   _FechaProductosState createState() => _FechaProductosState();
@@ -67,33 +74,104 @@ class _FechaProductosState extends State<FechaProductos> {
   List<int> selectedHours = [1];
   String? selectedDistritoName;
   String? selectedInside;
+  int cantidad = 1;
+  String? deliveryCost;
 
-  agregarCarrito() {
+  double calculateTotalValue(int quantity) {
+    double unitPrice = double.parse(widget.producto.price!);
+    return quantity * unitPrice;
+  }
+
+  void deliveryCostMap() {
+    if (widget.marca.coverage != null) {
+      for (CoverageModel? coverage in widget.marca.coverage!) {
+        if (coverage?.idDistrict == widget.idDistrito) {
+          setState(() {
+            deliveryCost = coverage?.deliveryCost;
+          });
+          break;
+        }
+      }
+    }
+  }
+
+  agregarCarrito() async {
+    if (widget.producto.typePro == 2) {
+      cantidad = 2;
+    }
     CartProvider cartProvider =
         Provider.of<CartProvider>(context, listen: false);
+    ProductoProvider productoProvider =
+        Provider.of<ProductoProvider>(context, listen: false);
+    DireccionProvider direccionProvider =
+        Provider.of<DireccionProvider>(context, listen: false);
+    CalendarioProvider calendarioProvider =
+        Provider.of<CalendarioProvider>(context, listen: false);
 
-    Map<String, dynamic> nuevoItem = {
-      "address": {
-        // enviar m
-        "name": '$selectedAdress',
-        "inside": '$selectedInside',
-        "name_district": '$selectedDistritoName', //enviar distrito
-        "id_district": "1",
-        "default": "true"
-      },
-      "id": "${widget.marca.id}", // id
-      "name": "${widget.marca.name}",
-      "email": "${widget.marca.bussinesName}", //no esta
-      "contact": "${widget.marca.contact}",
-      "telephone": "${widget.marca.telephone}",
-      "delivery_cost": "${widget.marca.deliveryTime}", //no esta
-      "delivery_time": "${widget.marca.deliveryTime}",
-      "total": "95.45", //no esta
-      "pet_name": {
-        // modulo para perris crud
-        "pet_id": selectedOptionMascota,
-        "name": nameSelectedOptionMascota,
-      },
+    Map<String, dynamic> nuevoSupplier = {
+      "coverge": widget.marca.coverage,
+      "create_at": "",
+      "delivery_time": widget.marca.deliveryTime,
+      "bussines_name": widget.marca.bussinesName,
+      "contact": widget.marca.contact,
+      "status": 1,
+      "slug": widget.marca.slug,
+      "address": widget.marca.addresses,
+      "id_user": user?.id,
+      "email": [''],
+      "name": widget.marca.name,
+      "updated_at": 1622602830,
+      "image": widget.marca.image,
+      "categories": widget.marca.categories,
+      "min_order_amount": widget.marca.minOrderAmount,
+      "telephone": widget.marca.telephone,
+      "id": widget.marca.id,
+      "min_amount_free_delivery": widget.marca.minAmountFreeDelivery,
+      "ruc": widget.marca.ruc,
+      "items": [
+        {
+          "discount_type": 1,
+          "status": 1,
+          "slug": widget.producto.slug,
+          "stock": widget.producto.stock,
+          "discount_percent": "${widget.producto.discountPercent}",
+          "name": widget.producto.name,
+          "updated_at": 1622602830,
+          "price_offer": "${widget.producto.priceOffer}",
+          "image": widget.producto.image,
+          "categories": widget.producto.categories,
+          "id_category": widget.idCategoria,
+          "units": widget.producto.units,
+          "description": widget.producto.description,
+          "id": widget.producto.id,
+          "price": widget.producto.price,
+          "id_supplier": widget.marca.id,
+          "supplier": {
+            "coverage": widget.marca.coverage,
+            "delivery_time": widget.marca.deliveryTime,
+            "bussines_name": widget.marca.bussinesName,
+            "contact": widget.marca.contact,
+            "status": 1,
+            "slug": widget.marca.slug,
+            "address": widget.marca.addresses,
+            "id_user": user?.id,
+            "email": [''],
+            "name": widget.marca.name,
+            "updated_at": 1622602830,
+            "image": widget.marca.image,
+            "categories": widget.marca.categories,
+            "min_order_amount": widget.marca.minOrderAmount,
+            "telephone": widget.marca.telephone,
+            "id": widget.marca.id,
+            "min_amount_free_delivery": widget.marca.minAmountFreeDelivery,
+            "ruc": widget.marca.ruc
+          },
+          "quantity": cantidad
+        }
+      ],
+    };
+
+    Map<String, dynamic> createCalendar = {
       "schedule": {
         "category_id": widget.idCategoria,
         "status": 'pending',
@@ -104,20 +182,57 @@ class _FechaProductosState extends State<FechaProductos> {
             "end": horaFinal,
           }
         },
-        "pet_id": selectedOptionMascota //no deberia ir
+        "pet_id": selectedOptionMascota
+      },
+    };
+
+    Map<String, dynamic> createProducto = {
+      "id": "${widget.marca.id}",
+      "name": "${widget.marca.name}",
+      "email": "",
+      "contact": "${widget.marca.contact}",
+      "telephone": "${widget.marca.telephone}",
+      "delivery_cost": deliveryCost,
+      "delivery_time": "${widget.marca.deliveryTime}",
+      "pet_name": {
+        "pet_id": selectedOptionMascota,
+        "name": nameSelectedOptionMascota,
+      },
+      "schedule": {
+        "category_id": '',
+        "status": '',
+        "time": {
+          "date": '',
+          "hour": {
+            "star": '',
+            "end": '',
+          }
+        },
+        "pet_id": ''
       },
       "items": [
         {
           "id": "${widget.producto.id}",
           "name": "${widget.producto.name}",
           "units": "Hours",
-          "quantity": 1,
+          "quantity": cantidad,
           "price": "${widget.producto.price}"
         }
       ]
     };
 
-    cartProvider.addToCart(nuevoItem);
+    Map<String, dynamic> createAdress = {
+      // enviar m
+      "name": '$selectedAdress',
+      "inside": '$selectedInside',
+      "name_district": '$selectedDistritoName', //enviar distrito
+      "id_district": "1",
+      "default": "true"
+    };
+
+    direccionProvider.addDireccion(createAdress);
+    cartProvider.addToCart(nuevoSupplier);
+    productoProvider.addOrden(createProducto);
   }
 
   void updateUserWithNewAddress(
@@ -131,16 +246,6 @@ class _FechaProductosState extends State<FechaProductos> {
       prefs.setString('user_data', jsonEncode(user!.toJson()));
       setState(() {});
     }
-  }
-
-  getCurrentUser() async {
-    UserLoginModel? userTemp = await Shared().currentUser();
-
-    setState(() {
-      user = userTemp;
-    });
-
-    await getMascotas();
   }
 
   void refreshMascotas() async {
@@ -158,8 +263,19 @@ class _FechaProductosState extends State<FechaProductos> {
     }
   }
 
+  getCurrentUser() async {
+    UserLoginModel? userTemp = await Shared().currentUser();
+
+    setState(() {
+      user = userTemp;
+    });
+
+    await getMascotas();
+  }
+
   @override
   void initState() {
+    deliveryCostMap();
     getCurrentUser();
     super.initState();
   }
@@ -590,10 +706,11 @@ class _FechaProductosState extends State<FechaProductos> {
                   ),
                 ),
                 BotonCustom(
-                  funcion: () {
+                  funcion: () async {
                     if (selectedAdress != null &&
                         selectedOptionMascota != null) {
-                      agregarCarrito();
+                      await agregarCarrito();
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
