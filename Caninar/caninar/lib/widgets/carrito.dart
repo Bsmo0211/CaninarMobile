@@ -1,7 +1,9 @@
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/providers/cart_provider.dart';
+import 'package:caninar/providers/direccion_provider.dart';
 import 'package:caninar/providers/orden_provider.dart';
+import 'package:caninar/providers/producto_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
@@ -19,7 +21,9 @@ class CarritoCompras extends StatefulWidget {
 }
 
 class _CarritoComprasState extends State<CarritoCompras> {
-  List<Map<String, dynamic>> dataList = [];
+  List<Map<String, dynamic>> productoList = [];
+  Map<String, dynamic> orden = {};
+  Map<String, dynamic> direccion = {};
   String? nameProduct;
   String? priceProduct;
 
@@ -37,6 +41,42 @@ class _CarritoComprasState extends State<CarritoCompras> {
     });
   }
 
+  createOrden() {
+    OrdenProvider ordenProvider =
+        Provider.of<OrdenProvider>(context, listen: false);
+
+    Map<String, dynamic> nuevaOrden = {
+      "paymen_status": null,
+      "id_user": user?.id,
+      "user": {
+        "addresses": user?.addresses,
+        "document_number": user?.documentNumber,
+        "document_type": 1,
+        "company": {
+          "bussines_name": "", //
+          "ruc": ""
+        },
+        "email": user?.email,
+        "first_name": user?.firstName,
+        "id": user?.id,
+        "id_cart": user?.idCart,
+        "last_name": user?.lastName,
+        "password": "",
+        "satus": 1,
+        "telephone": user?.telephone,
+        "type": 1,
+      },
+      "address": direccion,
+      "products": productoList,
+      "reciever": {"names": "", "last_names": "", "dni": ""},
+      "quantity": 2, //
+      "total": '$totalGeneral',
+      "id_transaction": "" //
+    };
+
+    ordenProvider.addOrden(nuevaOrden);
+  }
+
   @override
   void initState() {
     getCurrentUser();
@@ -46,11 +86,15 @@ class _CarritoComprasState extends State<CarritoCompras> {
 
   @override
   Widget build(BuildContext context) {
+    ProductoProvider productoProvider = Provider.of<ProductoProvider>(context);
     OrdenProvider ordenProvider = Provider.of<OrdenProvider>(context);
+    DireccionProvider direccionProvider =
+        Provider.of<DireccionProvider>(context);
 
     setState(() {
-      dataList = ordenProvider.ordenList;
-      // Calcula el subtotal al actualizar la lista
+      productoList = productoProvider.productoList;
+      orden = ordenProvider.ordenList;
+      direccion = direccionProvider.direccion;
       calculateSubtotal();
     });
 
@@ -80,7 +124,7 @@ class _CarritoComprasState extends State<CarritoCompras> {
             child: ListView(
               children: [
                 Column(
-                  children: dataList.asMap().entries.map((entry) {
+                  children: productoList.asMap().entries.map((entry) {
                     int index = entry.key;
                     Map<String, dynamic> data = entry.value;
 
@@ -211,7 +255,8 @@ class _CarritoComprasState extends State<CarritoCompras> {
                                               top: 10, bottom: 15),
                                           child: IconButton(
                                             onPressed: () {
-                                              ordenProvider.removeOrder(index);
+                                              productoProvider
+                                                  .removeProducto(index);
                                             },
                                             icon: Icon(
                                               Icons.delete_outlined,
@@ -236,7 +281,7 @@ class _CarritoComprasState extends State<CarritoCompras> {
                     );
                   }).toList(),
                 ),
-                dataList.isNotEmpty
+                productoList.isNotEmpty
                     ? Align(
                         alignment: Alignment.center,
                         child: Column(
@@ -317,17 +362,18 @@ class _CarritoComprasState extends State<CarritoCompras> {
                           ),
                         ),
                       ),
-                if (dataList.isNotEmpty)
+                if (productoList.isNotEmpty)
                   BotonCustom(
                     funcion: () {
+                      createOrden();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => FinalizarCompra(
                               subTotal: subtotal,
-                              deliveriFee: '',
-                              impuesto: '',
-                              total: ''),
+                              deliveriFee: deliveryCost,
+                              impuesto: 0,
+                              total: totalGeneral),
                         ),
                       );
                     },
@@ -345,7 +391,7 @@ class _CarritoComprasState extends State<CarritoCompras> {
     subtotal = 0.0;
     deliveryCost = 0.0;
 
-    for (var data in dataList) {
+    for (var data in productoList) {
       deliveryCost += double.parse(data['delivery_cost']);
 
       List<dynamic> items = data['items'];
