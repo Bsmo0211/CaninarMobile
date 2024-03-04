@@ -15,10 +15,7 @@ import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:go_router/go_router.dart';
-import 'package:uni_links/uni_links.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'package:provider/provider.dart';
@@ -330,7 +327,7 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                         "use_company": false,
                         "status": 1,
                         "id_user": '${user?.id}',
-                        "total": widget.total //arreglar total
+                        "total": widget.total
                       };
                       String? idCart = await API().createCarrito(nuevoItem);
                       String? idOrden = await API().createOrden(ordenList);
