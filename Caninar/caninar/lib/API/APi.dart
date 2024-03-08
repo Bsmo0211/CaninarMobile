@@ -21,7 +21,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class API {
   static Dio dio = Dio();
-  static UserLoginModel? userLoginModelFinal;
 
   Future<void> launchWhatsApp(String phoneNumber, {String message = ""}) async {
     try {
@@ -242,15 +241,17 @@ class API {
     return idOrden;
   }
 
-  Future<Map<String, dynamic>> getCitas(String? id) async {
+  Future<Map<String, dynamic>> getCitas(String? id, int? type) async {
     String link =
-        'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users/datings/$id';
+        'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users/datings/$id?role=$type';
 
     Response response = await dio.get(link);
-
     print(response.data);
-
-    return response.data;
+    if (response.statusCode == 200) {
+      return response.data;
+    } else {
+      throw Exception('Failed to load information');
+    }
   }
 
   Future<MarcasModel> getSupplierById(String id) async {
@@ -286,5 +287,27 @@ class API {
     } else {
       throw Exception('error');
     }
+  }
+
+  Future<void> updateOrden(
+      List<Map<String, dynamic>> datosActualizacionOrden, String id) async {
+    print(datosActualizacionOrden);
+    await dio.put(
+      'https://0v7g8z5804.execute-api.us-east-1.amazonaws.com/dev/orders/$id',
+      data: {
+        'schedule': datosActualizacionOrden,
+      },
+    ).then((value) async {
+      if (value.statusCode == 200) {
+        print(value.data);
+      }
+    }).catchError((e) {
+      print(e);
+      Fluttertoast.showToast(
+        msg: 'Ha ocurrido un error',
+        backgroundColor: Colors.red,
+        textColor: Colors.black,
+      );
+    });
   }
 }
