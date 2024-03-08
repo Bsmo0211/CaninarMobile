@@ -28,22 +28,24 @@ class _CompraRechazadaState extends State<CompraRechazada> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Center(
-            child: Image.asset(
-              'assets/images/Recurso 7.png',
-              width: 200,
-            ),
+          Image.asset(
+            'assets/images/Recurso 7.png',
+            width: 200,
           ),
           const Center(
             child: Padding(
-              padding: EdgeInsets.only(top: 10),
+              padding: EdgeInsets.only(
+                top: 10,
+              ),
               child: Text(
                 'Su compra fue rechazada!,¿Quiere volver a intentar realizar el pago?',
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
             ),
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               BotonCustom(
                   funcion: () {
