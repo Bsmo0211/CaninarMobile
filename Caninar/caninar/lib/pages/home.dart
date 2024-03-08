@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
 
@@ -25,8 +27,8 @@ class _HomeState extends State<Home> {
   bool isApiCallProcess = false;
   List<CategoriasModel> categorias = [];
   List<CarruselModel> imagenes = [];
-  PageController? _pageController;
-  int _currentPage = 0;
+  int currentIndex = 0;
+  late Timer _timer; // Declara el temporizador
 
   getData() async {
     setState(() {
@@ -47,7 +49,16 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     getData();
-    _pageController = PageController(initialPage: _currentPage);
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      setState(() {
+        if (currentIndex < imagenes.length - 1) {
+          currentIndex++;
+        } else {
+          currentIndex = 0; // Vuelve al principio de la lista
+        }
+      });
+    });
+
     super.initState();
   }
 
@@ -78,7 +89,18 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-          CarrouselPropio(images: imagenes),
+          SizedBox(
+            height: 200,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              child: imagenes.isNotEmpty
+                  ? Image.network(
+                      imagenes[currentIndex].imageMobile!,
+                      key: ValueKey<int>(currentIndex),
+                    )
+                  : const CircularProgressIndicator(),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(
               top: 15,
