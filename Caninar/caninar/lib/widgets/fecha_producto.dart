@@ -76,6 +76,7 @@ class _FechaProductosState extends State<FechaProductos> {
   String? selectedInside;
   int cantidad = 1;
   String? deliveryCost;
+  List<DateTime> dias = [];
 
   double calculateTotalValue(int quantity) {
     double unitPrice = double.parse(widget.producto.price!);
@@ -96,19 +97,15 @@ class _FechaProductosState extends State<FechaProductos> {
   }
 
   agregarCarrito() async {
-    if (widget.producto.typePro == 2) {
-      cantidad = 2;
-    }
     CartProvider cartProvider =
         Provider.of<CartProvider>(context, listen: false);
     ProductoProvider productoProvider =
         Provider.of<ProductoProvider>(context, listen: false);
     DireccionProvider direccionProvider =
         Provider.of<DireccionProvider>(context, listen: false);
-    CalendarioProvider calendarioProvider =
-        Provider.of<CalendarioProvider>(context, listen: false);
 
     Map<String, dynamic> nuevoSupplier = {
+      "delivery_cost": deliveryCost,
       "coverge": widget.marca.coverage,
       "create_at": "",
       "delivery_time": widget.marca.deliveryTime,
@@ -166,24 +163,9 @@ class _FechaProductosState extends State<FechaProductos> {
             "min_amount_free_delivery": widget.marca.minAmountFreeDelivery,
             "ruc": widget.marca.ruc
           },
-          "quantity": cantidad
+          "quantity": dias.length
         }
       ],
-    };
-
-    Map<String, dynamic> createCalendar = {
-      "schedule": {
-        "category_id": widget.idCategoria,
-        "status": 'pending',
-        "time": {
-          "date": diaFormateado,
-          "hour": {
-            "star": horaInicial,
-            "end": horaFinal,
-          }
-        },
-        "pet_id": selectedOptionMascota
-      },
     };
 
     Map<String, dynamic> createProducto = {
@@ -198,28 +180,32 @@ class _FechaProductosState extends State<FechaProductos> {
         "pet_id": selectedOptionMascota,
         "name": nameSelectedOptionMascota,
       },
-      "schedule": {
-        "category_id": '',
-        "status": '',
-        "time": {
-          "date": '',
-          "hour": {
-            "star": '',
-            "end": '',
-          }
-        },
-        "pet_id": ''
-      },
+      "schedule": [
+        {
+          "category_id": '',
+          "status": '',
+          "time": {
+            "date": '',
+            "hour": {
+              "star": '',
+              "end": '',
+            }
+          },
+          "pet_id": ''
+        }
+      ],
       "items": [
         {
           "id": "${widget.producto.id}",
           "name": "${widget.producto.name}",
           "units": "Hours",
-          "quantity": cantidad,
-          "price": "${widget.producto.price}"
+          "quantity": dias.length,
+          "price": "${calculateTotalValue(dias.length)}"
         }
       ]
     };
+
+    recibirDiasSeleccionados(dias, createProducto);
 
     Map<String, dynamic> createAdress = {
       // enviar m
@@ -263,14 +249,48 @@ class _FechaProductosState extends State<FechaProductos> {
     }
   }
 
+  void recibirDiasSeleccionados(
+      List<DateTime> selectedDays, Map<String, dynamic> createProducto) {
+    setState(() {
+      dias = selectedDays;
+      cantidad = dias.length;
+
+      List<Map<String, dynamic>> scheduleList = [];
+
+      for (DateTime date in dias) {
+        String formattedDate = DateFormat('dd/MM/yyyy').format(date);
+        Map<String, dynamic> scheduleItem = {
+          "id_user": user?.id,
+          "category_id": widget.idCategoria,
+          "supplier_id": widget.marca.id,
+          "status": 'pending',
+          "time": {
+            "date": formattedDate,
+            "hour": {
+              "star": horaInicial,
+              "end": horaFinal,
+            }
+          },
+          "pet_id": selectedOptionMascota
+        };
+        scheduleList.add(scheduleItem);
+      }
+
+      createProducto['schedule'] = scheduleList;
+    });
+  }
+
   getCurrentUser() async {
     UserLoginModel? userTemp = await Shared().currentUser();
 
     setState(() {
       user = userTemp;
     });
-
     await getMascotas();
+  }
+
+  void recibirDiasSeleccionadosWrapper(List<DateTime> selectedDays) {
+    recibirDiasSeleccionados(selectedDays, {});
   }
 
   @override
@@ -319,14 +339,7 @@ class _FechaProductosState extends State<FechaProductos> {
                 ),
                 CalendarioCustom(
                   type: widget.type,
-                  onDiaSeleccionado: ((selectedDay) {
-                    String formattedDate =
-                        DateFormat('dd/MM/yyyy').format(selectedDay);
-                    setState(() {
-                      diaFormateado = formattedDate;
-                    });
-                    print(formattedDate);
-                  }),
+                  onDiasSeleccionado: recibirDiasSeleccionadosWrapper,
                 ),
                 const Padding(
                   padding: EdgeInsets.only(left: 20, top: 15, bottom: 15),
@@ -341,57 +354,35 @@ class _FechaProductosState extends State<FechaProductos> {
                 Column(
                   children: [
                     for (int index = 0; index < selectedHours.length; index++)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: PrincipalColors.blueDrops,
-                            ),
-                            child: DropdownButton<int>(
-                              padding:
-                                  const EdgeInsets.only(left: 25, right: 25),
-                              value: selectedHours[index],
-                              items: hours.map((hour) {
-                                return DropdownMenuItem<int>(
-                                  value: hour,
-                                  child: Text(
-                                    '$hour:00 - ${hour + 1}:00',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedHours[index] = value!;
-                                  int horainicialTemp = selectedHours[index];
-                                  int horafinalTemp = horainicialTemp + 1;
-
-                                  horaInicial = '$horainicialTemp:00';
-                                  horaFinal = '$horafinalTemp:00';
-                                });
-
-                                print(horaInicial);
-                                print(horaFinal);
-                              },
-                            ),
-                          ),
-                          if (widget.type == 2 &&
-                              index == selectedHours.length - 1)
-                            IconButton(
-                              icon: Icon(
-                                Icons.add,
-                                color: PrincipalColors.blue,
+                      Container(
+                        decoration: BoxDecoration(
+                          color: PrincipalColors.blueDrops,
+                        ),
+                        child: DropdownButton<int>(
+                          padding: const EdgeInsets.only(left: 25, right: 25),
+                          value: selectedHours[index],
+                          items: hours.map((hour) {
+                            return DropdownMenuItem<int>(
+                              value: hour,
+                              child: Text(
+                                '$hour:00 - ${hour + 1}:00',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  selectedHours.add(1);
-                                });
-                              },
-                            ),
-                        ],
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedHours[index] = value!;
+                              int horainicialTemp = selectedHours[index];
+                              int horafinalTemp = horainicialTemp + 1;
+
+                              horaInicial = '$horainicialTemp:00';
+                              horaFinal = '$horafinalTemp:00';
+                            });
+                          },
+                        ),
                       ),
                   ],
                 ),
@@ -435,13 +426,6 @@ class _FechaProductosState extends State<FechaProductos> {
                 Center(
                   child: GestureDetector(
                     onTap: () async {
-                      /*  setState(() {
-                        isApiCallProcess = true;
-                      });
-                      await getUbicacion();
-                      setState(() {
-                        isApiCallProcess = false;
-                      }); */
                       showDialog(
                         context: context,
                         builder: ((BuildContext context) {
@@ -627,14 +611,14 @@ class _FechaProductosState extends State<FechaProductos> {
                                     ),
                                   ),
                                 ),
-                                const Padding(
-                                  padding: EdgeInsets.only(
+                                Padding(
+                                  padding: const EdgeInsets.only(
                                     top: 5,
                                     bottom: 20,
                                   ),
                                   child: Text(
-                                    '1',
-                                    style: TextStyle(
+                                    '$cantidad',
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -691,7 +675,7 @@ class _FechaProductosState extends State<FechaProductos> {
                                   padding:
                                       const EdgeInsets.only(top: 5, bottom: 20),
                                   child: Text(
-                                    '${widget.producto.price}',
+                                    '\$${calculateTotalValue(cantidad)}',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -707,19 +691,28 @@ class _FechaProductosState extends State<FechaProductos> {
                 ),
                 BotonCustom(
                   funcion: () async {
-                    if (selectedAdress != null &&
-                        selectedOptionMascota != null) {
-                      await agregarCarrito();
+                    if (dias.isNotEmpty) {
+                      if (selectedAdress != null &&
+                          selectedOptionMascota != null) {
+                        await agregarCarrito();
 
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CarritoCompras(),
-                        ),
-                      );
+                        // ignore: use_build_context_synchronously
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CarritoCompras(),
+                          ),
+                        );
+                        dias.clear();
+                      } else {
+                        Fluttertoast.showToast(
+                            msg: 'Debe Seleccionar todos los campos requeridos',
+                            backgroundColor: Colors.red,
+                            textColor: Colors.black);
+                      }
                     } else {
                       Fluttertoast.showToast(
-                          msg: 'Debe Seleccionar todos los campos requeridos',
+                          msg: 'Debe Seleccionar una dia del calendario',
                           backgroundColor: Colors.red,
                           textColor: Colors.black);
                     }
