@@ -4,12 +4,12 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class CalendarioCustom extends StatefulWidget {
   int type;
+  Function(List<DateTime>)? onDiasSeleccionado;
 
-  Function(DateTime selectedDay)? onDiaSeleccionado;
   CalendarioCustom({
     Key? key,
     required this.type,
-    this.onDiaSeleccionado,
+    this.onDiasSeleccionado,
   }) : super(key: key);
 
   @override
@@ -17,8 +17,12 @@ class CalendarioCustom extends StatefulWidget {
 }
 
 class _CalendarioCustomState extends State<CalendarioCustom> {
+  List<DateTime> selectedDays = [];
+
   @override
   Widget build(BuildContext context) {
+    /*   print('object');
+    print(widget.type); */
     return Center(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
@@ -38,16 +42,19 @@ class _CalendarioCustomState extends State<CalendarioCustom> {
               },
               onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
                 setState(() {
-                  if (args.value is DateTime) {
-                    if (widget.onDiaSeleccionado != null) {
-                      // Añade esta condición
-                      widget.onDiaSeleccionado!(args.value); // Añade esta línea
-                    }
-                  } else if (args.value is List<DateTime>) {
-                    // Handle multiple selection if needed
+                  if (widget.type == 1) {
+                    selectedDays.clear();
+                    selectedDays.add(args.value);
+                  } else if (widget.type == 2) {
+                    selectedDays.clear();
+                    selectedDays.addAll(args.value);
+                  }
+                  if (widget.onDiasSeleccionado != null) {
+                    widget.onDiasSeleccionado!(selectedDays);
                   }
                 });
               },
+
               monthCellStyle: DateRangePickerMonthCellStyle(
                 weekendDatesDecoration: BoxDecoration(
                   color: Colors.grey.shade300,
@@ -72,7 +79,8 @@ class _CalendarioCustomState extends State<CalendarioCustom> {
               enablePastDates: false,
               selectionMode: widget.type == 1
                   ? DateRangePickerSelectionMode.single
-                  : DateRangePickerSelectionMode.multiple,
+                  : DateRangePickerSelectionMode
+                      .multiple, // Selección única o múltiple
             ),
           ),
         ),
