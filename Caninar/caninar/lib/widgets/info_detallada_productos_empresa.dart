@@ -134,11 +134,12 @@ class _InformacionDetalladaProductosState
                                         padding: const EdgeInsets.only(
                                             top: 15, bottom: 15),
                                         child: Text(
-                                          'Horario:',
+                                          '',
                                           style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15,
-                                              color: PrincipalColors.orange),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                            color: PrincipalColors.orange,
+                                          ),
                                         ),
                                       )
                                     ],
