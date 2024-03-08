@@ -1,4 +1,4 @@
-import 'dart:async';
+/* import 'dart:async';
 
 import 'package:caninar/models/carrusel/model.dart';
 import 'package:flutter/material.dart';
@@ -71,4 +71,4 @@ class _CarrouselPropioState extends State<CarrouselPropio> {
       ),
     );
   }
-}
+} */
