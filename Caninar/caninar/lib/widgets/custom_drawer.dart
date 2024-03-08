@@ -5,6 +5,8 @@ import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/about_us.dart';
 import 'package:caninar/widgets/aliados.dart';
 import 'package:caninar/widgets/atencion_cliente.dart';
+import 'package:caninar/widgets/compra_finalizada.dart';
+import 'package:caninar/widgets/compra_rechazada.dart';
 import 'package:caninar/widgets/editar_perfil.dart';
 import 'package:caninar/widgets/item_drawer.dart';
 import 'package:caninar/widgets/libro_reclamaciones.dart';
@@ -78,23 +80,31 @@ class _CustomDrawerState extends State<CustomDrawer> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (user != null)
-                    ItemDrawer(
-                      titulo: 'Tu cuenta',
-                      redireccion: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EditarPerfil()),
-                        );
-                      },
-                    ),
-                  if (user != null)
-                    const Divider(
-                      height: 2,
-                      color: Colors.grey,
-                    ),
-                  if (user != null)
+                  user != null
+                      ? ItemDrawer(
+                          titulo: 'Tu Cuenta',
+                          redireccion: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const EditarPerfil()),
+                            );
+                          },
+                        )
+                      : ItemDrawer(
+                          titulo: 'Iniciar Sesión',
+                          redireccion: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => Login()),
+                            );
+                          },
+                        ),
+                  const Divider(
+                    height: 2,
+                    color: Colors.grey,
+                  ),
+                  if (user != null && user?.type != 2)
                     ItemDrawer(
                       titulo: 'Mascotas',
                       redireccion: () {
@@ -108,12 +118,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         );
                       },
                     ),
-                  if (user != null)
+                  if (user != null && user?.type != 2)
                     const Divider(
                       height: 2,
                       color: Colors.grey,
                     ),
-                  if (user != null)
+                  if (user != null && user?.type != 2)
                     ItemDrawer(
                       titulo: 'Mis Citas',
                       redireccion: () {
@@ -125,20 +135,28 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         );
                       },
                     ),
-                  if (user != null)
+                  if (user != null && user?.type != 2)
                     const Divider(
                       height: 2,
                       color: Colors.grey,
                     ),
-                  if (user != null)
+                  if (user != null && user?.type != 2)
                     ItemDrawer(
                       titulo: 'Pedidos',
-                      redireccion: () {},
+                      redireccion: () {
+                        /*   Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CompraRechazada(),
+                          ),
+                        ); */
+                      },
                     ),
-                  const Divider(
-                    height: 2,
-                    color: Colors.grey,
-                  ),
+                  if (user != null && user?.type != 2)
+                    const Divider(
+                      height: 2,
+                      color: Colors.grey,
+                    ),
                   ItemDrawer(
                     titulo: '¿Quiénes somos?',
                     redireccion: () {
@@ -148,19 +166,21 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       );
                     },
                   ),
-                  const Divider(
-                    height: 2,
-                    color: Colors.grey,
-                  ),
-                  ItemDrawer(
-                    titulo: 'Quiero ser un alidado',
-                    redireccion: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Alidados()),
-                      );
-                    },
-                  ),
+                  if (user?.type != 2)
+                    const Divider(
+                      height: 2,
+                      color: Colors.grey,
+                    ),
+                  if (user?.type != 2)
+                    ItemDrawer(
+                      titulo: 'Quiero ser un alidado',
+                      redireccion: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Alidados()),
+                        );
+                      },
+                    ),
                   const Divider(
                     height: 2,
                     color: Colors.grey,
