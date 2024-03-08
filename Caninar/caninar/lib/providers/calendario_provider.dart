@@ -5,19 +5,19 @@ class CalendarioProvider extends ChangeNotifier {
 
   List<Map<String, dynamic>> get calendarioList => _calendarioList;
 
-  addOrden(Map<String, dynamic> item) {
+  addCalendario(Map<String, dynamic> item) {
     _calendarioList.add(item);
     notifyListeners();
   }
 
-  removeOrder(int index) {
+  removeCalendario(int index) {
     if (index >= 0 && index < _calendarioList.length) {
       _calendarioList.removeAt(index);
       notifyListeners();
     }
   }
 
-  clearOrder() {
+  clearCalendario() {
     _calendarioList.clear();
     notifyListeners();
   }
