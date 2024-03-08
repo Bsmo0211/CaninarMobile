@@ -134,17 +134,6 @@ class _CardAdiestradorCaninoState extends State<CardAdiestradorCanino> {
                                   ),
                                 ),
                               ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 15, bottom: 15),
-                                child: Text(
-                                  'Horario',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      color: PrincipalColors.orange),
-                                ),
-                              )
                             ],
                           )),
                           Expanded(
