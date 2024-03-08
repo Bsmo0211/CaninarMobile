@@ -16,6 +16,7 @@ class UserLoginModel {
   String? id;
   String? idCart;
   int? type;
+  String? idSupplier;
   List<DireccionModel> addresses = [];
 
   Map<String, dynamic> toJson() {
@@ -32,7 +33,8 @@ class UserLoginModel {
     data['gender'] = gender;
     data['addresses'] =
         addresses.map((direccion) => direccion.toJson()).toList();
-
+    data['type'] = type;
+    data['id_supplier'] = idSupplier;
     return data;
   }
 
@@ -51,6 +53,8 @@ class UserLoginModel {
       addresses = List<DireccionModel>.from(json['addresses']
           .map((direccion) => DireccionModel.fromJson(direccion)));
     }
+    type = json['type'];
+    idSupplier = json['id_supplier'];
   }
 
   addAdress(String address, String optionalData, String district) {
