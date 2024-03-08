@@ -1,7 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/pages/home.dart';
+import 'package:caninar/widgets/home_adriestrador.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -53,10 +56,18 @@ class Shared {
           msg: 'Bienvenido ${userLoginModel?.firstName}',
           backgroundColor: Colors.green,
         );
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Home()),
-        );
+        if (userLoginModel?.type == 3 || userLoginModel?.type == 1) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const Home()),
+          );
+        }
+        if (userLoginModel?.type == 2) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeAdiestrador()),
+          );
+        }
       }
     }).catchError((e) {
       Fluttertoast.showToast(
@@ -73,7 +84,7 @@ class Shared {
     prefs.remove('user_data');
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Home()),
+      MaterialPageRoute(builder: (context) => const Home()),
     );
   }
 }
