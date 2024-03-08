@@ -9,6 +9,7 @@ import 'package:caninar/widgets/info_detallada_adiestrador.dart';
 import 'package:caninar/widgets/info_detallada_productos_empresa.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class PageCategoriaSeleccionada extends StatefulWidget {
   String slugCategoria;
@@ -32,6 +33,7 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
   String? idDistrito;
   List<MarcasModel> marcas = [];
   List<DropdownMenuItem<DistritosModel>> distritos = [];
+  bool isLoading = false;
 
   getDistritos() async {
     List<DropdownMenuItem<DistritosModel>> temp = [];
@@ -72,6 +74,11 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      EasyLoading.show(status: 'Cargando');
+    } else {
+      EasyLoading.dismiss();
+    }
     return Scaffold(
       appBar: const CustomAppBar(),
       drawer: CustomDrawer(),
@@ -102,8 +109,15 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
                     dropdownValueDistrito = newValue;
                     slugDsitrito = newValue?.slug;
                     idDistrito = newValue?.id;
+                    isLoading = true;
                   });
-                  print(idDistrito);
+
+                  await Future.delayed(const Duration(seconds: 2));
+
+                  setState(() {
+                    isLoading = false;
+                  });
+
                   await getMarcas();
                 },
               ),
