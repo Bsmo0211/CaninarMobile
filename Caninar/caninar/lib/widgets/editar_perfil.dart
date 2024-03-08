@@ -36,8 +36,6 @@ class _EditarPerfilState extends State<EditarPerfil> {
     setState(() {
       user = userTemp;
     });
-
-    print(user?.id);
   }
 
   tomarFoto() async {
@@ -306,8 +304,6 @@ class _EditarPerfilState extends State<EditarPerfil> {
 
                       String imagen =
                           'https://caninar-images.s3.amazonaws.com/users/$ultimoSegmento';
-
-                      print(imagen);
 
                       updatedUser.profilePhoto = imagen;
                     }
