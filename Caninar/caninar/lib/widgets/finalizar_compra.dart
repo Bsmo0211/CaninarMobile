@@ -4,6 +4,7 @@ import 'package:caninar/API/APi.dart';
 import 'package:caninar/API/Mercado_pago.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/user/model.dart';
+import 'package:caninar/providers/calendario_provider.dart';
 import 'package:caninar/providers/cart_provider.dart';
 import 'package:caninar/providers/orden_provider.dart';
 import 'package:caninar/providers/producto_provider.dart';
@@ -42,6 +43,7 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
   Map<String, dynamic> ordenList = {};
   List<Map<String, dynamic>> cartProvider = [];
   List<Map<String, dynamic>> productoList = [];
+  List<Map<String, dynamic>> calendarioList = [];
   StreamSubscription? _sub;
   int? cantidad;
   String? nameProduct;
@@ -72,10 +74,13 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
     OrdenProvider ordenProvider = Provider.of<OrdenProvider>(context);
     CartProvider carritoProvider = Provider.of<CartProvider>(context);
     ProductoProvider productoProvider = Provider.of<ProductoProvider>(context);
+    CalendarioProvider calendarioProvider =
+        Provider.of<CalendarioProvider>(context);
     setState(() {
       ordenList = ordenProvider.ordenList;
       cartProvider = carritoProvider.cartItems;
       productoList = productoProvider.productoList;
+      calendarioList = calendarioProvider.calendarioList;
     });
 
     return Scaffold(
@@ -367,7 +372,6 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                                       funcion: () async {
                                         String? estadoOrden =
                                             await API().getOrdenById(idOrden!);
-
                                         if (estadoOrden == 'approved') {
                                           Navigator.push(
                                             context,
