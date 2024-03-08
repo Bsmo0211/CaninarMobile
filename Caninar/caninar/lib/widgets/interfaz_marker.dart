@@ -197,7 +197,6 @@ class _InterfazMarkerState extends State<InterfazMarker> {
 
   @override
   Widget build(BuildContext context) {
-    print(deliveryCost);
     return Scaffold(
       appBar: const CustomAppBar(),
       drawer: CustomDrawer(),
