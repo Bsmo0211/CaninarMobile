@@ -1,6 +1,9 @@
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/mascotas/model.dart';
+import 'package:caninar/models/user/model.dart';
+import 'package:caninar/shared_Preferences/shared.dart';
+import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/image_network_propio.dart';
@@ -10,12 +13,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 class InformacionDetalladaCita extends StatefulWidget {
-  String nombreMarca;
-  String petId;
+  String nombreRedireccion;
+  MascotasModel mascota;
   InformacionDetalladaCita({
     super.key,
-    required this.nombreMarca,
-    required this.petId,
+    required this.nombreRedireccion,
+    required this.mascota,
   });
 
   @override
@@ -28,12 +31,13 @@ class _InformacionDetalladaCitaState extends State<InformacionDetalladaCita> {
   final Location _location = Location();
   LatLng _initialCameraPosition = const LatLng(0.0, 0.0);
   bool _isLocationLoaded = false;
-  MascotasModel? mascota;
+  UserLoginModel? user;
 
-  getInformacionById() async {
-    MascotasModel mascotaTemp = await API().getPetById(widget.petId);
+  getCurrentUser() async {
+    UserLoginModel? userTemp = await Shared().currentUser();
+
     setState(() {
-      mascota = mascotaTemp;
+      user = userTemp;
     });
   }
 
@@ -52,8 +56,9 @@ class _InformacionDetalladaCitaState extends State<InformacionDetalladaCita> {
 
   @override
   void initState() {
-    getInformacionById();
+    getCurrentUser();
     getLocation();
+
     super.initState();
   }
 
@@ -65,7 +70,11 @@ class _InformacionDetalladaCitaState extends State<InformacionDetalladaCita> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            RedireccionAtras(nombre: widget.nombreMarca),
+            RedireccionAtras(
+              nombre: user?.type == 2
+                  ? 'Paseo de ${widget.nombreRedireccion}'
+                  : widget.nombreRedireccion,
+            ),
             SizedBox(
               height: 200,
               child: _isLocationLoaded
@@ -100,14 +109,14 @@ class _InformacionDetalladaCitaState extends State<InformacionDetalladaCita> {
                       ),
                       ClipOval(
                         child: ImageNetworkPropio(
-                          imagen: '${mascota?.image}',
+                          imagen: '${widget.mascota.image}',
                           width: 50,
                           height: 50,
                           fit: BoxFit.cover,
                         ),
                       ),
                       const SizedBox(width: 10),
-                      Text('${mascota?.name}'),
+                      Text('${widget.mascota.name}'),
                     ],
                   ),
                 ),
@@ -149,9 +158,13 @@ class _InformacionDetalladaCitaState extends State<InformacionDetalladaCita> {
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 30),
-              child: Container(
+            if (user?.type == 2)
+              Padding(
+                  padding: const EdgeInsets.only(top: 30),
+                  child: BotonCustom(
+                      funcion: () {},
+                      texto:
+                          'Inciar Paseo') /*  Container(
                 decoration: BoxDecoration(
                   color: Colors.grey.shade300,
                 ),
@@ -251,8 +264,8 @@ class _InformacionDetalladaCitaState extends State<InformacionDetalladaCita> {
                     ),
                   ],
                 ),
-              ),
-            ),
+              ), */
+                  ),
           ],
         ),
       ),
