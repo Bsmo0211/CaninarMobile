@@ -13,7 +13,7 @@ class InformacionDetalladaCitaModel {
     final data = <String, dynamic>{};
     data['category_id'] = categoryId;
     data['pet_id'] = petId;
-    data['status'] = status;
+    data['sh_status'] = status;
     data['supplier_id'] = supplierId;
     data['id_user'] = idUser;
     data['id'] = id;
@@ -26,7 +26,7 @@ class InformacionDetalladaCitaModel {
   InformacionDetalladaCitaModel.fromJson(Map<String, dynamic> json) {
     categoryId = json['category_id'];
     petId = json['pet_id'];
-    status = json['status'];
+    status = json['sh_status'];
     supplierId = json['supplier_id'];
     idUser = json['id_user'];
     id = json['id'];
