@@ -69,6 +69,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               right: 8,
             ),
             child: Badge.count(
+              alignment: Alignment.bottomRight,
               count: productoProvider.productoList.length,
               backgroundColor: PrincipalColors.orange,
               child: IconButton(
