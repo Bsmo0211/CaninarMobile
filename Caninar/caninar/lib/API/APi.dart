@@ -241,12 +241,67 @@ class API {
     return idOrden;
   }
 
+  Future<void> updateFirstPointById(
+      List<Map<String, dynamic>> datosOrden, String id, String status) async {
+    await dio.put(
+      'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users/tracking?schedule_id=$id',
+      data: {"coordinates": datosOrden, 'sh_status': status},
+    ).then((value) async {
+      if (value.statusCode == 200) {
+        print(value.data);
+      }
+    }).catchError((e) {
+      print(e);
+      Fluttertoast.showToast(
+        msg: 'Ha ocurrido un error',
+        backgroundColor: Colors.red,
+        textColor: Colors.black,
+      );
+    });
+  }
+
+  Future<void> updatePointById(
+      List<Map<String, dynamic>> datosOrden, String id) async {
+    await dio.put(
+      'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users/tracking?schedule_id=$id',
+      data: {"coordinates": datosOrden},
+    ).then((value) async {
+      if (value.statusCode == 200) {
+        print(value.data);
+      }
+    }).catchError((e) {
+      print(e);
+      Fluttertoast.showToast(
+        msg: 'Ha ocurrido un error',
+        backgroundColor: Colors.red,
+        textColor: Colors.black,
+      );
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getPointsSupplierById(String id) async {
+    String link =
+        'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users/tracking?schedule_id=$id';
+
+    Response response = await dio.get(link);
+
+    if (response.statusCode == 200) {
+      List<Map<String, dynamic>> points = [];
+      for (Map<String, dynamic> punto in response.data) {
+        points.add(punto);
+      }
+      return points;
+    } else {
+      throw Exception('Failed to load points');
+    }
+  }
+
   Future<Map<String, dynamic>> getCitas(String? id, int? type) async {
     String link =
         'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users/datings/$id?role=$type';
 
     Response response = await dio.get(link);
-    print(response.data);
+
     if (response.statusCode == 200) {
       return response.data;
     } else {
@@ -291,7 +346,6 @@ class API {
 
   Future<void> updateOrden(
       List<Map<String, dynamic>> datosActualizacionOrden, String id) async {
-    print(datosActualizacionOrden);
     await dio.put(
       'https://0v7g8z5804.execute-api.us-east-1.amazonaws.com/dev/orders/$id',
       data: {
