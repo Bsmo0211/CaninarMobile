@@ -86,21 +86,24 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
         children: [
           RedireccionAtras(nombre: widget.name),
           Center(
-            child: Container(
-              padding: const EdgeInsets.only(left: 50, right: 50),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                border: Border.all(
-                  color: PrincipalColors.orange,
-                  width: 1.0,
+            child: SizedBox(
+              width: 250,
+              height: 60,
+              child: DropdownButtonFormField(
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        const BorderSide(color: Colors.orange, width: 1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.grey, width: 1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  filled: true,
                 ),
-                borderRadius: BorderRadius.circular(30.0),
-              ),
-              child: DropdownButton<DistritosModel>(
-                isDense: true,
                 dropdownColor: Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(30.0),
-                underline: Container(),
                 value: dropdownValueDistrito,
                 icon: const Icon(Icons.keyboard_arrow_down),
                 items: distritos,
