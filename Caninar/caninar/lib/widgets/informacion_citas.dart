@@ -10,7 +10,8 @@ import 'package:caninar/widgets/cards_items_home.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/info_detallada_adiestrador.dart';
-import 'package:caninar/widgets/informacion_detallada_cita.dart';
+import 'package:caninar/widgets/informacion_detallada_cita_cliente.dart';
+import 'package:caninar/widgets/informacion_detallada_cita_paseador.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -21,11 +22,13 @@ class InformacionCitas extends StatefulWidget {
   List<InformacionDetalladaCitaModel> informacionDetalle;
   String? titulo;
   bool proxima;
+  bool? terminado;
   InformacionCitas(
       {super.key,
       required this.informacionDetalle,
       required this.titulo,
-      required this.proxima});
+      required this.proxima,
+      this.terminado});
 
   @override
   State<InformacionCitas> createState() => _InformacionCitasState();
@@ -135,27 +138,45 @@ class _InformacionCitasState extends State<InformacionCitas> {
                           children:
                               infoDetalladaCita.asMap().entries.map((entry) {
                             int index = entry.key;
+                            bool? terminado = false;
+
+                            if (entry.value.status != null) {
+                              if (entry.value.status!.contains('terminated')) {
+                                terminado = true;
+                              }
+                            }
 
                             MarcasModel marca = marcas![index];
                             MascotasModel mascota = mascotas![index];
                             return CardItemHome(
+                              terminadoCitas: terminado,
                               titulo:
                                   user?.type == 2 ? mascota.name! : marca.name!,
                               imageCard: user?.type == 2
                                   ? mascota.image
                                   : marca.image!,
                               redireccion: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          InformacionDetalladaCita(
-                                            nombreRedireccion: user?.type == 2
-                                                ? mascota.name!
-                                                : marca.name!,
-                                            mascota: mascota,
-                                          )),
-                                );
+                                user?.type == 2
+                                    ? Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                InformacionDetalladaCitaPaseador(
+                                                  nombreRedireccion:
+                                                      mascota.name!,
+                                                  mascota: mascota,
+                                                )),
+                                      )
+                                    : Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                InformacionDetalladaCitaCliente(
+                                                  nombreRedireccion:
+                                                      marca.name!,
+                                                  mascota: mascota,
+                                                )),
+                                      );
                               },
                               precios:
                                   '${entry.value.time?.date} \n${entry.value.time?.hour?.start}-${entry.value.time?.hour?.end}',

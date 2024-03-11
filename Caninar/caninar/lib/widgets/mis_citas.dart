@@ -188,6 +188,7 @@ class _MisCitasState extends State<MisCitas> {
                     ? Column(
                         children: pendingModel!.dataCita.map((e) {
                         return CardItemHome(
+                            terminadoCitas: false,
                             imageCard: e.image,
                             titulo: e.name!,
                             redireccion: () {
@@ -217,6 +218,7 @@ class _MisCitasState extends State<MisCitas> {
                     ? Column(
                         children: historyModel!.dataCita.map((e) {
                         return CardItemHome(
+                            terminadoCitas: false,
                             imageCard: e.image,
                             titulo: e.name!,
                             redireccion: () {
@@ -244,6 +246,7 @@ class _MisCitasState extends State<MisCitas> {
                     ? Column(
                         children: currentModel!.dataCita.map((e) {
                         return CardItemHome(
+                            terminadoCitas: false,
                             imageCard: e.image,
                             titulo: e.name!,
                             redireccion: () {

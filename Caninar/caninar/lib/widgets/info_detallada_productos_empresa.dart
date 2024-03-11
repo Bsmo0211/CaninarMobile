@@ -229,6 +229,7 @@ class _InformacionDetalladaProductosState
           Column(
             children: productos.map((producto) {
               return CardItemHome(
+                terminadoCitas: false,
                 titulo: producto.name!,
                 redireccion: () {
                   if (user != null) {

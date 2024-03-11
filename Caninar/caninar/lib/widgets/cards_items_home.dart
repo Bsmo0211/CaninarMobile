@@ -10,6 +10,7 @@ class CardItemHome extends StatelessWidget {
   Function? redireccion;
   Color? colorTexto;
   String? precios;
+  bool? terminadoCitas;
   CardItemHome(
       {Key? key,
       required this.titulo,
@@ -17,7 +18,8 @@ class CardItemHome extends StatelessWidget {
       this.imageCard,
       required this.redireccion,
       this.colorTexto,
-      this.precios})
+      this.precios,
+      required this.terminadoCitas})
       : super(key: key);
 
   @override
@@ -26,7 +28,8 @@ class CardItemHome extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
       child: GestureDetector(
         child: Card(
-          elevation: 4,
+          elevation: terminadoCitas! ? 8 : 4,
+          shadowColor: terminadoCitas! ? Colors.red : Colors.grey,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
           ),

@@ -199,6 +199,7 @@ class _InformacionDetalladaAdiestradorState
             },
           ),
           CardItemHome(
+            terminadoCitas: false,
             titulo: 'Consulta',
             redireccion: () {},
             colorTexto: Colors.black,

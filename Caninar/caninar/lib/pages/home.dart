@@ -119,6 +119,7 @@ class _HomeState extends State<Home> {
           Column(
             children: categorias.map((categoria) {
               return CardItemHome(
+                terminadoCitas: false,
                 titulo: '${categoria.name}',
                 imageCard: categoria.image,
                 redireccion: () {

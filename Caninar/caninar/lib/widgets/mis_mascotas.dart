@@ -83,6 +83,7 @@ class _MisMascotasState extends State<MisMascotas> {
                     Column(
                       children: mascotas.map((mascota) {
                         return CardItemHome(
+                          terminadoCitas: false,
                           imageCard: mascota.image,
                           titulo: mascota.name!,
                           redireccion: () {
