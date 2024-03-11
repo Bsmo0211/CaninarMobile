@@ -87,7 +87,7 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
           RedireccionAtras(nombre: widget.name),
           Center(
             child: SizedBox(
-              width: 250,
+              width: 260,
               height: 60,
               child: DropdownButtonFormField(
                 decoration: InputDecoration(
