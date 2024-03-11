@@ -115,88 +115,99 @@ class _InformacionCitasState extends State<InformacionCitas> {
     return Scaffold(
       appBar: const CustomAppBar(),
       drawer: CustomDrawer(),
-      body: Column(
-        children: [
-          RedireccionAtras(nombre: widget.titulo!),
-          Expanded(
-            child: ListView(
-              children: [
-                if (widget.proxima)
-                  const Center(
-                    child:
-                        Text('Recuerda que puedes buscar tus citas por dia!'),
-                  ),
-                if (widget.proxima)
-                  CalendarioCustom(
-                    type: 1,
-                    onDiasSeleccionado: recibirDiasSeleccionados,
-                  ),
-                if (marcas != null)
-                  infoDetalladaCita.isEmpty
-                      ? const Center(
-                          child: Text('No tienes citas agendadas para ese dia'),
-                        )
-                      : Column(
-                          children:
-                              infoDetalladaCita.asMap().entries.map((entry) {
-                            int index = entry.key;
-                            bool? terminado = false;
+      body: RefreshIndicator(
+          child: Column(
+            children: [
+              RedireccionAtras(nombre: widget.titulo!),
+              Expanded(
+                child: ListView(
+                  children: [
+                    if (widget.proxima)
+                      const Center(
+                        child: Text(
+                            'Recuerda que puedes buscar tus citas por dia!'),
+                      ),
+                    if (widget.proxima)
+                      CalendarioCustom(
+                        type: 1,
+                        onDiasSeleccionado: recibirDiasSeleccionados,
+                      ),
+                    if (marcas != null)
+                      infoDetalladaCita.isEmpty
+                          ? const Center(
+                              child: Text(
+                                  'No tienes citas agendadas para ese dia'),
+                            )
+                          : Column(
+                              children: infoDetalladaCita
+                                  .asMap()
+                                  .entries
+                                  .map((entry) {
+                                int index = entry.key;
+                                bool? terminado = false;
 
-                            if (entry.value.status != null) {
-                              if (entry.value.status!.contains('terminated')) {
-                                terminado = true;
-                              }
-                            }
+                                if (entry.value.status != null) {
+                                  if (entry.value.status!
+                                      .contains('terminated')) {
+                                    terminado = true;
+                                  }
+                                }
 
-                            MarcasModel marca = marcas![index];
-                            MascotasModel mascota = mascotas![index];
-                            return CardItemHome(
-                              terminadoCitas: terminado,
-                              titulo:
-                                  user?.type == 2 ? mascota.name! : marca.name!,
-                              imageCard: user?.type == 2
-                                  ? mascota.image
-                                  : marca.image!,
-                              redireccion: () {
-                                user?.type == 2
-                                    ? Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                InformacionDetalladaCitaPaseador(
-                                                  idSchedule: entry.value.id!,
-                                                  nombreRedireccion:
-                                                      mascota.name!,
-                                                  mascota: mascota,
-                                                )),
-                                      )
-                                    : Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                InformacionDetalladaCitaCliente(
-                                                  idSchedule: entry.value.id!,
-                                                  nombreRedireccion:
-                                                      marca.name!,
-                                                  mascota: mascota,
-                                                )),
-                                      );
-                              },
-                              precios:
-                                  '${entry.value.time?.date} \n${entry.value.time?.hour?.start}-${entry.value.time?.hour?.end}',
-                              colorTexto: Colors.black,
-                              icono: Icon(
-                                Icons.star,
-                                color: PrincipalColors.orange,
-                              ),
-                            );
-                          }).toList(),
-                        )
-              ],
-            ),
-          )
-        ],
-      ),
+                                MarcasModel marca = marcas![index];
+                                MascotasModel mascota = mascotas![index];
+                                return CardItemHome(
+                                  terminadoCitas: terminado,
+                                  titulo: user?.type == 2
+                                      ? mascota.name!
+                                      : marca.name!,
+                                  imageCard: user?.type == 2
+                                      ? mascota.image
+                                      : marca.image!,
+                                  redireccion: () {
+                                    user?.type == 2
+                                        ? Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    InformacionDetalladaCitaPaseador(
+                                                      idSchedule:
+                                                          entry.value.id!,
+                                                      nombreRedireccion:
+                                                          mascota.name!,
+                                                      mascota: mascota,
+                                                    )),
+                                          )
+                                        : Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    InformacionDetalladaCitaCliente(
+                                                      idSchedule:
+                                                          entry.value.id!,
+                                                      nombreRedireccion:
+                                                          marca.name!,
+                                                      mascota: mascota,
+                                                    )),
+                                          );
+                                  },
+                                  precios:
+                                      '${entry.value.time?.date} \n${entry.value.time?.hour?.start}-${entry.value.time?.hour?.end}',
+                                  colorTexto: Colors.black,
+                                  icono: Icon(
+                                    Icons.star,
+                                    color: PrincipalColors.orange,
+                                  ),
+                                );
+                              }).toList(),
+                            )
+                  ],
+                ),
+              )
+            ],
+          ),
+          onRefresh: () async {
+            await getInformacionById();
+          }),
     );
   }
 }
