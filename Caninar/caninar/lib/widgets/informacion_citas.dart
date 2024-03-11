@@ -121,9 +121,11 @@ class _InformacionCitasState extends State<InformacionCitas> {
           Expanded(
             child: ListView(
               children: [
-                const Center(
-                  child: Text('Recuerda que puedes buscar tus citas por dia!'),
-                ),
+                if (widget.proxima)
+                  const Center(
+                    child:
+                        Text('Recuerda que puedes buscar tus citas por dia!'),
+                  ),
                 if (widget.proxima)
                   CalendarioCustom(
                     type: 1,
@@ -162,6 +164,7 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 InformacionDetalladaCitaPaseador(
+                                                  idSchedule: entry.value.id!,
                                                   nombreRedireccion:
                                                       mascota.name!,
                                                   mascota: mascota,
@@ -172,6 +175,7 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 InformacionDetalladaCitaCliente(
+                                                  idSchedule: entry.value.id!,
                                                   nombreRedireccion:
                                                       marca.name!,
                                                   mascota: mascota,
