@@ -94,16 +94,15 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
                   enabledBorder: OutlineInputBorder(
                     borderSide:
                         const BorderSide(color: Colors.orange, width: 1),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                   border: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.grey, width: 1),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                   filled: true,
                 ),
                 dropdownColor: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(30.0),
                 value: dropdownValueDistrito,
                 icon: const Icon(Icons.keyboard_arrow_down),
                 items: distritos,
