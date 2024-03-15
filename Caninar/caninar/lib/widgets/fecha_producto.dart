@@ -263,7 +263,7 @@ class _FechaProductosState extends State<FechaProductos> {
           "id_user": user?.id,
           "category_id": widget.idCategoria,
           "supplier_id": widget.marca.id,
-          "status": 'pending',
+          "sh_status": 'pending',
           "time": {
             "date": formattedDate,
             "hour": {
