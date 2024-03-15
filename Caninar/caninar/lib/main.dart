@@ -5,6 +5,7 @@ import 'package:caninar/pages/page_categoria_seleccionada.dart';
 import 'package:caninar/providers/calendario_provider.dart';
 import 'package:caninar/providers/cart_provider.dart';
 import 'package:caninar/providers/direccion_provider.dart';
+import 'package:caninar/providers/index_provider.dart';
 import 'package:caninar/providers/orden_provider.dart';
 import 'package:caninar/providers/producto_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
@@ -62,6 +63,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => (CalendarioProvider()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => (IndexNavegacion()),
         ),
       ],
       child: MaterialApp(
