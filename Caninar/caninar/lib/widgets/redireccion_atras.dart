@@ -13,7 +13,7 @@ class RedireccionAtras extends StatelessWidget {
     return ListTile(
       leading: IconButton(
           onPressed: () {
-            Navigator.pop(context, 'OK');
+            Navigator.maybePop(context, 'OK');
           },
           icon: Icon(
             Icons.arrow_back_ios,
