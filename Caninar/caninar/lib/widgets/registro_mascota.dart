@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:aws_s3_upload/enum/acl.dart';
 import 'package:caninar/constants/access_keys.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/mascotas/model.dart';
@@ -47,7 +48,7 @@ class _RegistroMascotaState extends State<RegistroMascota> {
   String? dropdownValueTamano;
   Map<String, String> dropdownTamanoMap = {
     'Pequeño (1kg - 8Kg)': 'Pequeño',
-    'Mediano (-kg - -Kg)': 'Mediano',
+    'Mediano (9kg - 15Kg)': 'Mediano',
   };
 
   submit() async {
@@ -99,22 +100,46 @@ class _RegistroMascotaState extends State<RegistroMascota> {
   }
 
   tomarFoto() async {
-    XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-    if (photo != null) {
-      File photofile = File(photo.path);
+    final picker = ImagePicker();
 
-      setState(() {
-        imageMascota = photofile;
-      });
+    final source = await showDialog<ImageSource>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Seleccionar'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(ImageSource.gallery),
+              child: const Text('Galería'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(ImageSource.camera),
+              child: Text('Cámara'),
+            ),
+          ],
+        );
+      },
+    );
 
-      AwsS3.uploadFile(
-        accessKey: Keys.awsAccessKey,
-        secretKey: Keys.awsSecretKey,
-        file: File(imageMascota!.path),
-        bucket: "caninar-images",
-        region: "us-east-1",
-        destDir: "pets",
-      );
+    if (source != null) {
+      XFile? photo = await picker.pickImage(source: source);
+
+      if (photo != null) {
+        File photofile = File(photo.path);
+
+        setState(() {
+          imageMascota = photofile;
+        });
+
+        AwsS3.uploadFile(
+          accessKey: Keys.awsAccessKey,
+          secretKey: Keys.awsSecretKey,
+          file: File(imageMascota!.path),
+          bucket: "caninar-images",
+          region: "us-east-1",
+          destDir: "pets",
+        );
+      }
     }
   }
 
@@ -147,15 +172,22 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                   child: CircleAvatar(
                     radius: 80.0,
                     backgroundColor: Colors.grey[300],
-                    backgroundImage:
-                        imageMascota != null ? FileImage(imageMascota!) : null,
-                    child: imageMascota != null
-                        ? null
-                        : const Icon(
-                            Icons.camera_alt,
-                            size: 40.0,
-                            color: Colors.white,
-                          ),
+                    child: ClipOval(
+                      child: SizedBox(
+                        width: 160.0, // El doble del radio
+                        height: 160.0, // El doble del radio
+                        child: widget.mascota?.image != null
+                            ? Image.network(
+                                widget.mascota!.image!,
+                                fit: BoxFit.cover,
+                              )
+                            : const Icon(
+                                Icons.camera_alt,
+                                size: 40.0,
+                                color: Colors.white,
+                              ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -378,7 +410,7 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                 child: Text('Raza'),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 15),
                 child: TextFormField(
                   decoration: InputDecoration(
                     labelText: widget.mascota?.race,
@@ -413,33 +445,32 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                   controller: razaCtrl,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 10, bottom: 25),
-                child: Center(
-                  child: SizedBox(
-                    width: 300,
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll<Color>(
-                            PrincipalColors.blue),
-                      ),
-                      child: Text(
-                        widget.registro == true
-                            ? 'Crear Mascota'
-                            : 'Editar Mascota',
-                        style: const TextStyle(
-                          color: Colors.white,
+              if (widget.registro == true)
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 25),
+                  child: Center(
+                    child: SizedBox(
+                      width: 300,
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStatePropertyAll<Color>(
+                              PrincipalColors.blue),
                         ),
+                        child: Text(
+                          'Crear Mascota',
+                          style: const TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        onPressed: () async {
+                          if (user != null) {
+                            await submit();
+                          }
+                        },
                       ),
-                      onPressed: () async {
-                        if (user != null) {
-                          await submit();
-                        }
-                      },
                     ),
                   ),
                 ),
-              ),
             ],
           )),
     );
