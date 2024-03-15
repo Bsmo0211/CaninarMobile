@@ -1,6 +1,6 @@
 class Keys {
-  static const String awsAccessKey = "AKIAUWQGQ2W254XEVIEF";
-  static const String awsSecretKey = "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";
+  static const String awsAccessKey = "AKIAUWQGQ2W24UJYKZA4";
+  static const String awsSecretKey = "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";
   static const String mpPublicKey =
       "APP_USR-09cd9e88-019a-413f-a802-8c71f3a09748";
   static const String mpAccesTokenKey =
