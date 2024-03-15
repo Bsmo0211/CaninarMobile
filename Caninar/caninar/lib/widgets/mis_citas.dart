@@ -3,6 +3,7 @@ import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/citas/model_current.dart';
 import 'package:caninar/models/citas/model_history.dart';
 import 'package:caninar/models/citas/model_pending.dart';
+import 'package:caninar/models/citas/model_terminated.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/providers/cart_provider.dart';
 import 'package:caninar/providers/producto_provider.dart';
@@ -31,6 +32,7 @@ class _MisCitasState extends State<MisCitas> {
   PendingModel? pendingModel;
   HistoryModel? historyModel;
   CurrentModel? currentModel;
+  TerminatedModel? terminatedModel;
   bool isApiCallProcess = false;
 
   getCurrentUser() async {
@@ -62,6 +64,7 @@ class _MisCitasState extends State<MisCitas> {
     PendingModel? pendingModelTemp;
     HistoryModel? historyModelTemp;
     CurrentModel? currentModelTemp;
+    TerminatedModel? terminatedModelTemp;
 
     if (citasData.containsKey('pending')) {
       pendingModelTemp = PendingModel.fromJson(citasData['pending']);
@@ -74,11 +77,15 @@ class _MisCitasState extends State<MisCitas> {
     if (citasData.containsKey('current')) {
       currentModelTemp = CurrentModel.fromJson(citasData['current']);
     }
+    if (citasData.containsKey('terminated')) {
+      terminatedModelTemp = TerminatedModel.fromJson(citasData['terminated']);
+    }
 
     setState(() {
       pendingModel = pendingModelTemp;
       historyModel = historyModelTemp;
       currentModel = currentModelTemp;
+      terminatedModel = terminatedModelTemp;
     });
   }
 
@@ -111,6 +118,12 @@ class _MisCitasState extends State<MisCitas> {
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ),
+          Tab(
+            child: Text(
+              'Terminadas',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            ),
+          ),
         ],
       );
 
@@ -123,166 +136,216 @@ class _MisCitasState extends State<MisCitas> {
       EasyLoading.dismiss();
     }
     return DefaultTabController(
-        length: 3,
+        length: 4,
         child: Scaffold(
-          appBar: AppBar(
-            iconTheme: const IconThemeData(
-              color: Colors.white,
-            ),
-            backgroundColor: PrincipalColors.blue,
-            elevation: 0,
-            title: Image.asset(
-              'assets/images/logo.png',
-              width: 90,
-            ),
-            actions: [
-              Padding(
-                padding: user?.type == 2
-                    ? const EdgeInsets.only(right: 10)
-                    : const EdgeInsets.all(0),
-                child: GestureDetector(
-                  child: Image.asset(
-                    'assets/images/wpp.png',
-                    width: 30,
-                  ),
-                  onTap: () {
-                    API().launchWhatsApp('51919285667');
-                  },
-                ),
+            appBar: AppBar(
+              iconTheme: const IconThemeData(
+                color: Colors.white,
               ),
-              if (user?.type != 2)
+              backgroundColor: PrincipalColors.blue,
+              elevation: 0,
+              title: Image.asset(
+                'assets/images/logo.png',
+                width: 90,
+              ),
+              actions: [
                 Padding(
-                  padding: const EdgeInsets.only(
-                    right: 8,
+                  padding: user?.type == 2
+                      ? const EdgeInsets.only(right: 10)
+                      : const EdgeInsets.all(0),
+                  child: GestureDetector(
+                    child: Image.asset(
+                      'assets/images/wpp.png',
+                      width: 30,
+                    ),
+                    onTap: () {
+                      API().launchWhatsApp('51919285667');
+                    },
                   ),
-                  child: Badge.count(
-                    alignment: Alignment.bottomRight,
-                    count: productoProvider.productoList.length,
-                    backgroundColor: PrincipalColors.orange,
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.shopping_cart_outlined,
-                        size: 30,
+                ),
+                if (user?.type != 2)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      right: 8,
+                    ),
+                    child: Badge.count(
+                      alignment: Alignment.bottomRight,
+                      count: productoProvider.productoList.length,
+                      backgroundColor: PrincipalColors.orange,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.shopping_cart_outlined,
+                          size: 30,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CarritoCompras()),
+                          );
+                        },
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CarritoCompras()),
-                        );
-                      },
                     ),
                   ),
-                ),
-            ],
-            bottom: PreferredSize(
-              preferredSize: _tabBar.preferredSize,
-              child: Material(color: Colors.white, child: _tabBar),
+              ],
+              bottom: PreferredSize(
+                preferredSize: _tabBar.preferredSize,
+                child: Material(color: Colors.white, child: _tabBar),
+              ),
             ),
-          ),
-          drawer: CustomDrawer(),
-          body: TabBarView(
-            children: [
-              RefreshIndicator(
-                  child: ListView(children: [
-                    if (user?.type != 2) RedireccionAtras(nombre: 'Mis citas'),
-                    pendingModel != null
-                        ? Column(
-                            children: pendingModel!.dataCita.map((e) {
-                            return CardItemHome(
-                                terminadoCitas: false,
-                                imageCard: e.image,
-                                titulo: e.name!,
-                                redireccion: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => InformacionCitas(
-                                        titulo: e.name,
-                                        informacionDetalle: e.infoDetalladaCita,
-                                        proxima: true,
+            drawer: CustomDrawer(),
+            body: TabBarView(
+              children: [
+                RefreshIndicator(
+                    child: ListView(children: [
+                      if (user?.type != 2)
+                        RedireccionAtras(nombre: 'Mis citas'),
+                      pendingModel != null
+                          ? Column(
+                              children: pendingModel!.dataCita.map((e) {
+                              return CardItemHome(
+                                  terminadoCitas: false,
+                                  imageCard: e.image,
+                                  titulo: e.name!,
+                                  redireccion: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => InformacionCitas(
+                                          estado: 'pending',
+                                          titulo: e.name,
+                                          informacionDetalle:
+                                              e.infoDetalladaCita,
+                                          proxima: true,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                });
-                          }).toList())
-                        : const Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('No tiene citas pendientes en este momento ')
-                            ],
-                          ),
-                  ]),
-                  onRefresh: () async {
-                    await getCitas();
-                  }),
-              RefreshIndicator(
-                  child: ListView(children: [
-                    if (user?.type != 2) RedireccionAtras(nombre: 'Mis citas'),
-                    historyModel != null
-                        ? Column(
-                            children: historyModel!.dataCita.map((e) {
-                            return CardItemHome(
-                                terminadoCitas: false,
-                                imageCard: e.image,
-                                titulo: e.name!,
-                                redireccion: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => InformacionCitas(
-                                        titulo: e.name,
-                                        informacionDetalle: e.infoDetalladaCita,
-                                        proxima: false,
+                                    );
+                                  });
+                            }).toList())
+                          : const Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                    'No tiene citas pendientes en este momento ')
+                              ],
+                            ),
+                    ]),
+                    onRefresh: () async {
+                      await getCitas();
+                    }),
+                RefreshIndicator(
+                    child: ListView(children: [
+                      if (user?.type != 2)
+                        RedireccionAtras(nombre: 'Mis citas'),
+                      historyModel != null
+                          ? Column(
+                              children: historyModel!.dataCita.map((e) {
+                              return CardItemHome(
+                                  terminadoCitas: false,
+                                  imageCard: e.image,
+                                  titulo: e.name!,
+                                  redireccion: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => InformacionCitas(
+                                          estado: 'history',
+                                          titulo: e.name,
+                                          informacionDetalle:
+                                              e.infoDetalladaCita,
+                                          proxima: false,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                });
-                          }).toList())
-                        : const Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [Text('No tiene un historial de citas ')],
-                          ),
-                  ]),
-                  onRefresh: () async {
-                    await getCitas();
-                  }),
-              RefreshIndicator(
-                  child: ListView(children: [
-                    if (user?.type != 2) RedireccionAtras(nombre: 'Mis citas'),
-                    currentModel != null
-                        ? Column(
-                            children: currentModel!.dataCita.map((e) {
-                            return CardItemHome(
-                                terminadoCitas: false,
-                                imageCard: e.image,
-                                titulo: e.name!,
-                                redireccion: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => InformacionCitas(
-                                        titulo: e.name,
-                                        informacionDetalle: e.infoDetalladaCita,
-                                        proxima: false,
+                                    );
+                                  });
+                            }).toList())
+                          : const Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('No tiene un historial de citas ')
+                              ],
+                            ),
+                    ]),
+                    onRefresh: () async {
+                      await getCitas();
+                    }),
+                RefreshIndicator(
+                    child: ListView(children: [
+                      if (user?.type != 2)
+                        RedireccionAtras(nombre: 'Mis citas'),
+                      currentModel != null
+                          ? Column(
+                              children: currentModel!.dataCita.map((e) {
+                              return CardItemHome(
+                                  terminadoCitas: false,
+                                  imageCard: e.image,
+                                  titulo: e.name!,
+                                  redireccion: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => InformacionCitas(
+                                          estado: 'current',
+                                          titulo: e.name,
+                                          informacionDetalle:
+                                              e.infoDetalladaCita,
+                                          proxima: false,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                });
-                          }).toList())
-                        : const Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [Text('No tiene ninguna cita en curso')],
-                          ),
-                  ]),
-                  onRefresh: () async {
-                    await getCitas();
-                  }),
-            ],
-          ),
-        ));
+                                    );
+                                  });
+                            }).toList())
+                          : const Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('No tiene ninguna cita en curso')
+                              ],
+                            ),
+                    ]),
+                    onRefresh: () async {
+                      await getCitas();
+                    }),
+                RefreshIndicator(
+                    child: ListView(children: [
+                      if (user?.type != 2)
+                        RedireccionAtras(nombre: 'Mis citas'),
+                      terminatedModel != null
+                          ? Column(
+                              children: terminatedModel!.dataCita.map((e) {
+                              return CardItemHome(
+                                  terminadoCitas: false,
+                                  imageCard: e.image,
+                                  titulo: e.name!,
+                                  redireccion: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => InformacionCitas(
+                                          estado: 'terminated',
+                                          titulo: e.name,
+                                          informacionDetalle:
+                                              e.infoDetalladaCita,
+                                          proxima: false,
+                                        ),
+                                      ),
+                                    );
+                                  });
+                            }).toList())
+                          : const Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('No tiene ninguna cita en curso')
+                              ],
+                            ),
+                    ]),
+                    onRefresh: () async {
+                      await getCitas();
+                    }),
+              ],
+            )));
   }
 }

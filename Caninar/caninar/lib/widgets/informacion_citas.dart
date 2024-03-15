@@ -20,15 +20,17 @@ import 'package:intl/intl.dart';
 
 class InformacionCitas extends StatefulWidget {
   List<InformacionDetalladaCitaModel> informacionDetalle;
+  String? estado;
   String? titulo;
   bool proxima;
   bool? terminado;
-  InformacionCitas(
-      {super.key,
-      required this.informacionDetalle,
-      required this.titulo,
-      required this.proxima,
-      this.terminado});
+  InformacionCitas({
+    super.key,
+    required this.informacionDetalle,
+    required this.titulo,
+    required this.proxima,
+    required this.estado,
+  });
 
   @override
   State<InformacionCitas> createState() => _InformacionCitasState();
@@ -182,6 +184,7 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     InformacionDetalladaCitaCliente(
+                                                      estado: widget.estado!,
                                                       idSchedule:
                                                           entry.value.id!,
                                                       nombreRedireccion:
