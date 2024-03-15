@@ -178,6 +178,8 @@ class API {
     String jsonBody = jsonEncode(dataSend);
     await dio.put(link, data: jsonBody).then((value) async {
       if (value.statusCode == 200) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('user_data', jsonEncode(dataSend));
         Fluttertoast.showToast(
             msg: 'Información actualizada con éxito',
             backgroundColor: Colors.green,
