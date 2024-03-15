@@ -56,22 +56,44 @@ class _RegistroState extends State<Registro> {
   List<Map<String, dynamic>> direcciones = [];
 
   tomarFoto() async {
-    XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-    if (photo != null) {
-      File photofile = File(photo.path);
+    final source = await showDialog<ImageSource>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Seleccionar'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(ImageSource.gallery),
+              child: const Text('Galería'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(ImageSource.camera),
+              child: Text('Cámara'),
+            ),
+          ],
+        );
+      },
+    );
 
-      setState(() {
-        imagenPersona = photofile;
-      });
+    if (source != null) {
+      XFile? photo = await _picker.pickImage(source: source);
 
-      AwsS3.uploadFile(
-        accessKey: Keys.awsAccessKey,
-        secretKey: Keys.awsSecretKey,
-        file: File(imagenPersona!.path),
-        bucket: "caninar-images",
-        region: "us-east-1",
-        destDir: "users",
-      );
+      if (photo != null) {
+        File photofile = File(photo.path);
+
+        setState(() {
+          imagenPersona = photofile;
+        });
+
+        AwsS3.uploadFile(
+          accessKey: Keys.awsAccessKey,
+          secretKey: Keys.awsSecretKey,
+          file: File(imagenPersona!.path),
+          bucket: "caninar-images",
+          region: "us-east-1",
+          destDir: "users",
+        );
+      }
     }
   }
 
@@ -642,6 +664,8 @@ class _RegistroState extends State<Registro> {
                         "id_district": "1",
                         "default": "true",
                       });
+
+                      print(direcciones);
                     },
                   ),
                   if (direcciones.isNotEmpty)
