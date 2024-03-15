@@ -50,15 +50,18 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
         ),
       );
     }
+
     setState(() {
       distritos = temp;
+      dropdownValueDistrito = distritos.isNotEmpty ? distritos[4].value : null;
     });
+    await getMarcas(dropdownValueDistrito!.slug!);
   }
 
-  getMarcas() async {
+  getMarcas(String slug) async {
     if (dropdownValueDistrito != null) {
       List<MarcasModel> marcasTemp =
-          await API().getMarcasByDistrito(slugDsitrito!, widget.slugCategoria);
+          await API().getMarcasByDistrito(slug, widget.slugCategoria);
 
       setState(() {
         marcas = marcasTemp;
@@ -120,7 +123,7 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
                     isLoading = false;
                   });
 
-                  await getMarcas();
+                  await getMarcas(slugDsitrito!);
                 },
               ),
             ),
