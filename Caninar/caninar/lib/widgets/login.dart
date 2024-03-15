@@ -171,7 +171,7 @@ class _LoginState extends State<Login> {
                 ),
                 onPressed: () async {
                   if (validate()) {
-                    UserLoginModel? usuario = await Shared()
+                    await Shared()
                         .login(correoCtrl.text, contrasenaCtrl.text, context);
                   }
                 },
