@@ -50,8 +50,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 185,
-              width: 500,
+              height: 165,
+              width: 450,
               child: DrawerHeader(
                 decoration: BoxDecoration(
                   color: PrincipalColors.blue,
@@ -64,7 +64,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       width: 200,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 35),
+                      padding: const EdgeInsets.only(top: 15),
                       child: Text(
                         "${user?.firstName ?? ''} ${user?.lastName ?? ''}",
                         style: const TextStyle(
@@ -111,9 +111,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => MisMascotas(
-                              user: user!,
-                            ),
+                            builder: (context) => MisMascotas(),
                           ),
                         );
                       },
