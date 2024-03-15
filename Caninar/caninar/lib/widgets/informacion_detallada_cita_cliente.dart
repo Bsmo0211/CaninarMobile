@@ -15,6 +15,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 class InformacionDetalladaCitaCliente extends StatefulWidget {
+  String estado;
   String nombreRedireccion;
   MascotasModel mascota;
   String idSchedule;
@@ -22,7 +23,8 @@ class InformacionDetalladaCitaCliente extends StatefulWidget {
       {super.key,
       required this.nombreRedireccion,
       required this.mascota,
-      required this.idSchedule});
+      required this.idSchedule,
+      required this.estado});
 
   @override
   State<InformacionDetalladaCitaCliente> createState() =>
@@ -71,28 +73,31 @@ class _InformacionDetalladaCitaClienteState
       };
     }).toList();
 
-    for (var coordenada in coordenadasDouble) {
-      puntos.add(LatLng(coordenada['lat']!, coordenada['long']!));
-    }
-    print(puntos);
+    setState(() {
+      for (var coordenada in coordenadasDouble) {
+        puntos.add(LatLng(coordenada['lat']!, coordenada['long']!));
+      }
+    });
+    setState(() {});
   }
 
   @override
   void initState() {
+    getLocationPaseador();
     getCurrentUser();
     getLocation();
-    getLocationPaseador();
 
-    _timer = Timer.periodic(Duration(seconds: 15), (timer) {
-      getLocationPaseador();
-    });
+    if (widget.estado.contains('current')) {
+      _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
+        getLocationPaseador();
+      });
+    }
 
     super.initState();
   }
 
   @override
   void dispose() {
-    // Cancelar el temporizador en dispose
     _timer?.cancel();
     super.dispose();
   }
@@ -115,12 +120,13 @@ class _InformacionDetalladaCitaClienteState
                         zoom: 17,
                       ),
                       markers: {
-                        Marker(
-                            markerId: MarkerId('punto'),
-                            position: puntos.last,
-                            icon: BitmapDescriptor.defaultMarkerWithHue(
-                              BitmapDescriptor.hueCyan,
-                            ))
+                        if (puntos.isNotEmpty)
+                          Marker(
+                              markerId: const MarkerId('punto'),
+                              position: puntos.last,
+                              icon: BitmapDescriptor.defaultMarkerWithHue(
+                                BitmapDescriptor.hueCyan,
+                              ))
                       },
                       polylines: {
                         Polyline(
