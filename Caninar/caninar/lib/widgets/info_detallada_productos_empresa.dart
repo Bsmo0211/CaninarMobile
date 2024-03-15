@@ -233,7 +233,7 @@ class _InformacionDetalladaProductosState
                 titulo: producto.name!,
                 redireccion: () {
                   if (user != null) {
-                    if (producto.typePro == 3) {
+                    if (producto.typePro == 3 || producto.typePro == null) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
