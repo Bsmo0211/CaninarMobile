@@ -9,6 +9,7 @@ import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/image_network_propio.dart';
+import 'package:caninar/widgets/paseo_terminado.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -244,6 +245,12 @@ class _InformacionDetalladaCitaPaseadorState
                       _locationTimer?.cancel();
                       await API().updateFirstPointById(
                           arrayEnvio, widget.idSchedule, 'terminated');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PaseoTerminado(),
+                        ),
+                      );
                       setState(() {
                         paseoIniciado = false;
                       });
