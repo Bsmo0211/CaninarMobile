@@ -74,11 +74,13 @@ class _InformacionDetalladaCitaClienteState
     }).toList();
 
     setState(() {
+      puntos.clear();
       for (var coordenada in coordenadasDouble) {
         puntos.add(LatLng(coordenada['lat']!, coordenada['long']!));
       }
     });
-    setState(() {});
+
+    print(puntos);
   }
 
   @override
