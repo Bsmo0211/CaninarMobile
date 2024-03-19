@@ -114,7 +114,7 @@ class _RegistroMascotaState extends State<RegistroMascota> {
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(ImageSource.camera),
-              child: Text('Cámara'),
+              child: const Text('Cámara'),
             ),
           ],
         );
