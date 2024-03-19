@@ -182,6 +182,7 @@ class _FechaProductosState extends State<FechaProductos> {
       },
       "schedule": [
         {
+          "name_adress": '',
           "category_id": '',
           "status": '',
           "time": {
@@ -260,6 +261,7 @@ class _FechaProductosState extends State<FechaProductos> {
       for (DateTime date in dias) {
         String formattedDate = DateFormat('dd/MM/yyyy').format(date);
         Map<String, dynamic> scheduleItem = {
+          "name_adress": '$selectedAdress',
           "id_user": user?.id,
           "category_id": widget.idCategoria,
           "supplier_id": widget.marca.id,
