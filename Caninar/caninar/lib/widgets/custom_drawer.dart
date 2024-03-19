@@ -50,7 +50,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 165,
+              height: 187,
               width: 450,
               child: DrawerHeader(
                 decoration: BoxDecoration(
@@ -171,7 +171,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     ),
                   if (user?.type != 2)
                     ItemDrawer(
-                      titulo: 'Quiero ser un alidado',
+                      titulo: 'Quiero ser un aliado',
                       redireccion: () {
                         Navigator.push(
                           context,
