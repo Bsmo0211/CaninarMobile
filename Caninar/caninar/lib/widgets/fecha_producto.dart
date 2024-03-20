@@ -13,6 +13,7 @@ import 'package:caninar/providers/direccion_provider.dart';
 import 'package:caninar/providers/orden_provider.dart';
 import 'package:caninar/providers/producto_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
+import 'package:caninar/widgets/actualizar_direccion.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/calendario_custom.dart';
 import 'package:caninar/widgets/carrito.dart';
@@ -407,8 +408,7 @@ class _FechaProductosState extends State<FechaProductos> {
                               padding: const EdgeInsets.only(
                                 left: 5,
                               ),
-                              child: Text(
-                                  '${direccion.name!},${direccion.idDistrict}'),
+                              child: Text(direccion.name!),
                             )
                           ],
                         ),
@@ -427,40 +427,15 @@ class _FechaProductosState extends State<FechaProductos> {
                 Center(
                   child: GestureDetector(
                     onTap: () async {
-                      showDialog(
-                        context: context,
-                        builder: ((BuildContext context) {
-                          return Dialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Align(
-                                  alignment: Alignment.topRight,
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.cancel,
-                                      color: PrincipalColors.blue,
-                                    ),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(15, 0, 15, 10),
-                                  child: SeleccionDireccion(
-                                    updateDireccion: true,
-                                    agregarDireccion: updateUserWithNewAddress,
-                                  ),
-                                )
-                              ],
-                            ),
-                          );
-                        }),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ActualizarDireccion(
+                                  user: user!,
+                                  refresh: () {
+                                    setState(() {});
+                                  },
+                                )),
                       );
                     },
                     child: Text(

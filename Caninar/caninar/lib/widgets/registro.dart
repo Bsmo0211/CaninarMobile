@@ -17,9 +17,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:google_places_autocomplete_text_field/model/prediction.dart';
 import 'package:snippet_coder_utils/multi_images_utils.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:aws_s3_upload/aws_s3_upload.dart';
+import 'package:google_places_autocomplete_text_field/google_places_autocomplete_text_field.dart';
+import 'package:uuid/uuid.dart';
 
 class Registro extends StatefulWidget {
   Registro({Key? key}) : super(key: key);
@@ -47,11 +50,16 @@ class _RegistroState extends State<Registro> {
   TextEditingController nombresCtrl = TextEditingController();
   TextEditingController apellidosCtrl = TextEditingController();
   TextEditingController telefonoCtrl = TextEditingController();
+  TextEditingController direccionCtrl = TextEditingController();
+  List<dynamic> _placeList = [];
+  List<Map<String, dynamic>> selectedPlaces = [];
 
   TextEditingController identificacionCtrl = TextEditingController();
   RegExp expRegNum = RegExp(r'[0-9]');
   final ImagePicker _picker = ImagePicker();
   File? imagenPersona;
+  Uuid uuid = const Uuid();
+  String? _sessionToken;
 
   List<Map<String, dynamic>> direcciones = [];
 
@@ -68,7 +76,7 @@ class _RegistroState extends State<Registro> {
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(ImageSource.camera),
-              child: Text('Cámara'),
+              child: const Text('Cámara'),
             ),
           ],
         );
@@ -97,6 +105,12 @@ class _RegistroState extends State<Registro> {
     }
   }
 
+  void addToSelectedPlaces(String placeDescription) {
+    setState(() {
+      selectedPlaces.add({'name': placeDescription});
+    });
+  }
+
   submit() async {
     Dio dio = Dio();
 
@@ -117,7 +131,7 @@ class _RegistroState extends State<Registro> {
       "document_number": identificacionCtrl.text,
       "telephone": telefonoCtrl.text,
       "password": contrasena2Ctrl.text,
-      "addresses": direcciones,
+      "addresses": selectedPlaces,
       "profile_photo": imagen
     };
 
@@ -155,6 +169,42 @@ class _RegistroState extends State<Registro> {
           backgroundColor: Colors.red,
           textColor: Colors.black);
     });
+  }
+
+  void getSuggestion(String input) async {
+    Dio dio = Dio();
+    String kplacesApiKey = "AIzaSyCmDOgFduDJlMZhE7zFNV_0ATbxT170xjU";
+    String type = '(regions)';
+    String baseURL =
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    String request =
+        '$baseURL?input=$input&key=$kplacesApiKey&sessiontoken=$_sessionToken';
+    Response response = await dio.get(request);
+    if (response.statusCode == 200) {
+      print(response.data);
+      setState(() {
+        _placeList = response.data['predictions'];
+      });
+    } else {
+      throw Exception('Failed to load predictions');
+    }
+  }
+
+  _onChanged() {
+    if (_sessionToken == null) {
+      setState(() {
+        _sessionToken = uuid.v4();
+      });
+    }
+    getSuggestion(direccionCtrl.text);
+  }
+
+  @override
+  void initState() {
+    direccionCtrl.addListener(() {
+      _onChanged();
+    });
+    super.initState();
   }
 
   @override
@@ -637,9 +687,7 @@ class _RegistroState extends State<Registro> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(
-                      top: 10,
-                    ),
+                    padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: Text(
                       'Datos sobre direccion',
                       style: TextStyle(
@@ -649,32 +697,68 @@ class _RegistroState extends State<Registro> {
                       ),
                     ),
                   ),
-                  SeleccionDireccion(
-                    updateDireccion: false,
-                    agregarDireccion: (distrito, direccion, datosOpcionales) {
-                      setState(() {
-                        distritoDireccion = distrito;
-                        direccionSeleccionada = direccion;
-                        datosOpcionalesSeleccionados = datosOpcionales;
-                      });
+                  TextField(
+                    controller: direccionCtrl,
+                    autocorrect: false,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                    ),
+                    decoration: InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 1.5,
+                          color: PrincipalColors.blue,
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 1.5,
+                          color: PrincipalColors.blue,
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 5.0,
+                        horizontal: 15.0,
+                      ),
+                      labelStyle: const TextStyle(
+                        color: Colors.black,
+                      ),
+                      border: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 3,
+                        ),
+                      ),
+                      suffixIcon: const Icon(Icons.search),
+                    ),
+                  ),
+                  ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: _placeList.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(_placeList[index]["description"]),
+                        onTap: () {
+                          String selectedPlaceDescription =
+                              _placeList[index]["description"];
+                          addToSelectedPlaces(selectedPlaceDescription);
 
-                      direcciones.add({
-                        "name": direccion,
-                        "inside": datosOpcionales,
-                        "id_district": "1",
-                        "default": "true",
-                      });
-
-                      print(direcciones);
+                          setState(() {
+                            direccionCtrl.clear();
+                          });
+                        },
+                      );
                     },
                   ),
-                  if (direcciones.isNotEmpty)
+                  if (selectedPlaces.isNotEmpty)
                     Padding(
-                      padding: const EdgeInsets.only(
-                        top: 10,
-                      ),
+                      padding: const EdgeInsets.only(top: 10),
                       child: Text(
-                        'Direcciones agregadas',
+                        'Direcciones seleccionadas',
                         style: TextStyle(
                           color: Colors.grey.shade700,
                           fontWeight: FontWeight.bold,
@@ -684,13 +768,30 @@ class _RegistroState extends State<Registro> {
                     ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: direcciones.map((direccion) {
+                    children: selectedPlaces.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final direccion = entry.value;
+                      String direccionNombre = direccion['name'];
                       return Padding(
                         padding:
                             const EdgeInsets.only(top: 5, bottom: 5, left: 5),
-                        child: Text(
-                          '${direccion["name"]}, $distritoDireccion',
-                          style: const TextStyle(fontSize: 16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                direccionNombre,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.close),
+                              onPressed: () {
+                                setState(() {
+                                  selectedPlaces.removeAt(index);
+                                });
+                              },
+                            ),
+                          ],
                         ),
                       );
                     }).toList(),
