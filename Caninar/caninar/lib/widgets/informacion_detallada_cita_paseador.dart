@@ -14,6 +14,7 @@ import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class InformacionDetalladaCitaPaseador extends StatefulWidget {
   String nombreRedireccion;
@@ -56,14 +57,25 @@ class _InformacionDetalladaCitaPaseadorState
 
   Future<void> getLocation() async {
     try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      setState(() {
-        _initialCameraPosition = LatLng(position.latitude, position.longitude);
-        _isLocationLoaded = true;
-      });
+      var status = await Permission.location.status;
+      if (status.isDenied) {
+        await Permission.location.request();
+      }
+
+      status = await Permission.location.status;
+      if (status.isGranted) {
+        Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+        setState(() {
+          _initialCameraPosition =
+              LatLng(position.latitude, position.longitude);
+          _isLocationLoaded = true;
+        });
+      } else {
+        print('Permisos de ubicación denegados');
+      }
     } catch (error) {
-      print('Error getting location: $error');
+      print('Error al obtener la ubicación: $error');
     }
   }
 

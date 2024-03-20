@@ -29,7 +29,7 @@
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-    <string>Se utiliza para saber punto exacto de la persona yu marcar en el mapa</string>
+    <string>Se utiliza para saber punto exacto de la persona y marcar en el mapa</string>
 	<key>NSLocationAlwaysUsageDescription</key>
     <string>Usado para obtener informacion del paseador y poder hacer tracking</string>
 	<key>UISupportedInterfaceOrientations</key>
