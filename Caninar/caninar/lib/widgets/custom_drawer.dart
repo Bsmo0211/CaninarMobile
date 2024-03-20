@@ -50,7 +50,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 187,
               width: 450,
               child: DrawerHeader(
                 decoration: BoxDecoration(
