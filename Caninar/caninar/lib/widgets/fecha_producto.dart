@@ -402,25 +402,13 @@ class _FechaProductosState extends State<FechaProductos> {
                   Column(
                     children: user!.addresses.map((direccion) {
                       return RadioListTile<String>(
-                        title: Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 5,
-                              ),
-                              child: Text(direccion.name!),
-                            )
-                          ],
+                        title: Padding(
+                          padding: const EdgeInsets.only(left: 5, right: 5),
+                          child: Text(direccion.name!),
                         ),
                         value: direccion.name!,
                         groupValue: selectedAdress,
-                        onChanged: (String? value) {
-                          setState(() {
-                            selectedAdress = value;
-                            selectedDistritoName = direccion.idDistrict;
-                            selectedInside = direccion.inside;
-                          });
-                        },
+                        onChanged: (String? value) {},
                       );
                     }).toList(),
                   ),
@@ -469,18 +457,20 @@ class _FechaProductosState extends State<FechaProductos> {
                       title: Row(
                         children: [
                           ClipOval(
-                              child: ImageNetworkPropio(
-                            imagen: mascota.image!,
-                            width: 70,
-                            height: 70,
-                            fit: BoxFit.cover,
-                          )),
-                          Padding(
+                            child: ImageNetworkPropio(
+                              imagen: mascota.image!,
+                              width: 70,
+                              height: 70,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Expanded(
+                              child: Padding(
                             padding: const EdgeInsets.only(
                               left: 5,
                             ),
                             child: Text('${mascota.name}'),
-                          )
+                          ))
                         ],
                       ),
                       value: mascota.id!,
