@@ -63,7 +63,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       width: 200,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 15),
+                      padding: const EdgeInsets.only(top: 15, bottom: 5),
                       child: Text(
                         "${user?.firstName ?? ''} ${user?.lastName ?? ''}",
                         style: const TextStyle(
