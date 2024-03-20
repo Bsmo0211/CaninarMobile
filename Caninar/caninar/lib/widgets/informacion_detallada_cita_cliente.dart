@@ -12,7 +12,7 @@ import 'package:caninar/widgets/image_network_propio.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 
 class InformacionDetalladaCitaCliente extends StatefulWidget {
   String estado;
@@ -33,7 +33,6 @@ class InformacionDetalladaCitaCliente extends StatefulWidget {
 
 class _InformacionDetalladaCitaClienteState
     extends State<InformacionDetalladaCitaCliente> {
-  final Location _location = Location();
   LatLng _initialCameraPosition = const LatLng(0.0, 0.0);
   bool _isLocationLoaded = false;
   UserLoginModel? user;
@@ -51,10 +50,10 @@ class _InformacionDetalladaCitaClienteState
 
   Future<void> getLocation() async {
     try {
-      LocationData locationData = await _location.getLocation();
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
       setState(() {
-        _initialCameraPosition =
-            LatLng(locationData.latitude!, locationData.longitude!);
+        _initialCameraPosition = LatLng(position.latitude, position.longitude!);
         _isLocationLoaded = true;
       });
     } catch (error) {

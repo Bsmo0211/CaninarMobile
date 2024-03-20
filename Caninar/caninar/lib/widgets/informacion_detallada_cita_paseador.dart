@@ -12,8 +12,8 @@ import 'package:caninar/widgets/image_network_propio.dart';
 import 'package:caninar/widgets/paseo_terminado.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 
 class InformacionDetalladaCitaPaseador extends StatefulWidget {
   String nombreRedireccion;
@@ -34,7 +34,7 @@ class InformacionDetalladaCitaPaseador extends StatefulWidget {
 class _InformacionDetalladaCitaPaseadorState
     extends State<InformacionDetalladaCitaPaseador> {
   GoogleMapController? _mapController;
-  final Location _location = Location();
+
   LatLng _initialCameraPosition = const LatLng(0.0, 0.0);
   LatLng _cameraPositionInicio = const LatLng(0.0, 0.0);
   LatLng _cameraPosition = const LatLng(0.0, 0.0);
@@ -56,10 +56,10 @@ class _InformacionDetalladaCitaPaseadorState
 
   Future<void> getLocation() async {
     try {
-      LocationData locationData = await _location.getLocation();
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
       setState(() {
-        _initialCameraPosition =
-            LatLng(locationData.latitude!, locationData.longitude!);
+        _initialCameraPosition = LatLng(position.latitude, position.longitude);
         _isLocationLoaded = true;
       });
     } catch (error) {
@@ -69,16 +69,13 @@ class _InformacionDetalladaCitaPaseadorState
 
   Future<void> getLocationTimer() async {
     try {
-      LocationData locationData = await _location.getLocation();
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
       setState(() {
-        _cameraPosition =
-            LatLng(locationData.latitude!, locationData.longitude!);
-        ubicaciones.add(
-            {'lat': locationData.latitude!, 'long': locationData.longitude!});
-        arrayEnvio.add({
-          'lat': '${locationData.latitude!}',
-          'long': '${locationData.longitude!}'
-        });
+        _cameraPosition = LatLng(position.latitude, position.longitude);
+        ubicaciones.add({'lat': position.latitude, 'long': position.longitude});
+        arrayEnvio.add(
+            {'lat': '${position.latitude}', 'long': '${position.longitude}'});
         polilineaPoints.add(_cameraPosition);
       });
       await API().updatePointById(arrayEnvio, widget.idSchedule);
@@ -89,16 +86,19 @@ class _InformacionDetalladaCitaPaseadorState
 
   Future<void> getLocationRecogida() async {
     try {
-      LocationData locationData = await _location.getLocation();
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
       setState(() {
-        _cameraPositionInicio =
-            LatLng(locationData.latitude!, locationData.longitude!);
-        ubicaciones.add(
-            {'lat': locationData.latitude!, 'long': locationData.longitude!});
-        arrayEnvio.add({
-          'lat': '${locationData.latitude!}',
-          'long': '${locationData.longitude!}'
+        _cameraPositionInicio = LatLng(
+          position.latitude,
+          position.longitude,
+        );
+        ubicaciones.add({
+          'lat': position.latitude,
+          'long': position.longitude,
         });
+        arrayEnvio.add(
+            {'lat': '${position.latitude}', 'long': '${position.longitude}'});
       });
 
       await API()

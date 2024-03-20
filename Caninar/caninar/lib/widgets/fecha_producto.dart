@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:caninar/API/APi.dart';
-import 'package:caninar/client/mapa.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/coverage/model.dart';
 import 'package:caninar/models/marcas/model.dart';

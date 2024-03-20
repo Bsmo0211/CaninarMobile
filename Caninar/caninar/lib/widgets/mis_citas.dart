@@ -17,7 +17,6 @@ import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class MisCitas extends StatefulWidget {

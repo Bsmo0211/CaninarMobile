@@ -20,7 +20,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_localizations/syncfusion_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:location/location.dart';
 
 Widget _defaultHome = const Home();
 void main() async {
