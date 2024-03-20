@@ -11,6 +11,7 @@ import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/mis_mascotas.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:snippet_coder_utils/multi_images_utils.dart';
 import 'package:dio/dio.dart';
@@ -50,6 +51,7 @@ class _RegistroMascotaState extends State<RegistroMascota> {
     'Pequeño (1kg - 8Kg)': 'Pequeño',
     'Mediano (9kg - 15Kg)': 'Mediano',
   };
+  bool isLoading = false;
 
   submit() async {
     String recorteUrl = imageMascota!.path;
@@ -159,6 +161,11 @@ class _RegistroMascotaState extends State<RegistroMascota> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      EasyLoading.show(status: 'Cargando');
+    } else {
+      EasyLoading.dismiss();
+    }
     return Center(
       child: Form(
           key: formKey1,
@@ -172,22 +179,15 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                   child: CircleAvatar(
                     radius: 80.0,
                     backgroundColor: Colors.grey[300],
-                    child: ClipOval(
-                      child: SizedBox(
-                        width: 160.0, // El doble del radio
-                        height: 160.0, // El doble del radio
-                        child: widget.mascota?.image != null
-                            ? Image.network(
-                                widget.mascota!.image!,
-                                fit: BoxFit.cover,
-                              )
-                            : const Icon(
-                                Icons.camera_alt,
-                                size: 40.0,
-                                color: Colors.white,
-                              ),
-                      ),
-                    ),
+                    backgroundImage:
+                        imageMascota != null ? FileImage(imageMascota!) : null,
+                    child: imageMascota != null
+                        ? null
+                        : const Icon(
+                            Icons.camera_alt,
+                            size: 40.0,
+                            color: Colors.white,
+                          ),
                   ),
                 ),
               ),
@@ -456,15 +456,21 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                           backgroundColor: MaterialStatePropertyAll<Color>(
                               PrincipalColors.blue),
                         ),
-                        child: Text(
+                        child: const Text(
                           'Crear Mascota',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                           ),
                         ),
                         onPressed: () async {
                           if (user != null) {
+                            setState(() {
+                              isLoading = true;
+                            });
                             await submit();
+                            setState(() {
+                              isLoading = false;
+                            });
                           }
                         },
                       ),

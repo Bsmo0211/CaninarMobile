@@ -15,6 +15,7 @@ import 'package:caninar/widgets/selecion_direccion.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:google_places_autocomplete_text_field/model/prediction.dart';
@@ -60,6 +61,7 @@ class _RegistroState extends State<Registro> {
   File? imagenPersona;
   Uuid uuid = const Uuid();
   String? _sessionToken;
+  bool isLoading = false;
 
   List<Map<String, dynamic>> direcciones = [];
 
@@ -209,6 +211,11 @@ class _RegistroState extends State<Registro> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      EasyLoading.show(status: 'Cargando');
+    } else {
+      EasyLoading.dismiss();
+    }
     return Scaffold(
       appBar: const CustomAppBar(),
       drawer: CustomDrawer(),
@@ -827,7 +834,13 @@ class _RegistroState extends State<Registro> {
                     funcion: () async {
                       if (validate()) {
                         if (_acceptTerms) {
+                          setState(() {
+                            isLoading = true;
+                          });
                           await submit();
+                          setState(() {
+                            isLoading = false;
+                          });
                         } else {
                           Fluttertoast.showToast(
                             msg: 'Se debe aceptar los terminos y condiciones',
