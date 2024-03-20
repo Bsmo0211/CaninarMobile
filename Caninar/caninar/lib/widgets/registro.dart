@@ -122,7 +122,7 @@ class _RegistroState extends State<Registro> {
         'https://caninar-images.s3.amazonaws.com/users/$ultimoSegmento';
 
     Map<String, dynamic> createUser = {
-      "type": 1,
+      "type": 3,
       "first_name": nombresCtrl.text,
       "last_name": apellidosCtrl.text,
       "email": correoCtrl.text,
