@@ -172,6 +172,7 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     InformacionDetalladaCitaPaseador(
+                                                      estado: terminado!,
                                                       idSchedule:
                                                           entry.value.id!,
                                                       nombreRedireccion:
