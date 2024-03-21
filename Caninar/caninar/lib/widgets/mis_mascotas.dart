@@ -11,6 +11,7 @@ import 'package:caninar/widgets/login.dart';
 import 'package:caninar/widgets/page_registro_mascotas.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class MisMascotas extends StatefulWidget {
   MisMascotas({
@@ -24,9 +25,16 @@ class MisMascotas extends StatefulWidget {
 class _MisMascotasState extends State<MisMascotas> {
   List<MascotasModel> mascotas = [];
   UserLoginModel? user;
+  bool isApiCallProcess = false;
 
   void refreshMascotas() async {
+    setState(() {
+      isApiCallProcess = true;
+    });
     await getMascotas();
+    setState(() {
+      isApiCallProcess = false;
+    });
   }
 
   getCurrentUser() async {
@@ -59,6 +67,11 @@ class _MisMascotasState extends State<MisMascotas> {
 
   @override
   Widget build(BuildContext context) {
+    if (isApiCallProcess) {
+      EasyLoading.show(status: 'Cargando', dismissOnTap: true);
+    } else {
+      EasyLoading.dismiss();
+    }
     return user != null
         ? Scaffold(
             appBar: const CustomAppBar(),
@@ -99,24 +112,47 @@ class _MisMascotasState extends State<MisMascotas> {
                             children: [
                               Column(
                                 children: mascotas.map((mascota) {
-                                  return CardItemHome(
-                                    terminadoCitas: false,
-                                    imageCard: mascota.image,
-                                    titulo: mascota.name!,
-                                    redireccion: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              PageRegistroMascotas(
-                                            mascota: mascota,
-                                            refresh: refreshMascotas,
-                                            registro: false,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    colorTexto: Colors.black,
+                                  return Stack(
+                                    children: [
+                                      CardItemHome(
+                                        terminadoCitas: false,
+                                        imageCard: mascota.image,
+                                        titulo: mascota.name!,
+                                        redireccion: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PageRegistroMascotas(
+                                                mascota: mascota,
+                                                refresh: refreshMascotas,
+                                                registro: false,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        colorTexto: Colors.black,
+                                      ),
+                                      Positioned(
+                                          bottom: 30,
+                                          right: 20,
+                                          child: IconButton(
+                                              onPressed: () async {
+                                                setState(() {
+                                                  isApiCallProcess = true;
+                                                });
+                                                await API()
+                                                    .deletePets(mascota.id!);
+                                                setState(() {
+                                                  getMascotas();
+                                                  isApiCallProcess = false;
+                                                });
+                                              },
+                                              icon: const Icon(
+                                                Icons.delete,
+                                                color: Colors.red,
+                                              )))
+                                    ],
                                   );
                                 }).toList(),
                               ),
