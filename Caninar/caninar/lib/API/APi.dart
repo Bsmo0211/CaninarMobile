@@ -366,4 +366,27 @@ class API {
       );
     });
   }
+
+  Future<void> deletePets(String id) async {
+    await dio
+        .delete(
+      'https://5sl6737lhc.execute-api.us-east-1.amazonaws.com/dev/pet/$id',
+    )
+        .then((value) async {
+      if (value.statusCode == 200) {
+        Fluttertoast.showToast(
+          msg: 'Mascota eliminada con éxito',
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+        );
+      }
+    }).catchError((e) {
+      print(e);
+      Fluttertoast.showToast(
+        msg: 'Ha ocurrido un error',
+        backgroundColor: Colors.red,
+        textColor: Colors.black,
+      );
+    });
+  }
 }
