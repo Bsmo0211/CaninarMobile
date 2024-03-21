@@ -192,6 +192,21 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                                 ? Image.network(
                                     widget.mascota!.image!,
                                     fit: BoxFit.cover,
+                                    loadingBuilder: (BuildContext context,
+                                        Widget child,
+                                        ImageChunkEvent? loadingProgress) {
+                                      if (loadingProgress == null) {
+                                        return child;
+                                      } else {
+                                        return const Center(
+                                          child: SizedBox(
+                                            width: 20.0,
+                                            height: 20.0,
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        );
+                                      }
+                                    },
                                   )
                                 : const Icon(
                                     Icons.camera_alt,

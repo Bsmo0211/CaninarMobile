@@ -127,6 +127,23 @@ class _EditarPerfilState extends State<EditarPerfil> {
                                       ? Image.network(
                                           user!.profilePhoto!,
                                           fit: BoxFit.cover,
+                                          loadingBuilder: (BuildContext context,
+                                              Widget child,
+                                              ImageChunkEvent?
+                                                  loadingProgress) {
+                                            if (loadingProgress == null) {
+                                              return child;
+                                            } else {
+                                              return const Center(
+                                                child: SizedBox(
+                                                  width: 20.0,
+                                                  height: 20.0,
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                ),
+                                              );
+                                            }
+                                          },
                                         )
                                       : const Icon(
                                           Icons.camera_alt,
