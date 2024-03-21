@@ -15,7 +15,9 @@ import 'package:caninar/widgets/compra_rechazada.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -227,13 +229,15 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 35,
-                                    top: 5,
-                                    bottom: 15,
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 35,
+                                      top: 5,
+                                      bottom: 15,
+                                    ),
+                                    child: Text(nombreDireccion!),
                                   ),
-                                  child: Text(nombreDireccion!),
                                 )
                               ],
                             ),

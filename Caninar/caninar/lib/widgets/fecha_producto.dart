@@ -27,6 +27,7 @@ import 'package:caninar/widgets/registro_mascota.dart';
 import 'package:caninar/widgets/selecion_direccion.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
@@ -404,11 +405,15 @@ class _FechaProductosState extends State<FechaProductos> {
                       return RadioListTile<String>(
                         title: Padding(
                           padding: const EdgeInsets.only(left: 5, right: 5),
-                          child: Text(direccion.name!),
+                          child: Expanded(child: Text(direccion.name!)),
                         ),
                         value: direccion.name!,
                         groupValue: selectedAdress,
-                        onChanged: (String? value) {},
+                        onChanged: (String? value) {
+                          setState(() {
+                            selectedAdress = value;
+                          });
+                        },
                       );
                     }).toList(),
                   ),
@@ -457,20 +462,20 @@ class _FechaProductosState extends State<FechaProductos> {
                       title: Row(
                         children: [
                           ClipOval(
-                            child: ImageNetworkPropio(
-                              imagen: mascota.image!,
-                              width: 70,
-                              height: 70,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                              child: ImageNetworkPropio(
+                            imagen: mascota.image!,
+                            width: 70,
+                            height: 70,
+                            fit: BoxFit.cover,
+                          )),
                           Expanded(
-                              child: Padding(
-                            padding: const EdgeInsets.only(
-                              left: 5,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                left: 5,
+                              ),
+                              child: Text('${mascota.name}'),
                             ),
-                            child: Text('${mascota.name}'),
-                          ))
+                          )
                         ],
                       ),
                       value: mascota.id!,
