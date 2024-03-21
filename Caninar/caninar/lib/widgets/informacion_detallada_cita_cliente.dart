@@ -59,7 +59,6 @@ class _InformacionDetalladaCitaClienteState
         return Future.error('Location permissions are denied');
       }
     }
-
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
       setState(() {
