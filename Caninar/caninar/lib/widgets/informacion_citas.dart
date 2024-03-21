@@ -177,6 +177,8 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                                       nombreRedireccion:
                                                           mascota.name!,
                                                       mascota: mascota,
+                                                      direccion: entry
+                                                          .value.direccion!,
                                                     )),
                                           )
                                         : Navigator.push(
@@ -184,6 +186,8 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     InformacionDetalladaCitaCliente(
+                                                      direccion: entry
+                                                          .value.direccion!,
                                                       estado: widget.estado!,
                                                       idSchedule:
                                                           entry.value.id!,

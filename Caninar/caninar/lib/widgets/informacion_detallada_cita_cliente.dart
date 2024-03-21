@@ -10,22 +10,24 @@ import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/image_network_propio.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class InformacionDetalladaCitaCliente extends StatefulWidget {
   String estado;
   String nombreRedireccion;
   MascotasModel mascota;
   String idSchedule;
+  String direccion;
   InformacionDetalladaCitaCliente(
       {super.key,
       required this.nombreRedireccion,
       required this.mascota,
       required this.idSchedule,
-      required this.estado});
+      required this.estado,
+      required this.direccion});
 
   @override
   State<InformacionDetalladaCitaCliente> createState() =>
@@ -200,15 +202,15 @@ class _InformacionDetalladaCitaClienteState
                     ],
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Dirección de rocojo: '),
-                      SizedBox(width: 40),
-                      Text('direccion'),
+                      const Text('Dirección de rocojo: '),
+                      const SizedBox(width: 40),
+                      Expanded(child: Text(widget.direccion)),
                     ],
                   ),
                 ),

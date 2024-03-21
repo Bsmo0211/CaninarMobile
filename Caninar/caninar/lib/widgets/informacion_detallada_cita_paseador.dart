@@ -19,11 +19,13 @@ class InformacionDetalladaCitaPaseador extends StatefulWidget {
   String nombreRedireccion;
   MascotasModel mascota;
   String idSchedule;
+  String direccion;
   InformacionDetalladaCitaPaseador({
     super.key,
     required this.nombreRedireccion,
     required this.mascota,
     required this.idSchedule,
+    required this.direccion,
   });
 
   @override
@@ -123,7 +125,6 @@ class _InformacionDetalladaCitaPaseadorState
 
   @override
   Widget build(BuildContext context) {
-    print(widget.idSchedule);
     return Scaffold(
       appBar: const CustomAppBar(),
       drawer: CustomDrawer(),
@@ -217,15 +218,15 @@ class _InformacionDetalladaCitaPaseadorState
                     ],
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Dirección de rocojo: '),
-                      SizedBox(width: 40),
-                      Text('direccion'),
+                      const Text('Dirección de rocojo: '),
+                      const SizedBox(width: 40),
+                      Text(widget.direccion),
                     ],
                   ),
                 ),
@@ -253,7 +254,7 @@ class _InformacionDetalladaCitaPaseadorState
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => PaseoTerminado(),
+                          builder: (context) => const PaseoTerminado(),
                         ),
                       );
                       setState(() {

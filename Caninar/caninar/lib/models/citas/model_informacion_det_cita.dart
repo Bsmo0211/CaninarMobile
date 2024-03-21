@@ -8,6 +8,7 @@ class InformacionDetalladaCitaModel {
   String? idUser;
   String? id;
   TimeModel? time;
+  String? direccion;
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -20,6 +21,7 @@ class InformacionDetalladaCitaModel {
     if (time != null) {
       data['time'] = time!.toJson();
     }
+    data['name_adress'] = direccion;
     return data;
   }
 
@@ -33,5 +35,6 @@ class InformacionDetalladaCitaModel {
     if (json['time'] != null) {
       time = TimeModel.fromJson(json['time']);
     }
+    direccion = json['name_adress'];
   }
 }
