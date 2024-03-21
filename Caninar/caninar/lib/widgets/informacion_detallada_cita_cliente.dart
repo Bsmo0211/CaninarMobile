@@ -52,7 +52,7 @@ class _InformacionDetalladaCitaClienteState
 
   Future<void> getLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
-
+    log(permission.name);
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
@@ -63,6 +63,7 @@ class _InformacionDetalladaCitaClienteState
         // your App should show an explanatory UI now.
         return Future.error('Location permissions are denied');
       }
+    }
 
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
@@ -70,7 +71,6 @@ class _InformacionDetalladaCitaClienteState
         _initialCameraPosition = LatLng(position.latitude, position.longitude);
         _isLocationLoaded = true;
       });
-    }
 
     /* try {
       var status = await Permission.location.status;
