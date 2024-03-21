@@ -123,7 +123,7 @@ class _EditarPerfilState extends State<EditarPerfil> {
                                       imagePersona!,
                                       fit: BoxFit.cover,
                                     )
-                                  : (user?.profilePhoto != null
+                                  : user?.profilePhoto != null
                                       ? Image.network(
                                           user!.profilePhoto!,
                                           fit: BoxFit.cover,
@@ -132,7 +132,7 @@ class _EditarPerfilState extends State<EditarPerfil> {
                                           Icons.camera_alt,
                                           size: 40.0,
                                           color: Colors.white,
-                                        )),
+                                        ),
                             ),
                           ),
                         ),

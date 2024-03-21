@@ -179,15 +179,27 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                   child: CircleAvatar(
                     radius: 80.0,
                     backgroundColor: Colors.grey[300],
-                    backgroundImage:
-                        imageMascota != null ? FileImage(imageMascota!) : null,
-                    child: imageMascota != null
-                        ? null
-                        : const Icon(
-                            Icons.camera_alt,
-                            size: 40.0,
-                            color: Colors.white,
-                          ),
+                    child: ClipOval(
+                      child: SizedBox(
+                        width: 160.0, // El doble del radio
+                        height: 160.0, // El doble del radio
+                        child: imageMascota != null
+                            ? Image.file(
+                                imageMascota!,
+                                fit: BoxFit.cover,
+                              )
+                            : widget.mascota?.image != null
+                                ? Image.network(
+                                    widget.mascota!.image!,
+                                    fit: BoxFit.cover,
+                                  )
+                                : const Icon(
+                                    Icons.camera_alt,
+                                    size: 40.0,
+                                    color: Colors.white,
+                                  ),
+                      ),
+                    ),
                   ),
                 ),
               ),
