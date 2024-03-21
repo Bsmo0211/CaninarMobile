@@ -134,8 +134,8 @@ class _MisMascotasState extends State<MisMascotas> {
                                         colorTexto: Colors.black,
                                       ),
                                       Positioned(
-                                          bottom: 30,
-                                          right: 20,
+                                          bottom: 28,
+                                          right: 33,
                                           child: IconButton(
                                               onPressed: () async {
                                                 setState(() {
