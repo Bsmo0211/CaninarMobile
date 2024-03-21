@@ -57,14 +57,14 @@ class _InformacionDetalladaCitaClienteState
       if (permission == LocationPermission.denied) {
         return Future.error('Location permissions are denied');
       }
-
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      setState(() {
-        _initialCameraPosition = LatLng(position.latitude, position.longitude);
-        _isLocationLoaded = true;
-      });
     }
+
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      _initialCameraPosition = LatLng(position.latitude, position.longitude);
+      _isLocationLoaded = true;
+    });
   }
 
   Future<void> getLocationPaseador() async {
