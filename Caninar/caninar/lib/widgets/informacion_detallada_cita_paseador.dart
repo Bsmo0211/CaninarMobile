@@ -57,27 +57,20 @@ class _InformacionDetalladaCitaPaseadorState
   }
 
   Future<void> getLocation() async {
-    try {
-      var status = await Permission.location.status;
-      if (status.isDenied) {
-        log("denied");
-        await Permission.location.request();
+    LocationPermission permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
       }
-      status = await Permission.location.status;
-      if (status.isGranted) {
-        Position position = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high);
-        setState(() {
-          _initialCameraPosition =
-              LatLng(position.latitude, position.longitude);
-          _isLocationLoaded = true;
-        });
-      } else {
-        print('Permisos de ubicación denegados');
-      }
-    } catch (error) {
-      print('Error al obtener la ubicación: $error');
     }
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      setState(() {
+        _initialCameraPosition = LatLng(position.latitude, position.longitude);
+        _isLocationLoaded = true;
+      });
   }
 
   Future<void> getLocationTimer() async {
