@@ -87,8 +87,6 @@ class _InformacionDetalladaCitaClienteState
         puntos.add(LatLng(coordenada['lat']!, coordenada['long']!));
       }
     });
-
-    print(puntos);
   }
 
   @override
@@ -98,7 +96,7 @@ class _InformacionDetalladaCitaClienteState
     getLocation();
 
     if (widget.estado.contains('current')) {
-      _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
+      _timer = Timer.periodic(const Duration(seconds: 16), (timer) {
         getLocationPaseador();
       });
     }
@@ -122,7 +120,7 @@ class _InformacionDetalladaCitaClienteState
           children: [
             RedireccionAtras(nombre: widget.nombreRedireccion),
             SizedBox(
-              height: 200,
+              height: 400,
               child: _isLocationLoaded
                   ? GoogleMap(
                       initialCameraPosition: CameraPosition(

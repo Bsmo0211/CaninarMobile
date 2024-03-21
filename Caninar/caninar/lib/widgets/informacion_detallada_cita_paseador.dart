@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:ffi';
 
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
@@ -12,7 +13,9 @@ import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/image_network_propio.dart';
 import 'package:caninar/widgets/paseo_terminado.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -21,12 +24,14 @@ class InformacionDetalladaCitaPaseador extends StatefulWidget {
   MascotasModel mascota;
   String idSchedule;
   String direccion;
+  bool estado;
   InformacionDetalladaCitaPaseador({
     super.key,
     required this.nombreRedireccion,
     required this.mascota,
     required this.idSchedule,
     required this.direccion,
+    required this.estado,
   });
 
   @override
@@ -54,6 +59,25 @@ class _InformacionDetalladaCitaPaseadorState
 
     setState(() {
       user = userTemp;
+    });
+  }
+
+  Future<void> getLocationPaseador() async {
+    List<Map<String, dynamic>> coordenadas =
+        await API().getPointsSupplierById(widget.idSchedule);
+
+    List<Map<String, double>> coordenadasDouble = coordenadas.map((coordenada) {
+      return {
+        'lat': double.parse(coordenada['lat']),
+        'long': double.parse(coordenada['long']),
+      };
+    }).toList();
+
+    setState(() {
+      polilineaPoints.clear();
+      for (var coordenada in coordenadasDouble) {
+        polilineaPoints.add(LatLng(coordenada['lat']!, coordenada['long']!));
+      }
     });
   }
 
@@ -120,6 +144,9 @@ class _InformacionDetalladaCitaPaseadorState
   void initState() {
     getCurrentUser();
     getLocation();
+    if (widget.estado == true) {
+      getLocationPaseador();
+    }
 
     super.initState();
   }
@@ -129,48 +156,53 @@ class _InformacionDetalladaCitaPaseadorState
     return Scaffold(
       appBar: const CustomAppBar(),
       drawer: CustomDrawer(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            RedireccionAtras(
-              nombre: 'Paseo de ${widget.nombreRedireccion}',
-            ),
-            SizedBox(
-              height: 200,
-              child: _isLocationLoaded
-                  ? GoogleMap(
-                      initialCameraPosition: CameraPosition(
-                        target: _initialCameraPosition,
-                        zoom: 17,
-                      ),
-                      markers: {
+      body: Column(
+        children: [
+          RedireccionAtras(
+            nombre: 'Paseo de ${widget.nombreRedireccion}',
+          ),
+          SizedBox(
+            height: 370,
+            child: _isLocationLoaded
+                ? GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: _initialCameraPosition,
+                      zoom: 17,
+                    ),
+                    markers: {
+                      Marker(
+                          markerId: const MarkerId('Punto incial'),
+                          position: _cameraPositionInicio,
+                          icon: BitmapDescriptor.defaultMarkerWithHue(
+                            BitmapDescriptor.hueCyan,
+                          )),
+                      if (polilineaPoints.isNotEmpty)
                         Marker(
                             markerId: const MarkerId('Punto incial'),
-                            position: _cameraPositionInicio,
+                            position: polilineaPoints.last,
                             icon: BitmapDescriptor.defaultMarkerWithHue(
                               BitmapDescriptor.hueCyan,
                             ))
-                      },
-                      polylines: {
-                        Polyline(
-                          polylineId: const PolylineId('ruta'),
-                          color: PrincipalColors.orange, // Color de la línea
-                          points: polilineaPoints,
-                        ),
-                      },
-                      mapType: MapType.normal,
-                      onMapCreated: (GoogleMapController controller) {
-                        _mapController = controller;
-                      },
-                      myLocationEnabled: true,
-                    )
-                  : const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+                    },
+                    polylines: {
+                      Polyline(
+                        polylineId: const PolylineId('ruta'),
+                        color: PrincipalColors.orange, // Color de la línea
+                        points: polilineaPoints,
+                      ),
+                    },
+                    mapType: MapType.normal,
+                    onMapCreated: (GoogleMapController controller) {
+                      _mapController = controller;
+                    },
+                    myLocationEnabled: true,
+                  )
+                : const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+          ),
+          Expanded(
+            child: ListView(
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 20),
@@ -220,54 +252,55 @@ class _InformacionDetalladaCitaPaseadorState
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 10),
+                  padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text('Dirección de rocojo: '),
                       const SizedBox(width: 40),
-                      Text(widget.direccion),
+                      Expanded(child: Text(widget.direccion)),
                     ],
                   ),
                 ),
+                if (user?.type == 2 && widget.estado == false)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: BotonCustom(
+                      funcion: () async {
+                        if (!paseoIniciado) {
+                          await getLocationRecogida();
+                          _locationTimer = Timer.periodic(
+                              const Duration(seconds: 15), (timer) async {
+                            await getLocationTimer();
+                          });
+
+                          setState(() {
+                            paseoIniciado = true;
+                          });
+                        } else {
+                          _locationTimer?.cancel();
+                          await API().updateFirstPointById(
+                              arrayEnvio, widget.idSchedule, 'terminated');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const PaseoTerminado(),
+                            ),
+                          );
+                          setState(() {
+                            paseoIniciado = false;
+                          });
+                        }
+                      },
+                      texto:
+                          paseoIniciado ? 'Finalizar Paseo' : 'Iniciar Paseo',
+                    ),
+                  ),
               ],
             ),
-            if (user?.type == 2)
-              Padding(
-                padding: const EdgeInsets.only(top: 30),
-                child: BotonCustom(
-                  funcion: () async {
-                    if (!paseoIniciado) {
-                      await getLocationRecogida();
-                      _locationTimer = Timer.periodic(
-                          const Duration(seconds: 30), (timer) async {
-                        await getLocationTimer();
-                      });
-
-                      setState(() {
-                        paseoIniciado = true;
-                      });
-                    } else {
-                      _locationTimer?.cancel();
-                      await API().updateFirstPointById(
-                          arrayEnvio, widget.idSchedule, 'terminated');
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PaseoTerminado(),
-                        ),
-                      );
-                      setState(() {
-                        paseoIniciado = false;
-                      });
-                    }
-                  },
-                  texto: paseoIniciado ? 'Finalizar Paseo' : 'Iniciar Paseo',
-                ),
-              ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
