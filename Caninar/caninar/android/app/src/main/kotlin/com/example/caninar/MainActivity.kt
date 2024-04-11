@@ -1,4 +1,4 @@
-package com.example.caninar
+package com.caninar.app
 
 import io.flutter.embedding.android.FlutterActivity
 
