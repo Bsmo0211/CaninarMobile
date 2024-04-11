@@ -61,7 +61,6 @@ class _ActualizarDireccionState extends State<ActualizarDireccion> {
         '$baseURL?input=$input&key=$kplacesApiKey&sessiontoken=$_sessionToken';
     Response response = await dio.get(request);
     if (response.statusCode == 200) {
-      print(response.data);
       setState(() {
         _placeList = response.data['predictions'];
       });

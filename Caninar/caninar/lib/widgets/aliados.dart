@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
+import 'package:caninar/constants/url_api.dart';
 import 'package:caninar/models/distritos/model.dart';
 import 'package:caninar/pages/home.dart';
 import 'package:caninar/widgets/boton_custom.dart';
@@ -9,6 +10,7 @@ import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:dio/dio.dart';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -47,7 +49,7 @@ class _AlidadosState extends State<Alidados> {
 
     await dio
         .post(
-      'https://gc1hfo9hl0.execute-api.us-east-1.amazonaws.com/dev/auth/invitation',
+      '${UrlApi.auth}/auth/invitation',
       data: createAliado,
     )
         .then((value) async {

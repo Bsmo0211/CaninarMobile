@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:caninar/constants/url_api.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/pages/home.dart';
 import 'package:caninar/widgets/home_adriestrador.dart';
@@ -37,7 +38,7 @@ class Shared {
 
     await dio
         .post(
-      'https://gc1hfo9hl0.execute-api.us-east-1.amazonaws.com/dev/auth/login',
+      '${UrlApi.auth}/auth/login',
       data: jsonBody,
     )
         .then((value) async {

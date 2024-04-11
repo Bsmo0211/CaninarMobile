@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:caninar/constants/url_api.dart';
 import 'package:caninar/models/carrusel/model.dart';
 import 'package:caninar/models/categorias/model.dart';
 import 'package:caninar/models/certificados/model.dart';
@@ -11,6 +12,7 @@ import 'package:caninar/models/marcas/model.dart';
 import 'package:caninar/models/mascotas/model.dart';
 import 'package:caninar/models/productos/model.dart';
 import 'package:caninar/models/user/model.dart';
+import 'package:caninar/services/dev.dart';
 import 'package:caninar/widgets/finalizar_compra.dart';
 import 'package:caninar/widgets/login.dart';
 import 'package:dio/dio.dart';
@@ -39,8 +41,8 @@ class API {
   }
 
   Future<List<CategoriasModel>> getCategorias() async {
-    String link =
-        'https://2nfsboi1gi.execute-api.us-east-1.amazonaws.com/dev/categories/featured?featured=1';
+    String link = '${UrlApi.categories}/categories/featured?featured=1';
+
     Response response = await dio.get(link);
 
     List<CategoriasModel> categorias = [];
@@ -53,8 +55,7 @@ class API {
   }
 
   Future<List<CarruselModel>> getImageCarrusel() async {
-    String link =
-        'https://4efh6anwka.execute-api.us-east-1.amazonaws.com/dev/config/banners/{id}';
+    String link = '${UrlApi.config}/config/banners/1';
     Response response = await dio.get(link);
 
     List<CarruselModel> imagenes = [];
@@ -67,8 +68,7 @@ class API {
   }
 
   Future<List<DistritosModel>> getDistritos() async {
-    String link =
-        'https://phjesjw9wa.execute-api.us-east-1.amazonaws.com/dev/district/list';
+    String link = '${UrlApi.district}/district/list';
     Response response = await dio.get(link);
 
     List<DistritosModel> distritos = [];
@@ -83,7 +83,7 @@ class API {
   Future<List<MarcasModel>> getMarcasByDistrito(
       String district, String categoria) async {
     String link =
-        'https://w7lje56t6h.execute-api.us-east-1.amazonaws.com/dev/suppliers/district/$district/category/$categoria';
+        '${UrlApi.suppliers}/suppliers/district/$district/category/$categoria';
     // https://ozstkosm6b.execute-api.us-east-1.amazonaws.com/dev/products/district/{district_slug}/supplier/{supplier-slug}/category/{category_slug}
     Response response = await dio.get(link);
 
@@ -112,7 +112,7 @@ class API {
   Future<List<ProductoModel>> getProductosbymarca(
       String district, String categoria, String marca) async {
     String link =
-        'https://ozstkosm6b.execute-api.us-east-1.amazonaws.com/dev/products/district/$district/supplier/$marca/category/$categoria';
+        '${UrlApi.products}/products/district/$district/supplier/$marca/category/$categoria';
     Response response = await dio.get(link);
 
     List<ProductoModel> productos = [];
@@ -127,8 +127,7 @@ class API {
   }
 
   Future<List<MascotasModel>> getMascotasByUser(String id) async {
-    String link =
-        'https://5sl6737lhc.execute-api.us-east-1.amazonaws.com/dev/pet/list/$id';
+    String link = '${UrlApi.pets}/pet/list/$id';
     Response response = await dio.get(link);
 
     List<MascotasModel> mascotas = [];
@@ -149,7 +148,7 @@ class API {
 
     await dio
         .post(
-      'https://gc1hfo9hl0.execute-api.us-east-1.amazonaws.com/dev/auth/password_recovery',
+      '${UrlApi.auth}/auth/password_recovery',
       data: jsonBody,
     )
         .then((value) async {
@@ -172,8 +171,7 @@ class API {
   }
 
   updateUser(Map<String, dynamic> dataSend, String id) async {
-    String link =
-        'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users/$id';
+    String link = '${UrlApi.users}/users/$id';
 
     String jsonBody = jsonEncode(dataSend);
     await dio.put(link, data: jsonBody).then((value) async {
@@ -200,7 +198,7 @@ class API {
 
     await dio
         .post(
-      'https://xcgb8jo8r3.execute-api.us-east-1.amazonaws.com/dev/cart',
+      '${UrlApi.cart}/dev/cart',
       data: jsonBody,
     )
         .then((value) async {
@@ -224,7 +222,7 @@ class API {
 
     await dio
         .post(
-      'https://0v7g8z5804.execute-api.us-east-1.amazonaws.com/dev/orders',
+      '${UrlApi.orders}/dev/orders',
       data: jsonBody,
     )
         .then((value) async {
@@ -245,45 +243,42 @@ class API {
 
   Future<void> updateFirstPointById(
       List<Map<String, dynamic>> datosOrden, String id, String status) async {
-    await dio.put(
-      'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users/tracking?schedule_id=$id',
-      data: {"coordinates": datosOrden, 'sh_status': status},
-    ).then((value) async {
-      if (value.statusCode == 200) {
-        print(value.data);
-      }
-    }).catchError((e) {
-      print(e);
-      Fluttertoast.showToast(
-        msg: 'Ha ocurrido un error',
-        backgroundColor: Colors.red,
-        textColor: Colors.black,
-      );
-    });
+    await dio
+        .put(
+          '${UrlApi.users}/users/tracking?schedule_id=$id',
+          data: {"coordinates": datosOrden, 'sh_status': status},
+        )
+        .then((value) async {})
+        .catchError((e) {
+          print(e);
+          Fluttertoast.showToast(
+            msg: 'Ha ocurrido un error',
+            backgroundColor: Colors.red,
+            textColor: Colors.black,
+          );
+        });
   }
 
   Future<void> updatePointById(
       List<Map<String, dynamic>> datosOrden, String id) async {
-    await dio.put(
-      'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users/tracking?schedule_id=$id',
-      data: {"coordinates": datosOrden},
-    ).then((value) async {
-      if (value.statusCode == 200) {
-        print(value.data);
-      }
-    }).catchError((e) {
-      print(e);
-      Fluttertoast.showToast(
-        msg: 'Ha ocurrido un error',
-        backgroundColor: Colors.red,
-        textColor: Colors.black,
-      );
-    });
+    await dio
+        .put(
+          '${UrlApi.users}/users/tracking?schedule_id=$id',
+          data: {"coordinates": datosOrden},
+        )
+        .then((value) async {})
+        .catchError((e) {
+          print(e);
+          Fluttertoast.showToast(
+            msg: 'Ha ocurrido un error',
+            backgroundColor: Colors.red,
+            textColor: Colors.black,
+          );
+        });
   }
 
   Future<List<Map<String, dynamic>>> getPointsSupplierById(String id) async {
-    String link =
-        'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users/tracking?schedule_id=$id';
+    String link = '${UrlApi.users}/users/tracking?schedule_id=$id';
 
     Response response = await dio.get(link);
 
@@ -299,8 +294,7 @@ class API {
   }
 
   Future<Map<String, dynamic>> getCitas(String? id, int? type) async {
-    String link =
-        'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users/datings/$id?role=$type';
+    String link = '${UrlApi.users}/users/datings/$id?role=$type';
 
     Response response = await dio.get(link);
 
@@ -312,8 +306,7 @@ class API {
   }
 
   Future<MarcasModel> getSupplierById(String id) async {
-    final response = await dio.get(
-        'https://w7lje56t6h.execute-api.us-east-1.amazonaws.com/dev/suppliers/$id');
+    final response = await dio.get('${UrlApi.suppliers}/suppliers/$id');
 
     if (response.statusCode == 200) {
       return MarcasModel.fromJson(response.data);
@@ -323,8 +316,7 @@ class API {
   }
 
   Future<MascotasModel> getPetById(String id) async {
-    final response = await dio.get(
-        'https://5sl6737lhc.execute-api.us-east-1.amazonaws.com/dev/pet/$id');
+    final response = await dio.get('${UrlApi.pets}/pet/$id');
 
     if (response.statusCode == 200) {
       return MascotasModel.fromJson(response.data);
@@ -333,30 +325,24 @@ class API {
     }
   }
 
-  Future<String?> getOrdenById(String id) async {
-    String? estado;
-    final response = await dio.get(
-        'https://0v7g8z5804.execute-api.us-east-1.amazonaws.com/dev/orders/$id');
+  Future<Map<String, dynamic>> getOrdenById(String id) async {
+    Map<String, dynamic> estado;
+    final response = await dio.get('${UrlApi.orders}/orders/$id');
 
     if (response.statusCode == 200) {
-      estado = response.data['payment_status'];
+      estado = response.data;
       return estado;
     } else {
       throw Exception('error');
     }
   }
 
-  Future<void> updateOrden(
-      List<Map<String, dynamic>> datosActualizacionOrden, String id) async {
+  Future<void> updatePaymentStatusOrden(String id) async {
     await dio.put(
-      'https://0v7g8z5804.execute-api.us-east-1.amazonaws.com/dev/orders/$id',
-      data: {
-        'schedule': datosActualizacionOrden,
-      },
+      '${UrlApi.orders}/orders/$id',
+      data: {"payment_status": "approved"},
     ).then((value) async {
-      if (value.statusCode == 200) {
-        print(value.data);
-      }
+      if (value.statusCode == 200) {}
     }).catchError((e) {
       print(e);
       Fluttertoast.showToast(
@@ -370,7 +356,7 @@ class API {
   Future<void> deletePets(String id) async {
     await dio
         .delete(
-      'https://5sl6737lhc.execute-api.us-east-1.amazonaws.com/dev/pet/$id',
+      '${UrlApi.pets}/dev/pet/$id',
     )
         .then((value) async {
       if (value.statusCode == 200) {

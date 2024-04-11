@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/access_keys.dart';
 import 'package:caninar/constants/principals_colors.dart';
+import 'package:caninar/constants/url_api.dart';
 import 'package:caninar/models/distritos/model.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
@@ -141,7 +142,7 @@ class _RegistroState extends State<Registro> {
 
     await dio
         .post(
-      'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users',
+      '${UrlApi.users}/users',
       data: jsonBody,
     )
         .then((value) async {
@@ -151,8 +152,7 @@ class _RegistroState extends State<Registro> {
           backgroundColor: Colors.green,
         );
 
-        String link =
-            'https://v3x0nryj7b.execute-api.us-east-1.amazonaws.com/dev/users/verify/{email}';
+        String link = '${UrlApi.users}/users/verify/{email}';
         Response response = await dio.get(link);
 
         if (response.statusCode == 200) {

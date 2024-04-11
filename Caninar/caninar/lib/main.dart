@@ -4,7 +4,9 @@ import 'package:caninar/models/user/model.dart';
 import 'package:caninar/pages/page_categoria_seleccionada.dart';
 import 'package:caninar/providers/calendario_provider.dart';
 import 'package:caninar/providers/cart_provider.dart';
+import 'package:caninar/providers/datos_cobro_provider.dart';
 import 'package:caninar/providers/direccion_provider.dart';
+import 'package:caninar/providers/id_orden_provider.dart';
 import 'package:caninar/providers/index_provider.dart';
 import 'package:caninar/providers/orden_provider.dart';
 import 'package:caninar/providers/producto_provider.dart';
@@ -12,6 +14,8 @@ import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/about_us.dart';
 
 import 'package:caninar/pages/home.dart';
+import 'package:caninar/widgets/compra_finalizada.dart';
+import 'package:caninar/widgets/compra_rechazada.dart';
 import 'package:caninar/widgets/finalizar_compra.dart';
 import 'package:caninar/widgets/home_adriestrador.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +29,6 @@ Widget _defaultHome = const Home();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  //await Location().requestPermission();
   UserLoginModel? user = await Shared().currentUser();
 
   if (user != null) {
@@ -43,6 +46,29 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
+
+  final router = GoRouter(
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (_, __) => _defaultHome,
+        routes: [
+          GoRoute(
+            path: 'payment/success',
+            builder: (context, state) => const CompraFinalizada(),
+          ),
+          GoRoute(
+            path: 'payment/error',
+            builder: (context, state) => const CompraRechazada(),
+          ),
+          GoRoute(
+            path: 'payment/error',
+            builder: (context, state) => const CompraRechazada(),
+          ),
+        ],
+      ),
+    ],
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -66,8 +92,15 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => (IndexNavegacion()),
         ),
+        ChangeNotifierProvider(
+          create: (context) => (IdOrdenProvider()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => (CobroProvider()),
+        ),
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
+        routerConfig: router,
         builder: EasyLoading.init(),
         localizationsDelegates: const [
           SfGlobalLocalizations.delegate,
@@ -92,7 +125,6 @@ class MyApp extends StatelessWidget {
         ),
         debugShowCheckedModeBanner: false,
         locale: const Locale('es'),
-        home: _defaultHome,
       ),
     );
   }

@@ -234,16 +234,16 @@ class _InformacionDetalladaProductosState
                 redireccion: () {
                   if (user != null) {
                     if (producto.typePro == 3 || producto.typePro == null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => InterfazMarker(
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return InterfazMarker(
                             marca: widget.marca,
                             producto: producto,
                             idCategoria: widget.categoriaId,
                             idDistrito: widget.distrito.id!,
-                          ),
-                        ),
+                          );
+                        },
                       );
                     } else {
                       Navigator.push(

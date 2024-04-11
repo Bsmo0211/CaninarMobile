@@ -1,4 +1,5 @@
 import 'package:caninar/constants/access_keys.dart';
+import 'package:caninar/constants/url_api.dart';
 import 'package:caninar/widgets/finalizar_compra.dart';
 import 'package:flutter/material.dart';
 import 'package:mercadopago_sdk/mercadopago_sdk.dart';
@@ -9,38 +10,63 @@ class MercadoPago {
   MP mpAcces = MP.fromAccessToken(Keys.mpAccesTokenKey);
   static Dio dio = Dio();
 
-  Future<Map<String, dynamic>> createPreference(BuildContext context) async {
-    Map<String, dynamic> preference = {
-      "items": [
-        {
-          "title": "Caninar",
-          "description": "Venta de productos en Caninar",
-          "quantity": 1,
-          "unit_price": 200,
-          "currency_id": "PEN",
-        }
-      ],
-      "back_urls": {
-        "success": "https://dev.caninar.com/success",
-        "failure": '',
-        "pending": "caninarApp://pending"
-      },
-      "auto_return": "approved",
-    };
-    var result = await mp.createPreference(preference);
+  Future<String?> createPreference(
+    BuildContext context,
+    String supplierId,
+    String email,
+    String nombreEmpresa,
+    String descripcion,
+    String idItem,
+    int cantidad,
+    double precio,
+  ) async {
+    Dio dio = Dio();
+    String? id;
 
-    return result;
-  }
+    try {
+      Response response = await dio.post(
+        '${UrlApi.mercadoPago}/mercadopago/create_preference',
+        data: {
+          "supplier_id": supplierId,
+          "payer_email": email,
+          "items": [
+            {
+              "id": idItem,
+              "title": nombreEmpresa,
+              "currency_id": "PEN",
+              "picture_url":
+                  "https://www.mercadopago.com/org-img/MP3/home/logomp3.gif",
+              "description": descripcion,
+              "category_id": "art",
+              "quantity": cantidad,
+              "unit_price": precio
+            }
+          ],
+        },
+      );
 
-  Future<String> ejecutarMercadoPago(BuildContext context) async {
-    String id;
-
-    var value = await createPreference(context);
-
-    print(value);
-
-    id = value['response']['id'];
+      if (response.statusCode == 200) {
+        id = response.data['id'];
+      }
+    } catch (e) {
+      print(e);
+    }
 
     return id;
+  }
+
+  Future<String?> ejecutarMercadoPago(
+      BuildContext context,
+      String supplierId,
+      String email,
+      String nombreEmpresa,
+      String descripcion,
+      String idItem,
+      int cantidad,
+      double precio) async {
+    String? value = await createPreference(context, supplierId, email,
+        nombreEmpresa, descripcion, idItem, cantidad, precio);
+
+    return value;
   }
 }

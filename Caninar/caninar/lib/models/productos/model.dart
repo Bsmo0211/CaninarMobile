@@ -1,4 +1,9 @@
 class ProductoModel {
+  //type pro usado para definir que tipo de producto se esta manejando
+  // type 1 adiestramiento y paseo (singular)
+  // type 2 adiestramientos y paseos (plurales)
+  // type 3 productod que no requieren de fecha
+
   String? slug;
   int? discountPercent;
   int? stock;

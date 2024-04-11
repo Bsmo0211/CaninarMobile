@@ -13,6 +13,7 @@ import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/login.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -94,7 +95,6 @@ class _EditarPerfilState extends State<EditarPerfil> {
 
   @override
   Widget build(BuildContext context) {
-    print(user?.profilePhoto);
     return user != null
         ? Scaffold(
             appBar: const CustomAppBar(),
@@ -388,8 +388,11 @@ class _EditarPerfilState extends State<EditarPerfil> {
                               updatedUser.profilePhoto != user?.profilePhoto) {
                             updateUser(updatedUser);
                           } else {
-                            print(
-                                "No se han realizado cambios en la información del usuario.");
+                            Fluttertoast.showToast(
+                              msg:
+                                  'No se han realizado cambios en la información del usuario.',
+                              backgroundColor: Colors.red,
+                            );
                           }
                         },
                         texto: 'Editar Perfil',

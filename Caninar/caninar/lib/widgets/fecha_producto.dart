@@ -198,6 +198,7 @@ class _FechaProductosState extends State<FechaProductos> {
       ],
       "items": [
         {
+          "description": widget.producto.description,
           "id": "${widget.producto.id}",
           "name": "${widget.producto.name}",
           "units": "Hours",
@@ -405,7 +406,7 @@ class _FechaProductosState extends State<FechaProductos> {
                       return RadioListTile<String>(
                         title: Padding(
                           padding: const EdgeInsets.only(left: 5, right: 5),
-                          child: Expanded(child: Text(direccion.name!)),
+                          child: Text(direccion.name!),
                         ),
                         value: direccion.name!,
                         groupValue: selectedAdress,

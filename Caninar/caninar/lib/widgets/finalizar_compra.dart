@@ -6,6 +6,8 @@ import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/providers/calendario_provider.dart';
 import 'package:caninar/providers/cart_provider.dart';
+import 'package:caninar/providers/datos_cobro_provider.dart';
+import 'package:caninar/providers/id_orden_provider.dart';
 import 'package:caninar/providers/orden_provider.dart';
 import 'package:caninar/providers/producto_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
@@ -20,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 
 import 'package:provider/provider.dart';
 
@@ -50,6 +53,10 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
   int? cantidad;
   String? nameProduct;
   String? priceProduct;
+  String? nombreProv;
+  String? idSupplier;
+  String? idItem;
+  String? description;
 
   getCurrentUser() async {
     UserLoginModel? userTemp = await Shared().currentUser();
@@ -57,6 +64,46 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
     setState(() {
       user = userTemp;
     });
+  }
+
+  void _launchURL(BuildContext context, Uri urlMp) async {
+    try {
+      await launchUrl(
+        urlMp,
+        customTabsOptions: CustomTabsOptions(
+          colorSchemes: CustomTabsColorSchemes.defaults(
+            toolbarColor: PrincipalColors.blue,
+          ),
+          shareState: CustomTabsShareState.on,
+          urlBarHidingEnabled: true,
+          showTitle: true,
+        ),
+        safariVCOptions: SafariViewControllerOptions(
+          preferredBarTintColor: PrincipalColors.blue,
+          preferredControlTintColor: PrincipalColors.blue,
+          barCollapsingEnabled: true,
+          dismissButtonStyle: SafariViewControllerDismissButtonStyle.close,
+        ),
+      );
+    } catch (e) {
+      // An exception is thrown if browser app is not installed on Android device.
+      debugPrint(e.toString());
+    }
+  }
+
+  agregarCostos() {
+    CobroProvider cobroProvider =
+        Provider.of<CobroProvider>(context, listen: false);
+
+    Map<String, dynamic> createDatosCobro = {
+      // enviar m
+      "subTotal": '${widget.subTotal}',
+      "total": '${widget.total}',
+      "delivery": '${widget.deliveriFee}', //enviar distrito
+      'impuesto': '${widget.impuesto}'
+    };
+
+    cobroProvider.addCobro(createDatosCobro);
   }
 
   @override
@@ -76,8 +123,10 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
     OrdenProvider ordenProvider = Provider.of<OrdenProvider>(context);
     CartProvider carritoProvider = Provider.of<CartProvider>(context);
     ProductoProvider productoProvider = Provider.of<ProductoProvider>(context);
+    IdOrdenProvider idOrdenProvider = Provider.of<IdOrdenProvider>(context);
     CalendarioProvider calendarioProvider =
         Provider.of<CalendarioProvider>(context);
+
     setState(() {
       ordenList = ordenProvider.ordenList;
       cartProvider = carritoProvider.cartItems;
@@ -100,12 +149,27 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                   Map<String, String> address = Map<String, String>.from(
                       ordenList['address'] as Map<String, dynamic>);
                   String nombreProveedor = data['name'];
+                  setState(() {
+                    nombreProv = nombreProveedor;
+                  });
                   String? nombreDireccion = address['name'];
 
                   List<dynamic> items = data['items'];
+                  List<dynamic> schedules = data['schedule'];
+
+                  for (var schedule in schedules) {
+                    setState(() {
+                      idSupplier = schedule['supplier_id'];
+                    });
+                  }
 
                   for (var item in items) {
                     nameProduct = item['name'];
+
+                    setState(() {
+                      description = item['description'];
+                      idItem = item['id'];
+                    });
 
                     cantidad = item['quantity'];
                     priceProduct = item['price'];
@@ -319,6 +383,15 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
               ),
               BotonCustom(
                   funcion: () async {
+                    String? idMp = await MercadoPago().ejecutarMercadoPago(
+                        context,
+                        idSupplier!,
+                        user!.email!,
+                        nombreProv!,
+                        description!,
+                        idItem!,
+                        cantidad!,
+                        widget.total);
                     if (user != null) {
                       Map<String, dynamic> nuevoItem = {
                         "coupon": {
@@ -339,82 +412,14 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                         "total": widget.total
                       };
                       String? idCart = await API().createCarrito(nuevoItem);
-                      String? idOrden = await API().createOrden(ordenList);
+                      await idOrdenProvider.crearOrden(ordenList);
                       String urlString =
-                          'https://dev.caninar.com/payment/excute?user_id=${user?.id}&&cart_id=$idCart&&total=${widget.total}&&id_orden=$idOrden';
-
-                      print(urlString);
+                          'https://www.mercadopago.com.pe/checkout/v1/redirect?pref_id=$idMp';
 
                       Uri url = Uri.parse(urlString);
-                      final controller = WebViewController()
-                        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                        ..loadRequest(url);
 
-                      // ignore: use_build_context_synchronously
-                      showDialog(
-                        barrierDismissible: false,
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Dialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16.0),
-                            ),
-                            elevation: 0.0,
-                            backgroundColor: Colors.transparent,
-                            child: Stack(
-                              children: [
-                                Column(
-                                  children: [
-                                    SizedBox(
-                                      height:
-                                          600, // Tamaño específico para el WebViewWidget
-                                      child: WebViewWidget(
-                                        controller: controller,
-                                      ),
-                                    ),
-                                    BotonCustom(
-                                      funcion: () async {
-                                        String? estadoOrden =
-                                            await API().getOrdenById(idOrden!);
-                                        if (estadoOrden == 'approved') {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const CompraFinalizada()),
-                                          );
-                                        }
-                                        if (estadoOrden == 'rejected') {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const CompraRechazada()),
-                                          );
-                                        }
-                                        // await MercadoPago().getPago();
-                                      },
-                                      texto: 'Continuar',
-                                    ),
-                                  ],
-                                ),
-                                Positioned(
-                                    right: 5,
-                                    child: IconButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        icon: Icon(
-                                          Icons.close,
-                                          color: PrincipalColors.orange,
-                                        )))
-                              ],
-                            ),
-                          );
-                        },
-                      );
-
-                      //await MercadoPago().consultarPago(id);
+                      agregarCostos();
+                      _launchURL(context, url);
                     } else {
                       Fluttertoast.showToast(
                         msg: 'Su sesión se ha expirado',

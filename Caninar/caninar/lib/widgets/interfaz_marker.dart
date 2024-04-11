@@ -13,7 +13,9 @@ import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/image_network_propio.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class InterfazMarker extends StatefulWidget {
@@ -52,7 +54,7 @@ class _InterfazMarkerState extends State<InterfazMarker> {
   agregarCarrito() {
     CartProvider cartProvider =
         Provider.of<CartProvider>(context, listen: false);
-    ProductoProvider ordenProvider =
+    ProductoProvider productoProvider =
         Provider.of<ProductoProvider>(context, listen: false);
     DireccionProvider direccionProvider =
         Provider.of<DireccionProvider>(context, listen: false);
@@ -120,7 +122,7 @@ class _InterfazMarkerState extends State<InterfazMarker> {
       ],
     };
 
-    Map<String, dynamic> nuevaOrden = {
+    Map<String, dynamic> createProducto = {
       "id": "${widget.marca.id}", // id
       "name": "${widget.marca.name}",
       "email": "${widget.marca.bussinesName}", //no esta
@@ -128,25 +130,31 @@ class _InterfazMarkerState extends State<InterfazMarker> {
       "telephone": "${widget.marca.telephone}",
       "delivery_cost": "$deliveryCost", //no esta
       "delivery_time": "${widget.marca.deliveryTime}",
-      "total": "95.45", //no esta
       "pet_name": {
         // modulo para perris crud
         "pet_id": '',
         "name": '',
       },
-      "schedule": {
-        "category_id": widget.idCategoria, //preguntar
-        "time": {
-          "date": "",
-          "hour": {
-            "star": '',
-            "end": '',
-          }
-        },
-        "pet_id": ''
-      },
+      "schedule": [
+        {
+          "name_adress": '$selectedAdress',
+          "id_user": user?.id,
+          "category_id": widget.idCategoria,
+          "supplier_id": widget.marca.id,
+          "sh_status": 'pending',
+          "time": {
+            "date": '',
+            "hour": {
+              "star": '',
+              "end": '',
+            }
+          },
+          "pet_id": ''
+        }
+      ],
       "items": [
         {
+          "description": widget.producto.description,
           "id": "${widget.producto.id}",
           "name": "${widget.producto.name}",
           "units": "",
@@ -167,7 +175,7 @@ class _InterfazMarkerState extends State<InterfazMarker> {
 
     direccionProvider.addDireccion(createAdress);
     cartProvider.addToCart(nuevoSupplier);
-    ordenProvider.addOrden(nuevaOrden);
+    productoProvider.addOrden(createProducto);
   }
 
   double calculateTotalValue(int quantity) {
@@ -197,26 +205,43 @@ class _InterfazMarkerState extends State<InterfazMarker> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const CustomAppBar(),
-      drawer: CustomDrawer(),
-      body: SingleChildScrollView(
+    return AlertDialog(
+      content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            RedireccionAtras(nombre: '${widget.producto.name}'),
+            Align(
+              alignment: Alignment.topRight,
+              child: IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(Icons.close)),
+            ),
             ImageNetworkPropio(
               imagen: widget.producto.image,
               width: 200,
             ),
+            Center(
+                child: Padding(
+              padding: const EdgeInsets.only(
+                  top: 0, bottom: 20, left: 20, right: 20),
+              child: Text(
+                widget.producto.name!,
+                textAlign: TextAlign.justify,
+              ),
+            )),
             Padding(
               padding: const EdgeInsets.only(
-                  top: 25, bottom: 40, left: 20, right: 20),
+                  top: 0, bottom: 40, left: 20, right: 20),
               child: Center(
                 child: Text(
                   widget.producto.description ?? '',
                   textAlign: TextAlign.justify,
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -225,98 +250,126 @@ class _InterfazMarkerState extends State<InterfazMarker> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Cantidad a comprar: ',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.remove,
+                  Container(
+                    decoration: BoxDecoration(
                       color: PrincipalColors.orange,
+                      border: Border.all(
+                        color: PrincipalColors.orange,
+                      ),
+                      borderRadius: BorderRadius.circular(5.0),
                     ),
-                    onPressed: () {
-                      if (quantity > 0) {
-                        setState(() {
-                          quantity--;
-                        });
-                      }
-                    },
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.remove,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        if (quantity > 1) {
+                          setState(() {
+                            quantity--;
+                          });
+                        }
+                      },
+                    ),
                   ),
+                  const SizedBox(width: 10),
                   Text(
                     '$quantity',
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.add,
+                  const SizedBox(width: 10),
+                  Container(
+                    decoration: BoxDecoration(
                       color: PrincipalColors.orange,
+                      border: Border.all(
+                        color: PrincipalColors.orange,
+                      ),
+                      borderRadius: BorderRadius.circular(5.0),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        quantity++;
-                      });
-                    },
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          quantity++;
+                        });
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
             if (user != null)
-              Column(
-                children: user!.addresses.map((direccion) {
-                  return RadioListTile<String>(
-                    title: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 5,
-                          ),
-                          child: Text(
-                              '${direccion.name!},${direccion.idDistrict}'),
-                        )
-                      ],
-                    ),
-                    value: direccion.name!,
-                    groupValue: selectedAdress,
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedAdress = value;
-                        selectedDistritoName = direccion.idDistrict;
-                        selectedInside = direccion.inside;
-                      });
-                    },
-                  );
-                }).toList(),
+              Padding(
+                padding: EdgeInsets.only(top: 15),
+                child: Column(
+                  children: user!.addresses.map((direccion) {
+                    return RadioListTile<String>(
+                      title: Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                left: 5,
+                              ),
+                              child: Text(direccion.name!),
+                            ),
+                          )
+                        ],
+                      ),
+                      value: direccion.name!,
+                      groupValue: selectedAdress,
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedAdress = value;
+                          selectedDistritoName = direccion.idDistrict;
+                          selectedInside = direccion.inside;
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
               ),
             Padding(
-              padding: EdgeInsets.only(
+              padding: const EdgeInsets.only(
                 top: 15,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     'Valor a pagar: ',
                     style: TextStyle(fontSize: 16),
                   ),
                   Text(
                     '\$${calculateTotalValue(quantity)}',
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
                 ],
               ),
             ),
             BotonCustom(
-              funcion: () {
-                agregarCarrito();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CarritoCompras(),
-                  ),
-                );
+              funcion: () async {
+                if (selectedAdress != null) {
+                  await agregarCarrito();
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CarritoCompras(),
+                    ),
+                  );
+                } else {
+                  Fluttertoast.showToast(
+                      msg: 'Debe Seleccionar la dirección de entrega',
+                      backgroundColor: Colors.red,
+                      textColor: Colors.black);
+                }
               },
-              texto: 'Agregar al carrito',
+              texto: 'Agregar',
             )
           ],
         ),

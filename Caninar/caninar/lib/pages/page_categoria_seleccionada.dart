@@ -53,7 +53,7 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
 
     setState(() {
       distritos = temp;
-      dropdownValueDistrito = distritos.isNotEmpty ? distritos[4].value : null;
+      dropdownValueDistrito = distritos.isNotEmpty ? distritos[0].value : null;
     });
     await getMarcas(dropdownValueDistrito!.slug!);
   }

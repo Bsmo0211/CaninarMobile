@@ -1,19 +1,9 @@
-import 'dart:convert';
-
-import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
-import 'package:caninar/models/user/model.dart';
-import 'package:caninar/pages/home.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
-import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
-import 'package:caninar/widgets/finalizar_compra.dart';
 import 'package:caninar/widgets/registro.dart';
 import 'package:caninar/widgets/restaurar_contrasena.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Login extends StatefulWidget {
   Login({Key? key}) : super(key: key);

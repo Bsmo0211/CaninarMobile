@@ -4,17 +4,19 @@ import 'dart:io';
 import 'package:aws_s3_upload/enum/acl.dart';
 import 'package:caninar/constants/access_keys.dart';
 import 'package:caninar/constants/principals_colors.dart';
+import 'package:caninar/constants/url_api.dart';
 import 'package:caninar/models/mascotas/model.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/pages/home.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/mis_mascotas.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:snippet_coder_utils/multi_images_utils.dart';
-import 'package:dio/dio.dart';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:aws_s3_upload/aws_s3_upload.dart';
 
@@ -76,7 +78,7 @@ class _RegistroMascotaState extends State<RegistroMascota> {
 
     await dio
         .post(
-      'https://5sl6737lhc.execute-api.us-east-1.amazonaws.com/dev/pet',
+      '${UrlApi.pets}/pet',
       data: jsonBody,
     )
         .then((value) async {
