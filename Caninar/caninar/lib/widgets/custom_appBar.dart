@@ -3,6 +3,7 @@ import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/providers/cart_provider.dart';
 import 'package:caninar/providers/producto_provider.dart';
+
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/carrito.dart';
 import 'package:flutter/material.dart';
@@ -21,23 +22,18 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _CustomAppBarState extends State<CustomAppBar> {
   UserLoginModel? user;
 
-  getCurrentUser() async {
-    UserLoginModel? userTemp = await Shared().currentUser();
-
-    setState(() {
-      user = userTemp;
-    });
-  }
-
   @override
   void initState() {
-    getCurrentUser();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Obtener el estado global del usuario
+
+    // Obtener el proveedor de productos
     ProductoProvider productoProvider = Provider.of<ProductoProvider>(context);
+
     return AppBar(
       iconTheme: const IconThemeData(
         color: Colors.white,
@@ -50,9 +46,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
       ),
       actions: [
         Padding(
-          padding: user?.type == 2 || user == null
-              ? const EdgeInsets.only(right: 15)
-              : const EdgeInsets.all(0),
+          padding: const EdgeInsets.only(right: 3),
           child: GestureDetector(
             child: Image.asset(
               'assets/images/wpp.png',
@@ -63,29 +57,28 @@ class _CustomAppBarState extends State<CustomAppBar> {
             },
           ),
         ),
-        if (user?.type == 1 || user?.type == 3)
-          Padding(
-            padding: const EdgeInsets.only(
-              right: 8,
-            ),
-            child: Badge.count(
-              alignment: Alignment.bottomRight,
-              count: productoProvider.productoList.length,
-              backgroundColor: PrincipalColors.orange,
-              child: IconButton(
-                icon: const Icon(
-                  Icons.shopping_cart_outlined,
-                  size: 30,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CarritoCompras()),
-                  );
-                },
+        Padding(
+          padding: const EdgeInsets.only(
+            right: 8,
+          ),
+          child: Badge.count(
+            alignment: Alignment.bottomRight,
+            count: productoProvider.productoList.length,
+            backgroundColor: PrincipalColors.orange,
+            child: IconButton(
+              icon: const Icon(
+                Icons.shopping_cart_outlined,
+                size: 30,
               ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CarritoCompras()),
+                );
+              },
             ),
           ),
+        ),
       ],
     );
   }

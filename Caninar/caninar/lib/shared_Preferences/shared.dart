@@ -5,10 +5,12 @@ import 'dart:convert';
 import 'package:caninar/constants/url_api.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/pages/home.dart';
+import 'package:caninar/providers/producto_provider.dart';
 import 'package:caninar/widgets/home_adriestrador.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Shared {
@@ -58,16 +60,10 @@ class Shared {
           backgroundColor: Colors.green,
         );
         if (userLoginModel?.type == 3 || userLoginModel?.type == 1) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const Home()),
-          );
+          Navigator.pop(context, true);
         }
         if (userLoginModel?.type == 2) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeAdiestrador()),
-          );
+          Navigator.pop(context, true);
         }
       }
     }).catchError((e) {
@@ -81,6 +77,10 @@ class Shared {
 
   Future<void> logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    ProductoProvider productoProvider =
+        Provider.of<ProductoProvider>(context, listen: false);
+
+    productoProvider.clearProducto();
 
     prefs.remove('user_data');
     Navigator.push(

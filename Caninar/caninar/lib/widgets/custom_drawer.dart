@@ -95,8 +95,17 @@ class _CustomDrawerState extends State<CustomDrawer> {
                           redireccion: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => Login()),
-                            );
+                              MaterialPageRoute(
+                                builder: (context) => Login(),
+                              ),
+                            ).then((isLoginSuccessful) {
+                              if (isLoginSuccessful != null &&
+                                  isLoginSuccessful) {
+                                setState(() {
+                                  getCurrentUser();
+                                });
+                              }
+                            });
                           },
                         ),
                   const Divider(

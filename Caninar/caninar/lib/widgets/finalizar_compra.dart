@@ -145,9 +145,14 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
             children: [
               Column(
                 children: productoList.asMap().entries.map((entry) {
+                  String? nombreDireccionUsuario;
                   Map<String, dynamic> data = entry.value;
                   Map<String, String> address = Map<String, String>.from(
                       ordenList['address'] as Map<String, dynamic>);
+                  user?.addresses.forEach((place) {
+                    nombreDireccionUsuario = place.name;
+                  });
+
                   String nombreProveedor = data['name'];
                   setState(() {
                     nombreProv = nombreProveedor;
@@ -300,7 +305,9 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                                       top: 5,
                                       bottom: 15,
                                     ),
-                                    child: Text(nombreDireccion!),
+                                    child: Text(nombreDireccion == 'null'
+                                        ? nombreDireccionUsuario!
+                                        : nombreDireccion!),
                                   ),
                                 )
                               ],

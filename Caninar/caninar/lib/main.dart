@@ -12,7 +12,6 @@ import 'package:caninar/providers/orden_provider.dart';
 import 'package:caninar/providers/producto_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/about_us.dart';
-
 import 'package:caninar/pages/home.dart';
 import 'package:caninar/widgets/compra_finalizada.dart';
 import 'package:caninar/widgets/compra_rechazada.dart';
@@ -32,7 +31,7 @@ void main() async {
   UserLoginModel? user = await Shared().currentUser();
 
   if (user != null) {
-    if (user.type == 1 || user.type == 1) {
+    if (user.type == 1 || user.type == 3) {
       _defaultHome = const Home();
     } else {
       _defaultHome = const HomeAdiestrador();

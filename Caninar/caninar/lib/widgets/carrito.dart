@@ -365,17 +365,33 @@ class _CarritoComprasState extends State<CarritoCompras> {
                 if (productoList.isNotEmpty)
                   BotonCustom(
                     funcion: () {
-                      createOrden();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => FinalizarCompra(
-                              subTotal: subtotal,
-                              deliveriFee: deliveryCost,
-                              impuesto: 0,
-                              total: totalGeneral),
-                        ),
-                      );
+                      if (user != null) {
+                        createOrden();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FinalizarCompra(
+                                subTotal: subtotal,
+                                deliveriFee: deliveryCost,
+                                impuesto: 0,
+                                total: totalGeneral),
+                          ),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Login(),
+                          ),
+                        ).then((isLoginSuccessful) {
+                          if (isLoginSuccessful != null && isLoginSuccessful) {
+                            // El usuario ha iniciado sesión correctamente, actualiza el estado o reconstruye la página anterior
+                            setState(() {
+                              getCurrentUser();
+                            });
+                          }
+                        });
+                      }
                     },
                     texto: 'Ir a pagar',
                   ),

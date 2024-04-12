@@ -228,49 +228,107 @@ class _InformacionDetalladaProductosState
           ),
           Column(
             children: productos.map((producto) {
-              return CardItemHome(
-                terminadoCitas: false,
-                titulo: producto.name!,
-                redireccion: () {
-                  if (user != null) {
-                    if (producto.typePro == 3 || producto.typePro == null) {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return InterfazMarker(
-                            marca: widget.marca,
-                            producto: producto,
-                            idCategoria: widget.categoriaId,
-                            idDistrito: widget.distrito.id!,
+              return Column(
+                children: [
+                  CardItemHome(
+                    productoTipo: true,
+                    typePro: producto.typePro,
+                    marca: widget.marca,
+                    producto: producto,
+                    idCategoria: widget.categoriaId,
+                    idDistrito: widget.distrito.id!,
+                    terminadoCitas: false,
+                    titulo: producto.name!,
+                    redireccion: () {
+                      if (producto.typePro == 3 || producto.typePro == null) {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return InterfazMarker(
+                              marca: widget.marca,
+                              producto: producto,
+                              idCategoria: widget.categoriaId,
+                              idDistrito: widget.distrito.id!,
+                            );
+                          },
+                        );
+                      } else {
+                        if (user != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FechaProductos(
+                                marca: widget.marca,
+                                producto: producto,
+                                type: producto.typePro!,
+                                idCategoria: widget.categoriaId,
+                                idDistrito: widget.distrito.id!,
+                              ),
+                            ),
                           );
-                        },
-                      );
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => FechaProductos(
-                            marca: widget.marca,
-                            producto: producto,
-                            type: producto.typePro!,
-                            idCategoria: widget.categoriaId,
-                            idDistrito: widget.distrito.id!,
-                          ),
-                        ),
-                      );
-                    }
-                  } else {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Login(),
-                      ),
-                    );
-                  }
-                },
-                colorTexto: Colors.black,
-                precios: 'S/${producto.price}',
-                imageCard: producto.image,
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext contextHijo) {
+                              return AlertDialog(
+                                title: Text('Comprar ${producto.name}'),
+                                content: const Text(
+                                    'Para realizar esta acción, primero debes iniciar sesión.'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStatePropertyAll(
+                                                PrincipalColors.blue)),
+                                    onPressed: () {
+                                      Navigator.of(contextHijo).pop();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => Login(),
+                                        ),
+                                      ).then((isLoginSuccessful) {
+                                        if (isLoginSuccessful != null &&
+                                            isLoginSuccessful) {
+                                          // El usuario ha iniciado sesión correctamente, actualiza el estado o reconstruye la página anterior
+                                          setState(() {
+                                            getCurrentUser();
+                                          });
+                                        }
+                                      });
+                                    },
+                                    child: const Text(
+                                      'Sí',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStatePropertyAll(
+                                                PrincipalColors.orange)),
+                                    onPressed: () {
+                                      // Aquí puedes agregar la lógica para manejar la respuesta "No"
+                                      Navigator.of(context)
+                                          .pop(); // Cerrar el diálogo
+                                    },
+                                    child: const Text(
+                                      'No',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+                      }
+                    },
+                    colorTexto: Colors.black,
+                    precios: 'S/${producto.price}',
+                    imageCard: producto.image,
+                  ),
+                ],
               );
             }).toList(),
           )

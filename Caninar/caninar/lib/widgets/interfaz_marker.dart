@@ -137,7 +137,7 @@ class _InterfazMarkerState extends State<InterfazMarker> {
       },
       "schedule": [
         {
-          "name_adress": '$selectedAdress',
+          "name_adress": '',
           "id_user": user?.id,
           "category_id": widget.idCategoria,
           "supplier_id": widget.marca.id,
@@ -302,37 +302,6 @@ class _InterfazMarkerState extends State<InterfazMarker> {
                 ],
               ),
             ),
-            if (user != null)
-              Padding(
-                padding: EdgeInsets.only(top: 15),
-                child: Column(
-                  children: user!.addresses.map((direccion) {
-                    return RadioListTile<String>(
-                      title: Row(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                left: 5,
-                              ),
-                              child: Text(direccion.name!),
-                            ),
-                          )
-                        ],
-                      ),
-                      value: direccion.name!,
-                      groupValue: selectedAdress,
-                      onChanged: (String? value) {
-                        setState(() {
-                          selectedAdress = value;
-                          selectedDistritoName = direccion.idDistrict;
-                          selectedInside = direccion.inside;
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
-              ),
             Padding(
               padding: const EdgeInsets.only(
                 top: 15,
@@ -353,21 +322,12 @@ class _InterfazMarkerState extends State<InterfazMarker> {
             ),
             BotonCustom(
               funcion: () async {
-                if (selectedAdress != null) {
-                  await agregarCarrito();
+                await agregarCarrito();
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CarritoCompras(),
-                    ),
-                  );
-                } else {
-                  Fluttertoast.showToast(
-                      msg: 'Debe Seleccionar la dirección de entrega',
-                      backgroundColor: Colors.red,
-                      textColor: Colors.black);
-                }
+                Fluttertoast.showToast(
+                  msg: 'Su producto ha sido agregado al carrito con éxito',
+                  backgroundColor: Colors.green,
+                );
               },
               texto: 'Agregar',
             )

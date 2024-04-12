@@ -668,14 +668,13 @@ class _FechaProductosState extends State<FechaProductos> {
                           selectedOptionMascota != null) {
                         await agregarCarrito();
 
-                        // ignore: use_build_context_synchronously
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CarritoCompras(),
-                          ),
-                        );
                         dias.clear();
+                        Navigator.pop(context);
+                        Fluttertoast.showToast(
+                          msg:
+                              'Su producto ha sido agregado al carrito con éxito',
+                          backgroundColor: Colors.green,
+                        );
                       } else {
                         Fluttertoast.showToast(
                             msg: 'Debe Seleccionar todos los campos requeridos',
