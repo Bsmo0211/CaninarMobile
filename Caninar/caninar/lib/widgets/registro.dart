@@ -9,6 +9,7 @@ import 'package:caninar/models/distritos/model.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
+import 'package:caninar/widgets/item_home.dart';
 import 'package:caninar/widgets/login.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:caninar/widgets/registro_completo.dart';
@@ -117,7 +118,7 @@ class _RegistroState extends State<Registro> {
   submit() async {
     Dio dio = Dio();
 
-    String recorteUrl = imagenPersona!.path;
+    String recorteUrl = imagenPersona?.path ?? '';
     List<String> segmentos = recorteUrl.split("/");
     String ultimoSegmento = segmentos.last;
 
@@ -159,7 +160,7 @@ class _RegistroState extends State<Registro> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => Login(),
+              builder: (context) => ItemHome(),
             ),
           );
         }

@@ -7,15 +7,19 @@ import 'package:caninar/models/distritos/model.dart';
 import 'package:caninar/models/marcas/model.dart';
 import 'package:caninar/models/productos/model.dart';
 import 'package:caninar/models/user/model.dart';
+import 'package:caninar/navigation_pages/navigation_compra_productos.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
+import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/cards_items_home.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
-import 'package:caninar/widgets/fecha_producto.dart';
+import 'package:caninar/widgets/compra_producto.dart';
+import 'package:caninar/widgets/horario_atencion.dart';
 import 'package:caninar/widgets/interfaz_marker.dart';
 import 'package:caninar/widgets/login.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class InformacionDetalladaProductos extends StatefulWidget {
   List<CertificadosModel> certificados;
@@ -254,18 +258,51 @@ class _InformacionDetalladaProductosState
                         );
                       } else {
                         if (user != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => FechaProductos(
-                                marca: widget.marca,
-                                producto: producto,
-                                type: producto.typePro!,
-                                idCategoria: widget.categoriaId,
-                                idDistrito: widget.distrito.id!,
-                              ),
-                            ),
-                          );
+                          showDialog(
+                              context: context,
+                              builder: (contextDialog) {
+                                return AlertDialog(
+                                  title: const Center(
+                                      child: Text(
+                                    'Horario Proovedor',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  )),
+                                  content: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        HorarioAtencion(
+                                          schedule:
+                                              widget.marca.schedule!.schedule,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: [
+                                    Center(
+                                      child: BotonCustom(
+                                        funcion: () async {
+                                          Navigator.pop(contextDialog);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  NavegacionCompraProductos(
+                                                marca: widget.marca,
+                                                producto: producto,
+                                                type: producto.typePro!,
+                                                idCategoria: widget.categoriaId,
+                                                idDistrito: widget.distrito.id!,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        texto: 'Entendido',
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              });
                         } else {
                           showDialog(
                             context: context,
@@ -325,7 +362,13 @@ class _InformacionDetalladaProductosState
                       }
                     },
                     colorTexto: Colors.black,
-                    precios: 'S/${producto.price}',
+                    precios: Text(
+                      'S/${producto.price}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black87,
+                      ),
+                    ),
                     imageCard: producto.image,
                   ),
                 ],

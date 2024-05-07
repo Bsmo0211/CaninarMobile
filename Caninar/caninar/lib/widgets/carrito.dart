@@ -408,11 +408,16 @@ class _CarritoComprasState extends State<CarritoCompras> {
     deliveryCost = 0.0;
 
     for (var data in productoList) {
-      deliveryCost += double.parse(data['delivery_cost']);
+      String deliveryCostString = data['delivery_cost'];
+      deliveryCostString = deliveryCostString.replaceAll(',', '.');
+
+      deliveryCost += double.parse(deliveryCostString);
 
       List<dynamic> items = data['items'];
       for (var item in items) {
-        subtotal += double.parse(item['price']);
+        String subTotalString = item['price'];
+        subTotalString = subTotalString.replaceAll(',', '.');
+        subtotal += double.parse(subTotalString);
       }
       totalGeneral = deliveryCost + subtotal;
     }

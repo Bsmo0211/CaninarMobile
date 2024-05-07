@@ -9,7 +9,9 @@ import 'package:caninar/providers/producto_provider.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/carrito.dart';
 import 'package:caninar/widgets/image_network_propio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +23,8 @@ class CardItemHome extends StatefulWidget {
   String? imageCard;
   Function? redireccion;
   Color? colorTexto;
-  String? precios;
+  Widget? precios;
+  Icon? whatsApp;
   bool? terminadoCitas;
   ProductoModel? producto;
   MarcasModel? marca;
@@ -41,7 +44,8 @@ class CardItemHome extends StatefulWidget {
       this.marca,
       this.idCategoria,
       this.idDistrito,
-      this.productoTipo})
+      this.productoTipo,
+      this.whatsApp})
       : super(key: key);
 
   @override
@@ -140,23 +144,6 @@ class _CardItemHomeState extends State<CardItemHome> {
         "pet_id": '',
         "name": '',
       },
-      "schedule": [
-        {
-          "name_adress": '$selectedAdress',
-          "id_user": user?.id,
-          "category_id": widget.idCategoria,
-          "supplier_id": widget.marca?.id,
-          "sh_status": 'pending',
-          "time": {
-            "date": '',
-            "hour": {
-              "star": '',
-              "end": '',
-            }
-          },
-          "pet_id": ''
-        }
-      ],
       "items": [
         {
           "description": widget.producto?.description,
@@ -221,13 +208,28 @@ class _CardItemHomeState extends State<CardItemHome> {
           ),
           child: Column(
             children: [
-              AspectRatio(
-                aspectRatio: 16 / 9,
-                child: widget.imageCard != null
-                    ? ImageNetworkPropio(imagen: widget.imageCard!)
-                    : Image.asset(
-                        'assets/images/Recurso 7.png',
+              SizedBox(
+                height: 150,
+                child: ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(20.0)),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: widget.imageCard != null
+                            ? ImageNetworkPropio(
+                                imagen: widget.imageCard!,
+                                fit: BoxFit.fill,
+                              )
+                            : Image.asset(
+                                'assets/images/Recurso 7.png',
+                                fit: BoxFit.fill,
+                              ),
                       ),
+                    ],
+                  ),
+                ),
               ),
               Container(
                   decoration: const BoxDecoration(
@@ -259,15 +261,8 @@ class _CardItemHomeState extends State<CardItemHome> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        trailing: widget.precios != null
-                            ? Text(
-                                widget.precios!,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black87,
-                                ),
-                              )
-                            : null,
+                        trailing:
+                            widget.precios != null ? widget.precios! : null,
                       ),
                       if (widget.productoTipo == true &&
                           (widget.typePro == null || widget.typePro == 3))

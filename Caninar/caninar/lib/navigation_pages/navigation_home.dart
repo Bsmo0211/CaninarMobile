@@ -12,11 +12,14 @@ import 'package:caninar/providers/index_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/cards_items_home.dart';
 import 'package:caninar/widgets/carrousel_propio.dart';
+import 'package:caninar/widgets/comunidad.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/editar_perfil.dart';
 import 'package:caninar/widgets/image_network_propio.dart';
 import 'package:caninar/widgets/item_home.dart';
+import 'package:caninar/widgets/login.dart';
+import 'package:caninar/widgets/mis_citas.dart';
 import 'package:caninar/widgets/mis_mascotas.dart';
 import 'package:caninar/widgets/navigation_bar.dart';
 import 'package:caninar/widgets/terminos_condiciones.dart';
@@ -44,15 +47,14 @@ class _HomeState extends State<Home> {
       user = userTemp;
     });
   }
-  // Declara el temporizador
 
   insertPaginas() {
     setState(() {
       paginasNavegacion = [
-        TerminosYCondiciones(),
+        const Comunidad(),
         MisMascotas(),
         const ItemHome(),
-        TerminosYCondiciones(),
+        const MisCitas(),
         const EditarPerfil()
       ];
     });

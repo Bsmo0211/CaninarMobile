@@ -15,6 +15,7 @@ class ProductoModel {
   int? typePro;
   int? priceOffer;
   String? units;
+  int? maximumQtyAllowed;
   List<String>? categories;
 
   Map<String, dynamic> toJson() {
@@ -31,6 +32,7 @@ class ProductoModel {
     data['price_offer'] = priceOffer;
     data['units'] = units;
     data['categories'] = categories;
+    data['maximum_qty_allowed'] = maximumQtyAllowed;
 
     return data;
   }
@@ -56,5 +58,6 @@ class ProductoModel {
     priceOffer = json['price_offer'];
     units = json['units'];
     categories = List<String>.from(json['categories']);
+    maximumQtyAllowed = json['maximum_qty_allowed'];
   }
 }

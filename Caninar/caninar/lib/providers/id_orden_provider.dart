@@ -11,8 +11,10 @@ class IdOrdenProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> crearOrden(Map<String, dynamic> ordenList) async {
+  Future<String?> crearOrden(Map<String, dynamic> ordenList) async {
     _idOrden = await API().createOrden(ordenList);
     notifyListeners();
+
+    return _idOrden;
   }
 }

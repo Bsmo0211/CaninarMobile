@@ -120,6 +120,7 @@ class API {
     List<dynamic> productList = response.data['products'];
 
     for (Map<String, dynamic> producto in productList) {
+      print(producto);
       productos.add(ProductoModel.fromJson(producto));
     }
 
@@ -173,8 +174,7 @@ class API {
   updateUser(Map<String, dynamic> dataSend, String id) async {
     String link = '${UrlApi.users}/users/$id';
 
-    String jsonBody = jsonEncode(dataSend);
-    await dio.put(link, data: jsonBody).then((value) async {
+    await dio.put(link, data: dataSend).then((value) async {
       if (value.statusCode == 200) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('user_data', jsonEncode(dataSend));
@@ -186,7 +186,7 @@ class API {
     }).catchError((e) {
       print(e);
       Fluttertoast.showToast(
-          msg: 'Ha ocurrido con la creación de la dirección',
+          msg: 'Ha ocurrido con la actualización de los datos',
           backgroundColor: Colors.red,
           textColor: Colors.black);
     });
@@ -198,7 +198,7 @@ class API {
 
     await dio
         .post(
-      '${UrlApi.cart}/dev/cart',
+      '${UrlApi.cart}/cart',
       data: jsonBody,
     )
         .then((value) async {
@@ -222,12 +222,13 @@ class API {
 
     await dio
         .post(
-      '${UrlApi.orders}/dev/orders',
+      '${UrlApi.orders}/orders',
       data: jsonBody,
     )
         .then((value) async {
       if (value.statusCode == 200) {
         idOrden = value.data['id_order'];
+        print(idOrden);
       }
     }).catchError((e) {
       print(e);
@@ -257,6 +258,29 @@ class API {
             textColor: Colors.black,
           );
         });
+  }
+
+  Future<void> updateScheduleById(
+      String id, Map<String, dynamic> timeActualizacion) async {
+    await dio.put(
+      '${UrlApi.orders}/orders/schedule/$id',
+      data: {
+        "sh_status": 'coming',
+        "time": timeActualizacion,
+      },
+    ).then((value) async {
+      Fluttertoast.showToast(
+        msg: 'La cita ha sido programada con éxito',
+        backgroundColor: Colors.green,
+      );
+    }).catchError((e) {
+      print(e);
+      Fluttertoast.showToast(
+        msg: 'Ha ocurrido un error',
+        backgroundColor: Colors.red,
+        textColor: Colors.black,
+      );
+    });
   }
 
   Future<void> updatePointById(
@@ -290,6 +314,16 @@ class API {
       return points;
     } else {
       throw Exception('Failed to load points');
+    }
+  }
+
+  Future<UserLoginModel> getUserByid(String id) async {
+    final response = await dio.get('${UrlApi.users}/users/$id');
+
+    if (response.statusCode == 200) {
+      return UserLoginModel.fromJson(response.data);
+    } else {
+      throw Exception('Failed to load supplier');
     }
   }
 
@@ -356,7 +390,7 @@ class API {
   Future<void> deletePets(String id) async {
     await dio
         .delete(
-      '${UrlApi.pets}/dev/pet/$id',
+      '${UrlApi.pets}/pet/$id',
     )
         .then((value) async {
       if (value.statusCode == 200) {
@@ -374,5 +408,56 @@ class API {
         textColor: Colors.black,
       );
     });
+  }
+
+  updatePets(Map<String, dynamic> dataSend, String id) async {
+    String link = '${UrlApi.pets}/pet/$id';
+
+    await dio.put(link, data: dataSend).then((value) async {
+      if (value.statusCode == 200) {
+        Fluttertoast.showToast(
+            msg: 'Información actualizada con éxito',
+            backgroundColor: Colors.green,
+            textColor: Colors.white);
+      }
+    }).catchError((e) {
+      print(e);
+      Fluttertoast.showToast(
+          msg: 'Ha ocurrido con la actualización de los datos',
+          backgroundColor: Colors.red,
+          textColor: Colors.black);
+    });
+  }
+
+  Future<void> sendParams(Map<String, dynamic> updateParams) async {
+    await dio
+        .post(
+      '${UrlApi.transaction}/transaction/charge',
+      data: updateParams,
+    )
+        .then((value) async {
+      if (value.statusCode == 200) {
+        print('enviado con exito');
+      }
+    }).catchError((e) {
+      print(e);
+      Fluttertoast.showToast(
+        msg: 'Ha ocurrido un error',
+        backgroundColor: Colors.red,
+        textColor: Colors.black,
+      );
+    });
+  }
+
+  Future<Map<String, dynamic>> getInfoComunidad() async {
+    Map<String, dynamic> estado;
+    final response = await dio.get('${UrlApi.config}/config/general');
+
+    if (response.statusCode == 200) {
+      estado = response.data;
+      return estado;
+    } else {
+      throw Exception('error');
+    }
   }
 }

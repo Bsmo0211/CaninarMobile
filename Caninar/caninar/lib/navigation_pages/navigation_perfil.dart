@@ -1,0 +1,71 @@
+import 'package:caninar/models/user/model.dart';
+import 'package:caninar/providers/index_provider.dart';
+import 'package:caninar/shared_Preferences/shared.dart';
+import 'package:caninar/widgets/compra_producto.dart';
+import 'package:caninar/widgets/comunidad.dart';
+import 'package:caninar/widgets/editar_perfil.dart';
+import 'package:caninar/widgets/item_home.dart';
+import 'package:caninar/widgets/mis_citas.dart';
+import 'package:caninar/widgets/mis_mascotas.dart';
+import 'package:caninar/widgets/navigation_bar.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class NavegacionPerfil extends StatefulWidget {
+  const NavegacionPerfil({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  _NavegacionPerfilState createState() => _NavegacionPerfilState();
+}
+
+class _NavegacionPerfilState extends State<NavegacionPerfil> {
+  UserLoginModel? user;
+  List<Widget> paginasNavegacion = [];
+
+  getCurrentUser() async {
+    UserLoginModel? userTemp = await Shared().currentUser();
+
+    setState(() {
+      user = userTemp;
+    });
+  }
+
+  insertPaginas() {
+    setState(() {
+      paginasNavegacion = [
+        const Comunidad(),
+        MisMascotas(),
+        const ItemHome(),
+        const MisCitas(),
+        const EditarPerfil()
+      ];
+    });
+  }
+
+  @override
+  void initState() {
+    getCurrentUser();
+    insertPaginas();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    int index = Provider.of<IndexNavegacion>(context).Index;
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: paginasNavegacion.isNotEmpty
+            ? Center(
+                child: paginasNavegacion.elementAt(index),
+              )
+            : const Center(child: Text("Cargando")),
+        bottomNavigationBar: NavbigationBarWidget(
+          paginasNavegacion: paginasNavegacion,
+        ),
+      ),
+    );
+  }
+}

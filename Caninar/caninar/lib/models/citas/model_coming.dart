@@ -1,6 +1,6 @@
 import 'package:caninar/models/citas/model_data_cita.dart';
 
-class TerminatedModel {
+class ComingModel {
   int? counter;
   List<DataCitaModel> dataCita = [];
 
@@ -12,7 +12,7 @@ class TerminatedModel {
     return data;
   }
 
-  TerminatedModel.fromJson(Map<String, dynamic> json) {
+  ComingModel.fromJson(Map<String, dynamic> json) {
     counter = json['counter'];
     if (json['data'] != null) {
       dataCita = List<DataCitaModel>.from(

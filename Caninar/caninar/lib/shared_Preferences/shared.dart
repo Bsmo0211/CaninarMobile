@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:caninar/constants/url_api.dart';
 import 'package:caninar/models/user/model.dart';
-import 'package:caninar/pages/home.dart';
+import 'package:caninar/navigation_pages/navigation_home.dart';
 import 'package:caninar/providers/producto_provider.dart';
 import 'package:caninar/widgets/home_adriestrador.dart';
 import 'package:dio/dio.dart';
@@ -63,7 +63,10 @@ class Shared {
           Navigator.pop(context, true);
         }
         if (userLoginModel?.type == 2) {
-          Navigator.pop(context, true);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeAdiestrador()),
+          );
         }
       }
     }).catchError((e) {

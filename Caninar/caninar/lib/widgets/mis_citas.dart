@@ -3,7 +3,7 @@ import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/citas/model_current.dart';
 import 'package:caninar/models/citas/model_history.dart';
 import 'package:caninar/models/citas/model_pending.dart';
-import 'package:caninar/models/citas/model_terminated.dart';
+import 'package:caninar/models/citas/model_coming.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/providers/cart_provider.dart';
 import 'package:caninar/providers/producto_provider.dart';
@@ -31,7 +31,7 @@ class _MisCitasState extends State<MisCitas> {
   PendingModel? pendingModel;
   HistoryModel? historyModel;
   CurrentModel? currentModel;
-  TerminatedModel? terminatedModel;
+  ComingModel? comingModel;
   bool isApiCallProcess = false;
 
   getCurrentUser() async {
@@ -45,7 +45,9 @@ class _MisCitasState extends State<MisCitas> {
       user = userTemp;
     });
 
-    await getCitas();
+    if (user != null) {
+      await getCitas();
+    }
 
     setState(() {
       isApiCallProcess == false;
@@ -63,7 +65,7 @@ class _MisCitasState extends State<MisCitas> {
     PendingModel? pendingModelTemp;
     HistoryModel? historyModelTemp;
     CurrentModel? currentModelTemp;
-    TerminatedModel? terminatedModelTemp;
+    ComingModel? comingTemp;
 
     if (citasData.containsKey('pending')) {
       pendingModelTemp = PendingModel.fromJson(citasData['pending']);
@@ -76,15 +78,15 @@ class _MisCitasState extends State<MisCitas> {
     if (citasData.containsKey('current')) {
       currentModelTemp = CurrentModel.fromJson(citasData['current']);
     }
-    if (citasData.containsKey('terminated')) {
-      terminatedModelTemp = TerminatedModel.fromJson(citasData['terminated']);
+    if (citasData.containsKey('coming')) {
+      comingTemp = ComingModel.fromJson(citasData['coming']);
     }
 
     setState(() {
       pendingModel = pendingModelTemp;
       historyModel = historyModelTemp;
       currentModel = currentModelTemp;
-      terminatedModel = terminatedModelTemp;
+      comingModel = comingTemp;
     });
   }
 
@@ -98,28 +100,40 @@ class _MisCitasState extends State<MisCitas> {
         isScrollable: true,
         labelStyle: const TextStyle(color: Colors.black),
         indicatorColor: PrincipalColors.orange,
-        tabs: const [
+        tabs: [
           Tab(
-            child: Text(
-              'Pendientes',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            child: Badge.count(
+              alignment: Alignment.topRight,
+              count:
+                  pendingModel?.dataCita != null ? pendingModel!.counter! : 0,
+              backgroundColor: PrincipalColors.orange,
+              child: const Padding(
+                padding: EdgeInsets.all(7.0),
+                child: Text(
+                  'Pendientes',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
           ),
-          Tab(
+          const Tab(
             child: Text(
               'Historial',
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ),
-          Tab(
+          const Tab(
             child: Text(
               'En curso',
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ),
-          Tab(
+          const Tab(
             child: Text(
-              'Terminadas',
+              'Próximas',
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ),
@@ -311,9 +325,9 @@ class _MisCitasState extends State<MisCitas> {
                     child: ListView(children: [
                       if (user?.type != 2)
                         RedireccionAtras(nombre: 'Mis citas'),
-                      terminatedModel != null
+                      comingModel != null
                           ? Column(
-                              children: terminatedModel!.dataCita.map((e) {
+                              children: comingModel!.dataCita.map((e) {
                               return CardItemHome(
                                   terminadoCitas: false,
                                   imageCard: e.image,
@@ -323,7 +337,7 @@ class _MisCitasState extends State<MisCitas> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => InformacionCitas(
-                                          estado: 'terminated',
+                                          estado: 'coming',
                                           titulo: e.name,
                                           informacionDetalle:
                                               e.infoDetalladaCita,
@@ -336,9 +350,7 @@ class _MisCitasState extends State<MisCitas> {
                           : const Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text('No tiene ninguna cita en curso')
-                              ],
+                              children: [Text('No tiene ninguna cita próxima')],
                             ),
                     ]),
                     onRefresh: () async {

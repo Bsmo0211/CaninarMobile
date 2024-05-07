@@ -1,6 +1,9 @@
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/user/model.dart';
+import 'package:caninar/navigation_pages/navigation_perfil.dart';
+import 'package:caninar/navigation_pages/navigator_mascotas.dart';
+import 'package:caninar/providers/index_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/about_us.dart';
 import 'package:caninar/widgets/aliados.dart';
@@ -17,6 +20,7 @@ import 'package:caninar/widgets/page_registro_mascotas.dart';
 import 'package:caninar/widgets/registro.dart';
 import 'package:caninar/widgets/terminos_condiciones.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CustomDrawer extends StatefulWidget {
   CustomDrawer({Key? key}) : super(key: key);
@@ -83,10 +87,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       ? ItemDrawer(
                           titulo: 'Tu Cuenta',
                           redireccion: () {
+                            Provider.of<IndexNavegacion>(context, listen: false)
+                                .Index = 4;
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const EditarPerfil()),
+                                  builder: (context) =>
+                                      const NavegacionPerfil()),
                             );
                           },
                         )
@@ -116,11 +123,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     ItemDrawer(
                       titulo: 'Mascotas',
                       redireccion: () {
+                        Provider.of<IndexNavegacion>(context, listen: false)
+                            .Index = 1;
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => MisMascotas(),
-                          ),
+                              builder: (context) => const NavegacionMascota()),
                         );
                       },
                     ),

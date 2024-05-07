@@ -5,6 +5,7 @@ import 'package:caninar/models/marcas/model.dart';
 import 'package:caninar/models/mascotas/model.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
+import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/calendario_custom.dart';
 import 'package:caninar/widgets/cards_items_home.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
@@ -13,6 +14,7 @@ import 'package:caninar/widgets/info_detallada_adiestrador.dart';
 import 'package:caninar/widgets/informacion_detallada_cita_cliente.dart';
 import 'package:caninar/widgets/informacion_detallada_cita_paseador.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
+import 'package:caninar/widgets/seleccion_fecha_cita.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -40,6 +42,7 @@ class _InformacionCitasState extends State<InformacionCitas> {
   List<MarcasModel>? marcas;
   List<MascotasModel>? mascotas;
   UserLoginModel? user;
+  UserLoginModel? userById;
   bool isApiCallProcess = false;
   List<InformacionDetalladaCitaModel> infoDetalladaCita = [];
 
@@ -57,12 +60,15 @@ class _InformacionCitasState extends State<InformacionCitas> {
     });
     List<MarcasModel> marcastemp = [];
     List<MascotasModel> mascotasTemp = [];
-
+    UserLoginModel? userByIdTemp;
     for (InformacionDetalladaCitaModel detalle in widget.informacionDetalle) {
+      String idUser = detalle.idUser!;
       String idSupplier = detalle.supplierId!;
       String idPet = detalle.petId!;
       MarcasModel? marcaTemp = await API().getSupplierById(idSupplier);
       MascotasModel mascotaTemp = await API().getPetById(idPet);
+
+      userByIdTemp = await API().getUserByid(idUser);
 
       if (marcaTemp != null) {
         marcastemp.add(marcaTemp);
@@ -76,6 +82,7 @@ class _InformacionCitasState extends State<InformacionCitas> {
       marcas = marcastemp;
       mascotas = mascotasTemp;
       infoDetalladaCita = widget.informacionDetalle;
+      userById = userByIdTemp;
     });
 
     setState(() {
@@ -167,21 +174,32 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                       : marca.image!,
                                   redireccion: () {
                                     user?.type == 2
-                                        ? Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    InformacionDetalladaCitaPaseador(
-                                                      estado: terminado!,
-                                                      idSchedule:
-                                                          entry.value.id!,
-                                                      nombreRedireccion:
-                                                          mascota.name!,
-                                                      mascota: mascota,
-                                                      direccion: entry
-                                                          .value.direccion!,
-                                                    )),
-                                          )
+                                        ? entry.value.time!.date == ''
+                                            ? Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        SeleccionFechaCita(
+                                                          idSchedule:
+                                                              entry.value.id ??
+                                                                  '',
+                                                        )),
+                                              )
+                                            : Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        InformacionDetalladaCitaPaseador(
+                                                          estado: terminado!,
+                                                          idSchedule:
+                                                              entry.value.id!,
+                                                          nombreRedireccion:
+                                                              mascota.name!,
+                                                          mascota: mascota,
+                                                          direccion: entry
+                                                              .value.direccion!,
+                                                        )),
+                                              )
                                         : Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -198,8 +216,63 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                                     )),
                                           );
                                   },
-                                  precios:
-                                      '${entry.value.time?.date} \n${entry.value.time?.hour?.start}-${entry.value.time?.hour?.end}',
+                                  precios: widget.estado!.contains('pending') &&
+                                          entry.value.time!.date == ''
+                                      ? GestureDetector(
+                                          child: Image.asset(
+                                            'assets/images/wpp.png',
+                                            width: 35,
+                                          ),
+                                          onTap: () {
+                                            showDialog(
+                                                context: context,
+                                                builder: (contextDialog) {
+                                                  return AlertDialog(
+                                                    title: const Center(
+                                                        child: Text(
+                                                      'Importante',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    )),
+                                                    content: const Text(
+                                                        textAlign:
+                                                            TextAlign.justify,
+                                                        'Recuerda si no logras contactar a la otra persona, te sugiero que te dirijas a soporte para obtener ayuda en cómo establecer contacto con ella.'),
+                                                    actions: [
+                                                      Center(
+                                                        child: BotonCustom(
+                                                          funcion: () {
+                                                            user?.type == 2
+                                                                ? API().launchWhatsApp(
+                                                                    userById?.telephone !=
+                                                                            null
+                                                                        ? '51${userById?.telephone}'
+                                                                        : '51919285667')
+                                                                : API().launchWhatsApp(
+                                                                    marca.telephone !=
+                                                                            null
+                                                                        ? '51${marca.telephone}'
+                                                                        : '51919285667');
+                                                            Navigator.pop(
+                                                                contextDialog); // Cierra el diálogo
+                                                          },
+                                                          texto:
+                                                              'Ir a WhatsApp',
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                });
+                                          },
+                                        )
+                                      : Text(
+                                          '${entry.value.time?.date} \n${entry.value.time?.hour?.start}-${entry.value.time?.hour?.end}',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
                                   colorTexto: Colors.black,
                                   icono: Icon(
                                     Icons.star,

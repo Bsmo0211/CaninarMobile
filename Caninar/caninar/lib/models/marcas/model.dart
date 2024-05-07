@@ -1,6 +1,7 @@
 import 'package:caninar/models/certificados/model.dart';
 import 'package:caninar/models/coverage/model.dart';
 import 'package:caninar/models/direcciones/model.dart';
+import 'package:caninar/models/schedule_marca/model.dart';
 
 class MarcasModel {
   String? deliveryTime;
@@ -19,6 +20,7 @@ class MarcasModel {
   List<CoverageModel>? coverage;
   List<DireccionModel> addresses = [];
   List<String>? categories;
+  ScheduleModel? schedule;
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -39,6 +41,7 @@ class MarcasModel {
     data['addresses'] =
         addresses.map((direccion) => direccion.toJson()).toList();
     data['categories'] = categories;
+    data['schedule'] = schedule?.schedule;
 
     return data;
   }
@@ -72,5 +75,6 @@ class MarcasModel {
           .map((direccion) => DireccionModel.fromJson(direccion)));
     }
     categories = List<String>.from(json['categories']);
+    schedule = json['schedule'] != null ? ScheduleModel.fromJson(json) : null;
   }
 }

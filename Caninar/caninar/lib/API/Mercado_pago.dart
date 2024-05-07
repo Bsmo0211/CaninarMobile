@@ -19,6 +19,7 @@ class MercadoPago {
     String idItem,
     int cantidad,
     double precio,
+    String idOrden,
   ) async {
     Dio dio = Dio();
     String? id;
@@ -42,6 +43,7 @@ class MercadoPago {
               "unit_price": precio
             }
           ],
+          "order_id": idOrden
         },
       );
 
@@ -63,9 +65,10 @@ class MercadoPago {
       String descripcion,
       String idItem,
       int cantidad,
-      double precio) async {
+      double precio,
+      String idOrden) async {
     String? value = await createPreference(context, supplierId, email,
-        nombreEmpresa, descripcion, idItem, cantidad, precio);
+        nombreEmpresa, descripcion, idItem, cantidad, precio, idOrden);
 
     return value;
   }

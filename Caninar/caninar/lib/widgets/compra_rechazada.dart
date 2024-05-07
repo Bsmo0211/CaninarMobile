@@ -1,4 +1,4 @@
-import 'package:caninar/pages/home.dart';
+import 'package:caninar/navigation_pages/navigation_home.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/carrito.dart';
 import 'package:caninar/widgets/custom_appBar.dart';

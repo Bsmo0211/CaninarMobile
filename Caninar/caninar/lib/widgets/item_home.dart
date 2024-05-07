@@ -4,11 +4,13 @@ import 'package:caninar/API/APi.dart';
 import 'package:caninar/models/carrusel/model.dart';
 import 'package:caninar/models/categorias/model.dart';
 import 'package:caninar/models/user/model.dart';
+import 'package:caninar/navigation_pages/navigation_categoria_seleccionada.dart';
 import 'package:caninar/pages/page_categoria_seleccionada.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/cards_items_home.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
@@ -58,7 +60,7 @@ class _ItemHomeState extends State<ItemHome> {
     getCurrentUser();
     super.initState();
     getData();
-    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       if (mounted) {
         setState(() {
           if (currentIndex < imagenes.length - 1) {
@@ -94,7 +96,7 @@ class _ItemHomeState extends State<ItemHome> {
             const Padding(
               padding: EdgeInsets.only(
                 top: 15,
-                bottom: 15,
+                bottom: 5,
               ),
               child: Center(
                 child: Text(
@@ -106,16 +108,36 @@ class _ItemHomeState extends State<ItemHome> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 200,
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-                child: imagenes.isNotEmpty
-                    ? Image.network(
-                        imagenes[currentIndex].imageMobile!,
-                        key: ValueKey<int>(currentIndex),
-                      )
-                    : const CircularProgressIndicator(),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(15, 8, 15, 8),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                    image: DecorationImage(
+                      image: NetworkImage(imagenes.isNotEmpty
+                          ? imagenes[currentIndex].imageMobile!
+                          : ''),
+                      fit: BoxFit.cover,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        offset: const Offset(0, 3),
+                        blurRadius: 5.0,
+                        spreadRadius: 2.0,
+                      ),
+                    ],
+                  ),
+                  height: 200.0,
+                  child: AnimatedSwitcher(
+                    // Opcional para animaciones
+                    duration: const Duration(milliseconds: 500),
+                    child: imagenes.isNotEmpty
+                        ? null // Evita contenido innecesario sobre la imagen
+                        : const CircularProgressIndicator(),
+                  ),
+                ),
               ),
             ),
             Padding(
@@ -143,7 +165,7 @@ class _ItemHomeState extends State<ItemHome> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => PageCategoriaSeleccionada(
+                        builder: (context) => NavegacionCategoriaSeleccionada(
                           slugCategoria: categoria.slug ?? '',
                           name: categoria.name!,
                           idCategoria: categoria.id!,

@@ -1,7 +1,7 @@
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/user/model.dart';
-import 'package:caninar/pages/home.dart';
+import 'package:caninar/navigation_pages/navigation_home.dart';
 import 'package:caninar/providers/index_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/editar_perfil.dart';

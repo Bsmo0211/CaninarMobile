@@ -26,6 +26,7 @@ import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:caninar/widgets/registro_mascota.dart';
 import 'package:caninar/widgets/selecion_direccion.dart';
 import 'package:convert/convert.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -36,14 +37,14 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 
-class FechaProductos extends StatefulWidget {
+class CompraProductos extends StatefulWidget {
   ProductoModel producto;
   MarcasModel marca;
   int type;
   String idCategoria;
   String idDistrito;
 
-  FechaProductos(
+  CompraProductos(
       {Key? key,
       required this.producto,
       required this.marca,
@@ -53,10 +54,10 @@ class FechaProductos extends StatefulWidget {
       : super(key: key);
 
   @override
-  _FechaProductosState createState() => _FechaProductosState();
+  _CompraProductosState createState() => _CompraProductosState();
 }
 
-class _FechaProductosState extends State<FechaProductos> {
+class _CompraProductosState extends State<CompraProductos> {
   DateTime? diaSeleccionado;
   String? diaFormateado;
   LatLng? initialCenter;
@@ -164,7 +165,7 @@ class _FechaProductosState extends State<FechaProductos> {
             "min_amount_free_delivery": widget.marca.minAmountFreeDelivery,
             "ruc": widget.marca.ruc
           },
-          "quantity": dias.length
+          "quantity": widget.producto.maximumQtyAllowed
         }
       ],
     };
@@ -202,13 +203,13 @@ class _FechaProductosState extends State<FechaProductos> {
           "id": "${widget.producto.id}",
           "name": "${widget.producto.name}",
           "units": "Hours",
-          "quantity": dias.length,
-          "price": "${calculateTotalValue(dias.length)}"
+          "quantity": widget.producto.maximumQtyAllowed,
+          "price": "${widget.producto.price}"
         }
       ]
     };
 
-    recibirDiasSeleccionados(dias, createProducto);
+    recibirDiasSeleccionados(createProducto);
 
     Map<String, dynamic> createAdress = {
       // enviar m
@@ -252,16 +253,11 @@ class _FechaProductosState extends State<FechaProductos> {
     }
   }
 
-  void recibirDiasSeleccionados(
-      List<DateTime> selectedDays, Map<String, dynamic> createProducto) {
+  void recibirDiasSeleccionados(Map<String, dynamic> createProducto) {
     setState(() {
-      dias = selectedDays;
-      cantidad = dias.length;
-
       List<Map<String, dynamic>> scheduleList = [];
 
-      for (DateTime date in dias) {
-        String formattedDate = DateFormat('dd/MM/yyyy').format(date);
+      for (int i = 0; i < widget.producto.maximumQtyAllowed!; i++) {
         Map<String, dynamic> scheduleItem = {
           "name_adress": '$selectedAdress',
           "id_user": user?.id,
@@ -269,10 +265,10 @@ class _FechaProductosState extends State<FechaProductos> {
           "supplier_id": widget.marca.id,
           "sh_status": 'pending',
           "time": {
-            "date": formattedDate,
+            "date": '',
             "hour": {
-              "star": horaInicial,
-              "end": horaFinal,
+              "star": '',
+              "end": '',
             }
           },
           "pet_id": selectedOptionMascota
@@ -294,7 +290,7 @@ class _FechaProductosState extends State<FechaProductos> {
   }
 
   void recibirDiasSeleccionadosWrapper(List<DateTime> selectedDays) {
-    recibirDiasSeleccionados(selectedDays, {});
+    recibirDiasSeleccionados({});
   }
 
   @override
@@ -321,17 +317,17 @@ class _FechaProductosState extends State<FechaProductos> {
           Expanded(
             child: ListView(
               children: [
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                   child: Text(
-                    'Un paseo de 1 hora a cargo de un profesional certificado de APAI K9.',
-                    style: TextStyle(
+                    '${widget.producto.description}',
+                    style: const TextStyle(
                       fontSize: 16,
                     ),
                     textAlign: TextAlign.justify,
                   ),
                 ),
-                const Padding(
+                /* const Padding(
                   padding: EdgeInsets.only(left: 20, top: 15),
                   child: Text(
                     'Selecciona una fecha:',
@@ -389,7 +385,7 @@ class _FechaProductosState extends State<FechaProductos> {
                         ),
                       ),
                   ],
-                ),
+                ), */
                 const Padding(
                   padding: EdgeInsets.only(left: 20, top: 15, bottom: 5),
                   child: Text(
@@ -589,7 +585,7 @@ class _FechaProductosState extends State<FechaProductos> {
                                     bottom: 20,
                                   ),
                                   child: Text(
-                                    '$cantidad',
+                                    '${widget.producto.maximumQtyAllowed}',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -647,7 +643,7 @@ class _FechaProductosState extends State<FechaProductos> {
                                   padding:
                                       const EdgeInsets.only(top: 5, bottom: 20),
                                   child: Text(
-                                    '\$${calculateTotalValue(cantidad)}',
+                                    '\$${widget.producto.price}',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -663,30 +659,55 @@ class _FechaProductosState extends State<FechaProductos> {
                 ),
                 BotonCustom(
                   funcion: () async {
-                    if (dias.isNotEmpty) {
-                      if (selectedAdress != null &&
-                          selectedOptionMascota != null) {
-                        await agregarCarrito();
+                    //if (dias.isNotEmpty) {
+                    if (selectedAdress != null &&
+                        selectedOptionMascota != null) {
+                      showDialog(
+                          context: context,
+                          builder: (contextDialog) {
+                            return AlertDialog(
+                              title: const Center(
+                                  child: Text(
+                                'Importante',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              )),
+                              content: Text(
+                                  textAlign: TextAlign.justify,
+                                  'Una vez finalizada tu compra, ${widget.marca.name} se pondrá en contacto para agendar la cita de $nameSelectedOptionMascota.'),
+                              actions: [
+                                Center(
+                                  child: BotonCustom(
+                                    funcion: () async {
+                                      await agregarCarrito();
 
-                        dias.clear();
-                        Navigator.pop(context);
-                        Fluttertoast.showToast(
-                          msg:
-                              'Su producto ha sido agregado al carrito con éxito',
-                          backgroundColor: Colors.green,
-                        );
-                      } else {
-                        Fluttertoast.showToast(
-                            msg: 'Debe Seleccionar todos los campos requeridos',
-                            backgroundColor: Colors.red,
-                            textColor: Colors.black);
-                      }
+                                      dias.clear();
+                                      Navigator.pop(
+                                          contextDialog); // Cierra el diálogo
+                                      Navigator.pop(context);
+                                      Fluttertoast.showToast(
+                                        msg:
+                                            'Su producto ha sido agregado al carrito con éxito',
+                                        backgroundColor: Colors.green,
+                                      );
+                                    },
+                                    texto: 'Agregar al carrito',
+                                  ),
+                                ),
+                              ],
+                            );
+                          });
                     } else {
+                      Fluttertoast.showToast(
+                          msg: 'Debe Seleccionar todos los campos requeridos',
+                          backgroundColor: Colors.red,
+                          textColor: Colors.black);
+                    }
+                    /*   } else {
                       Fluttertoast.showToast(
                           msg: 'Debe Seleccionar una dia del calendario',
                           backgroundColor: Colors.red,
                           textColor: Colors.black);
-                    }
+                    } */
                   },
                   texto: 'Agregar al carrito',
                 )

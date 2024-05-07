@@ -79,7 +79,6 @@ class _MisMascotasState extends State<MisMascotas> {
             body: RefreshIndicator(
                 child: Column(
                   children: [
-                    RedireccionAtras(nombre: 'Mis Mascotas'),
                     mascotas.isEmpty
                         ? Center(
                             child: SizedBox(

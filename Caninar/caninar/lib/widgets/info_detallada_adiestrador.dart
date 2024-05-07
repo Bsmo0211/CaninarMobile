@@ -203,7 +203,13 @@ class _InformacionDetalladaAdiestradorState
             titulo: 'Consulta',
             redireccion: () {},
             colorTexto: Colors.black,
-            precios: 'S/ 60.00',
+            precios: Text(
+              'S/ 60.00',
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black87,
+              ),
+            ),
           )
         ],
       ),

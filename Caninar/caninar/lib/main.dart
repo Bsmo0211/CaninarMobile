@@ -12,7 +12,7 @@ import 'package:caninar/providers/orden_provider.dart';
 import 'package:caninar/providers/producto_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/about_us.dart';
-import 'package:caninar/pages/home.dart';
+import 'package:caninar/navigation_pages/navigation_home.dart';
 import 'package:caninar/widgets/compra_finalizada.dart';
 import 'package:caninar/widgets/compra_rechazada.dart';
 import 'package:caninar/widgets/finalizar_compra.dart';
@@ -54,7 +54,12 @@ class MyApp extends StatelessWidget {
         routes: [
           GoRoute(
             path: 'payment/success',
-            builder: (context, state) => const CompraFinalizada(),
+            builder: (context, state) {
+              Map<String, String> queryParams = state.uri.queryParameters;
+              return CompraFinalizada(
+                queryParams: queryParams,
+              );
+            },
           ),
           GoRoute(
             path: 'payment/error',

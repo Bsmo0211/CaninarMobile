@@ -135,23 +135,6 @@ class _InterfazMarkerState extends State<InterfazMarker> {
         "pet_id": '',
         "name": '',
       },
-      "schedule": [
-        {
-          "name_adress": '',
-          "id_user": user?.id,
-          "category_id": widget.idCategoria,
-          "supplier_id": widget.marca.id,
-          "sh_status": 'pending',
-          "time": {
-            "date": '',
-            "hour": {
-              "star": '',
-              "end": '',
-            }
-          },
-          "pet_id": ''
-        }
-      ],
       "items": [
         {
           "description": widget.producto.description,

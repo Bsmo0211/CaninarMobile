@@ -2,6 +2,7 @@ import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/distritos/model.dart';
 import 'package:caninar/models/marcas/model.dart';
+import 'package:caninar/navigation_pages/navigator_informacion_detallada_prod.dart';
 import 'package:caninar/widgets/card_adiestrador.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
@@ -66,6 +67,8 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
       setState(() {
         marcas = marcasTemp;
       });
+
+      print(marcas);
     }
   }
 
@@ -128,32 +131,45 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
               ),
             ),
           ),
-          if (marcas.isNotEmpty)
-            Column(
-                children: marcas.map((marca) {
-              return CardAdiestradorCanino(
-                redireccion: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => InformacionDetalladaProductos(
-                        distrito: dropdownValueDistrito!,
-                        categoria: widget.slugCategoria,
-                        categoriaId: widget.idCategoria,
-                        marca: marca,
-                        certificados: marca.certificates != null
-                            ? marca.certificates!
-                            : [],
+          marcas.isNotEmpty
+              ? Column(
+                  children: marcas.map((marca) {
+                  return CardAdiestradorCanino(
+                    redireccion: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              NavegacionInformacionDetalladaProd(
+                            distrito: dropdownValueDistrito!,
+                            categoria: widget.slugCategoria,
+                            categoriaId: widget.idCategoria,
+                            marca: marca,
+                            certificados: marca.certificates != null
+                                ? marca.certificates!
+                                : [],
+                          ),
+                        ),
+                      );
+                    },
+                    codigo: 'AK9-123',
+                    nombre: marca.name!,
+                    calificacion: '${marca.rating}',
+                    imagen: marca.image,
+                  );
+                }).toList())
+              : const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 10),
+                    child: Text(
+                      'No hay proovedores en este distrito',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
                       ),
                     ),
-                  );
-                },
-                codigo: 'AK9-123',
-                nombre: marca.name!,
-                calificacion: '${marca.rating}',
-                imagen: marca.image,
-              );
-            }).toList())
+                  ),
+                )
         ],
       ),
     );

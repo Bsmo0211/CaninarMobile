@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:aws_s3_upload/enum/acl.dart';
+import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/access_keys.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/constants/url_api.dart';
 import 'package:caninar/models/mascotas/model.dart';
 import 'package:caninar/models/user/model.dart';
-import 'package:caninar/pages/home.dart';
+import 'package:caninar/navigation_pages/navigation_home.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/mis_mascotas.dart';
 import 'package:dio/dio.dart';
@@ -41,7 +42,7 @@ class _RegistroMascotaState extends State<RegistroMascota> {
   final formKey1 = GlobalKey<FormState>();
   UserLoginModel? user;
   File? imageMascota;
-  bool esterilizado = false;
+  bool? esterilizado;
   String? dropdownValueSexo;
   final ImagePicker _picker = ImagePicker();
   Map<String, String> dropdownSexoMap = {
@@ -52,11 +53,12 @@ class _RegistroMascotaState extends State<RegistroMascota> {
   Map<String, String> dropdownTamanoMap = {
     'Pequeño (1kg - 8Kg)': 'Pequeño',
     'Mediano (9kg - 15Kg)': 'Mediano',
+    'Grande (15kg en adelante)': 'Grande',
   };
   bool isLoading = false;
 
   submit() async {
-    String recorteUrl = imageMascota!.path;
+    String recorteUrl = imageMascota?.path ?? '';
     List<String> segmentos = recorteUrl.split("/");
     String ultimoSegmento = segmentos.last;
 
@@ -101,6 +103,12 @@ class _RegistroMascotaState extends State<RegistroMascota> {
           backgroundColor: Colors.red,
           textColor: Colors.black);
     });
+  }
+
+  updatePets(Map<String, dynamic> updatePet) async {
+    await API().updatePets(updatePet, widget.mascota!.id!);
+
+    setState(() {});
   }
 
   tomarFoto() async {
@@ -157,6 +165,7 @@ class _RegistroMascotaState extends State<RegistroMascota> {
 
   @override
   void initState() {
+    esterilizado = widget.mascota?.sterilized ?? false;
     getCurrentUser();
     super.initState();
   }
@@ -341,8 +350,9 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                         height: 50,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color:
-                              esterilizado ? PrincipalColors.blue : Colors.grey,
+                          color: esterilizado!
+                              ? PrincipalColors.blue
+                              : Colors.grey,
                         ),
                         child: const Center(
                           child: Text(
@@ -364,7 +374,7 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                         height: 50,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: esterilizado
+                          color: esterilizado!
                               ? Colors.grey
                               : PrincipalColors.orange,
                         ),
@@ -474,25 +484,27 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                   controller: razaCtrl,
                 ),
               ),
-              if (widget.registro == true)
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 25),
-                  child: Center(
-                    child: SizedBox(
-                      width: 300,
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll<Color>(
-                              PrincipalColors.blue),
+              Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 25),
+                child: Center(
+                  child: SizedBox(
+                    width: 300,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll<Color>(
+                            PrincipalColors.blue),
+                      ),
+                      child: Text(
+                        widget.registro == true
+                            ? 'Crear Mascota'
+                            : 'Editar Mascota',
+                        style: const TextStyle(
+                          color: Colors.white,
                         ),
-                        child: const Text(
-                          'Crear Mascota',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                        onPressed: () async {
-                          if (user != null) {
+                      ),
+                      onPressed: () async {
+                        if (user != null) {
+                          if (widget.registro == true) {
                             setState(() {
                               isLoading = true;
                             });
@@ -500,12 +512,78 @@ class _RegistroMascotaState extends State<RegistroMascota> {
                             setState(() {
                               isLoading = false;
                             });
+                          } else {
+                            //Update
+
+                            MascotasModel updatePet = MascotasModel.fromJson(
+                                widget.mascota!.toJson());
+
+                            if (imageMascota != null) {
+                              String recorteUrl = imageMascota!.path;
+                              List<String> segmentos = recorteUrl.split("/");
+                              String ultimoSegmento = segmentos.last;
+
+                              String imagen =
+                                  'https://caninar-images.s3.amazonaws.com/pets/$ultimoSegmento';
+                              updatePet.image = imagen;
+                            }
+
+                            if (nombresCtrl.text.isNotEmpty &&
+                                nombresCtrl.text != widget.mascota?.name) {
+                              updatePet.name = nombresCtrl.text;
+                            }
+
+                            if (razaCtrl.text.isNotEmpty &&
+                                razaCtrl.text != widget.mascota?.race) {
+                              updatePet.race = razaCtrl.text;
+                            }
+
+                            if (dropdownValueSexo != null &&
+                                dropdownValueSexo != widget.mascota?.gender) {
+                              updatePet.gender = dropdownValueSexo;
+                            }
+
+                            if (dropdownValueTamano != null &&
+                                dropdownValueTamano !=
+                                    widget.mascota?.petSize) {
+                              updatePet.petSize = dropdownValueTamano;
+                            }
+
+                            if (esterilizado != widget.mascota?.sterilized) {
+                              updatePet.sterilized = esterilizado;
+                            }
+
+                            if (updatePet.name != widget.mascota?.name ||
+                                updatePet.race != widget.mascota?.race ||
+                                updatePet.petSize != widget.mascota?.petSize ||
+                                updatePet.gender != widget.mascota?.gender ||
+                                updatePet.sterilized !=
+                                    widget.mascota?.sterilized ||
+                                updatePet.image != widget.mascota?.image) {
+                              Map<String, dynamic> updatePetsJson = {
+                                "user_id": '${user?.id}',
+                                "name": updatePet.name,
+                                "gender": updatePet.gender,
+                                "sterilized": updatePet.sterilized,
+                                "pet_size": updatePet.petSize,
+                                "race": updatePet.race,
+                                "image": updatePet.image,
+                              };
+                              updatePets(updatePetsJson);
+                            } else {
+                              Fluttertoast.showToast(
+                                msg:
+                                    'La información del perfil sigue siendo la misma.',
+                                backgroundColor: Colors.red,
+                              );
+                            }
                           }
-                        },
-                      ),
+                        }
+                      },
                     ),
                   ),
                 ),
+              ),
             ],
           )),
     );

@@ -103,7 +103,6 @@ class _EditarPerfilState extends State<EditarPerfil> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  RedireccionAtras(nombre: 'Mi perfil'),
                   Padding(
                     padding: const EdgeInsets.only(top: 15, bottom: 10),
                     child: Center(
@@ -390,7 +389,7 @@ class _EditarPerfilState extends State<EditarPerfil> {
                           } else {
                             Fluttertoast.showToast(
                               msg:
-                                  'No se han realizado cambios en la información del usuario.',
+                                  'La información del perfil sigue siendo la misma.',
                               backgroundColor: Colors.red,
                             );
                           }

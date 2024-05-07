@@ -1,6 +1,6 @@
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
-import 'package:caninar/pages/home.dart';
+import 'package:caninar/navigation_pages/navigation_home.dart';
 import 'package:caninar/providers/cart_provider.dart';
 import 'package:caninar/providers/datos_cobro_provider.dart';
 import 'package:caninar/providers/id_orden_provider.dart';
@@ -18,7 +18,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class CompraFinalizada extends StatefulWidget {
-  const CompraFinalizada({super.key});
+  Map<String, String> queryParams;
+  CompraFinalizada({super.key, required this.queryParams});
 
   @override
   State<CompraFinalizada> createState() => _CompraFinalizadaState();
@@ -28,6 +29,7 @@ class _CompraFinalizadaState extends State<CompraFinalizada> {
   Map<String, dynamic> ordenList = {};
   List<Map<String, dynamic>> productoList = [];
   Map<String, dynamic> datosCobro = {};
+
   int? cantidad;
   String? nameProduct;
   String? priceProduct;
@@ -51,10 +53,45 @@ class _CompraFinalizadaState extends State<CompraFinalizada> {
     }
   }
 
+  sendQueryParams() async {
+    String collectionId = widget.queryParams['collection_id']?.toString() ?? '';
+    String collectionStatus =
+        widget.queryParams['collection_status']?.toString() ?? '';
+    String paymentId = widget.queryParams['payment_id']?.toString() ?? '';
+    String status = widget.queryParams['status']?.toString() ?? '';
+    String externalReference =
+        widget.queryParams['external_reference']?.toString() ?? '';
+    String paymentType = widget.queryParams['payment_type']?.toString() ?? '';
+    String merchantOrderId =
+        widget.queryParams['merchant_order_id']?.toString() ?? '';
+    String preferenceId = widget.queryParams['preference_id']?.toString() ?? '';
+    String siteId = widget.queryParams['site_id']?.toString() ?? '';
+    String processingMode =
+        widget.queryParams['processing_mode']?.toString() ?? '';
+    String merchantAccountId =
+        widget.queryParams['merchant_account_id']?.toString() ?? '';
+
+    Map<String, List<String>> updateParams = {
+      "collection_id": [collectionId],
+      "collection_status": [collectionStatus],
+      "payment_id": [paymentId],
+      "status": [status],
+      "external_reference": [externalReference],
+      "payment_type": [paymentType],
+      "merchant_order_id": [merchantOrderId],
+      "preference_id": [preferenceId],
+      "site_id": [siteId],
+      "processing_mode": [processingMode],
+      "merchant_account_id": [merchantAccountId]
+    };
+
+    await API().sendParams(updateParams);
+  }
+
   @override
   void initState() {
     super.initState();
-
+    sendQueryParams();
     updateStatusOrden();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       limpiarCarrito();

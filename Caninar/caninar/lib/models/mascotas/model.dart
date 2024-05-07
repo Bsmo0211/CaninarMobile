@@ -15,6 +15,7 @@ class MascotasModel {
     data['name'] = name;
     data['image'] = image;
     data['id'] = id;
+    data['sterilized'] = sterilized;
 
     return data;
   }
@@ -27,5 +28,6 @@ class MascotasModel {
     image = json['image'];
     name = json['name'];
     race = json['race'];
+    sterilized = json['sterilized'];
   }
 }

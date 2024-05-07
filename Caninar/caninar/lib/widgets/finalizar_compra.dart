@@ -20,6 +20,7 @@ import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
@@ -57,6 +58,7 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
   String? idSupplier;
   String? idItem;
   String? description;
+  bool isLoading = false;
 
   getCurrentUser() async {
     UserLoginModel? userTemp = await Shared().currentUser();
@@ -133,6 +135,12 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
       productoList = productoProvider.productoList;
       calendarioList = calendarioProvider.calendarioList;
     });
+
+    if (isLoading) {
+      EasyLoading.show(status: 'Cargando');
+    } else {
+      EasyLoading.dismiss();
+    }
 
     return Scaffold(
       appBar: const CustomAppBar(),
@@ -390,6 +398,13 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
               ),
               BotonCustom(
                   funcion: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
+
+                    String? idOrden =
+                        await idOrdenProvider.crearOrden(ordenList);
+                    print(idOrden);
                     String? idMp = await MercadoPago().ejecutarMercadoPago(
                         context,
                         idSupplier!,
@@ -398,7 +413,8 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                         description!,
                         idItem!,
                         cantidad!,
-                        widget.total);
+                        widget.total,
+                        idOrden!);
                     if (user != null) {
                       Map<String, dynamic> nuevoItem = {
                         "coupon": {
@@ -418,8 +434,7 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                         "id_user": '${user?.id}',
                         "total": widget.total
                       };
-                      String? idCart = await API().createCarrito(nuevoItem);
-                      await idOrdenProvider.crearOrden(ordenList);
+                      await API().createCarrito(nuevoItem);
                       String urlString =
                           'https://www.mercadopago.com.pe/checkout/v1/redirect?pref_id=$idMp';
 
@@ -427,6 +442,9 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
 
                       agregarCostos();
                       _launchURL(context, url);
+                      setState(() {
+                        isLoading = false;
+                      });
                     } else {
                       Fluttertoast.showToast(
                         msg: 'Su sesión se ha expirado',

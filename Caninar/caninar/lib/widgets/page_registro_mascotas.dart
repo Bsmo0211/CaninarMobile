@@ -25,7 +25,10 @@ class _PageRegistroMascotasState extends State<PageRegistroMascotas> {
       drawer: CustomDrawer(),
       body: Column(
         children: [
-          RedireccionAtras(nombre: 'Registro Mascotas'),
+          RedireccionAtras(
+              nombre: widget.registro == true
+                  ? 'Registro Mascotas'
+                  : 'Editar Mascota'),
           Expanded(
               child: RegistroMascota(
             mascota: widget.mascota,
