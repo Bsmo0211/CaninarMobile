@@ -6,6 +6,7 @@ import 'package:caninar/constants/access_keys.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/constants/url_api.dart';
 import 'package:caninar/models/distritos/model.dart';
+import 'package:caninar/navigation_pages/navigation_home.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
@@ -160,7 +161,7 @@ class _RegistroState extends State<Registro> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ItemHome(),
+              builder: (context) => Home(),
             ),
           );
         }

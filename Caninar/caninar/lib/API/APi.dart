@@ -460,4 +460,18 @@ class API {
       throw Exception('error');
     }
   }
+
+  Future<Map<String, dynamic>> getProductsSearch(
+      String distrito, String busqueda) async {
+    Map<String, dynamic> search;
+    final response = await dio
+        .get('${UrlApi.products}/products/district/$distrito/search/$busqueda');
+
+    if (response.statusCode == 200) {
+      search = response.data;
+      return search;
+    } else {
+      throw Exception('error');
+    }
+  }
 }

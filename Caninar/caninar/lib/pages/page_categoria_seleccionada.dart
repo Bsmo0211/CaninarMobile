@@ -67,8 +67,6 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
       setState(() {
         marcas = marcasTemp;
       });
-
-      print(marcas);
     }
   }
 

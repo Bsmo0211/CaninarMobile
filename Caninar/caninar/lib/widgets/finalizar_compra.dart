@@ -168,7 +168,7 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                   String? nombreDireccion = address['name'];
 
                   List<dynamic> items = data['items'];
-                  List<dynamic> schedules = data['schedule'];
+                  List<dynamic> schedules = data['schedule'] ?? [];
 
                   for (var schedule in schedules) {
                     setState(() {

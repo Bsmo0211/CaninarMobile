@@ -31,6 +31,7 @@ class CustomDrawer extends StatefulWidget {
 
 class _CustomDrawerState extends State<CustomDrawer> {
   UserLoginModel? user;
+  bool _showSubMenu = false;
   getCurrentUser() async {
     UserLoginModel? userTemp = await Shared().currentUser();
 
@@ -144,7 +145,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => MisCitas(),
+                            builder: (context) => const MisCitas(),
                           ),
                         );
                       },
@@ -239,14 +240,39 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 ),
               ),
             ItemDrawer(
-                titulo: 'Términos y Condiciones',
+              titulo: 'Términos y Condiciones',
+              redireccion: () {
+                setState(() {
+                  _showSubMenu = !_showSubMenu;
+                });
+              },
+            ),
+            if (_showSubMenu)
+              ItemDrawer(
+                titulo: 'Términos para Clientes',
                 redireccion: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => TerminosYCondiciones()),
+                        builder: (context) => TerminosYCondiciones(
+                              cliente: true,
+                            )),
                   );
-                }),
+                },
+              ),
+            if (_showSubMenu)
+              ItemDrawer(
+                titulo: 'Términos para Proveedores',
+                redireccion: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => TerminosYCondiciones(
+                              cliente: false,
+                            )),
+                  );
+                },
+              ),
             const Divider(
               height: 2,
               color: Colors.grey,

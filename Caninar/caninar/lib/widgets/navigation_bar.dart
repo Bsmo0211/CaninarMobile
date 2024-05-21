@@ -46,16 +46,18 @@ class _NavbigationBarWidgetState extends State<NavbigationBarWidget> {
   updateItems() {
     List<BottomBarItem> itemsTemp = [
       BottomBarItem(
+        itemLabel: 'Noticias',
         inActiveItem: Icon(
-          Icons.fireplace,
+          Icons.people_alt_rounded,
           color: PrincipalColors.blue,
         ),
         activeItem: Icon(
-          Icons.fireplace,
+          Icons.people_alt_rounded,
           color: PrincipalColors.blue,
         ),
       ),
       BottomBarItem(
+        itemLabel: 'Mascotas',
         inActiveItem: Icon(
           Icons.pets,
           color: PrincipalColors.blue,
@@ -66,6 +68,7 @@ class _NavbigationBarWidgetState extends State<NavbigationBarWidget> {
         ),
       ),
       BottomBarItem(
+        itemLabel: 'Inicio',
         inActiveItem: Icon(
           Icons.home,
           color: PrincipalColors.blue,
@@ -76,6 +79,7 @@ class _NavbigationBarWidgetState extends State<NavbigationBarWidget> {
         ),
       ),
       BottomBarItem(
+        itemLabel: 'Citas',
         inActiveItem: Icon(
           Icons.edit_calendar_rounded,
           color: PrincipalColors.blue,
@@ -86,6 +90,7 @@ class _NavbigationBarWidgetState extends State<NavbigationBarWidget> {
         ),
       ),
       BottomBarItem(
+        itemLabel: 'Perfil',
         inActiveItem: Icon(
           Icons.person,
           color: PrincipalColors.blue,
@@ -110,12 +115,19 @@ class _NavbigationBarWidgetState extends State<NavbigationBarWidget> {
     );
 
     return AnimatedNotchBottomBar(
-      kBottomRadius: 10.0,
+      kBottomRadius: 15.0,
       kIconSize: 20.0,
       notchBottomBarController: controller,
       bottomBarItems: items,
       onTap: (value) {
         indexProv.Index = value;
+
+        if (value == 2) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const Home()),
+          );
+        }
       },
       color: Colors.grey.shade100,
     );
