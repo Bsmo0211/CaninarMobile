@@ -88,7 +88,6 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
         ),
       );
     } catch (e) {
-      // An exception is thrown if browser app is not installed on Android device.
       debugPrint(e.toString());
     }
   }
@@ -170,11 +169,16 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                   List<dynamic> items = data['items'];
                   List<dynamic> schedules = data['schedule'] ?? [];
 
-                  for (var schedule in schedules) {
+                   setState(() {
+                   idSupplier = data['id'];
+                     
+                   }); 
+
+                  /* for (var schedule in schedules) {
                     setState(() {
                       idSupplier = schedule['supplier_id'];
                     });
-                  }
+                  } */
 
                   for (var item in items) {
                     nameProduct = item['name'];
@@ -314,7 +318,7 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                                       bottom: 15,
                                     ),
                                     child: Text(nombreDireccion == 'null'
-                                        ? nombreDireccionUsuario!
+                                        ? nombreDireccionUsuario ?? ''
                                         : nombreDireccion!),
                                   ),
                                 )
@@ -404,10 +408,10 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
 
                     String? idOrden =
                         await idOrdenProvider.crearOrden(ordenList);
-                    print(idOrden);
+                      
                     String? idMp = await MercadoPago().ejecutarMercadoPago(
                         context,
-                        idSupplier!,
+                        idSupplier ?? '',
                         user!.email!,
                         nombreProv!,
                         description!,
