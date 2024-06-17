@@ -338,7 +338,7 @@ class _EditarPerfilState extends State<EditarPerfil> {
                         return null;
                       },
                     ),
-                  ),
+                  ),   
                   Center(
                     child: SizedBox(
                       child: BotonCustom(
@@ -394,7 +394,8 @@ class _EditarPerfilState extends State<EditarPerfil> {
                             );
                           }
                         },
-                        texto: 'Editar Perfil',
+                        texto: 'Guardar Cambios',
+                        
                       ),
                     ),
                   ),

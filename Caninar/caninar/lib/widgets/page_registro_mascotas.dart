@@ -28,7 +28,7 @@ class _PageRegistroMascotasState extends State<PageRegistroMascotas> {
           RedireccionAtras(
               nombre: widget.registro == true
                   ? 'Registro Mascotas'
-                  : 'Editar Mascota'),
+                  : 'Guardar Cambios'),
           Expanded(
               child: RegistroMascota(
             mascota: widget.mascota,
