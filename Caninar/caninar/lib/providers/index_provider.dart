@@ -11,4 +11,9 @@ class IndexNavegacion with ChangeNotifier {
     _index = index;
     notifyListeners();
   }
+
+    void resetIndex() {
+    _index = 2;  
+    notifyListeners();
+  }
 }

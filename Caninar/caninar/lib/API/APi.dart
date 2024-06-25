@@ -120,7 +120,7 @@ class API {
     List<dynamic> productList = response.data['products'];
 
     for (Map<String, dynamic> producto in productList) {
-      print(producto);
+   
       productos.add(ProductoModel.fromJson(producto));
     }
 
@@ -228,7 +228,7 @@ class API {
         .then((value) async {
       if (value.statusCode == 200) {
         idOrden = value.data['id_order'];
-        print(idOrden);
+    
       }
     }).catchError((e) {
       print(e);

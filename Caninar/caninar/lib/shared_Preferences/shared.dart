@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:caninar/constants/url_api.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/navigation_pages/navigation_home.dart';
+import 'package:caninar/providers/index_provider.dart';
 import 'package:caninar/providers/producto_provider.dart';
 import 'package:caninar/widgets/home_adriestrador.dart';
 import 'package:dio/dio.dart';
@@ -29,7 +30,7 @@ class Shared {
   }
 
   Future<UserLoginModel?> login(
-      String email, String pass, BuildContext context) async {
+      String email, String pass, BuildContext context , bool? requerido) async {
     UserLoginModel? userLoginModel;
     Map<String, dynamic> login = {
       "email": email,
@@ -61,6 +62,14 @@ class Shared {
         );
         if (userLoginModel?.type == 3 || userLoginModel?.type == 1) {
           Navigator.pop(context, true);
+        }
+         if ((userLoginModel?.type == 3 || userLoginModel?.type == 1) && requerido!) {
+          print('object');
+          Provider.of<IndexNavegacion>(context, listen: false).resetIndex();
+         Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const Home()),
+          );
         }
         if (userLoginModel?.type == 2) {
           Navigator.push(

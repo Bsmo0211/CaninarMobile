@@ -358,7 +358,8 @@ class _ItemHomeState extends State<ItemHome> {
                                                   MainAxisAlignment.center,
                                               children: [
                                                 Container(
-                                                  width: 40,
+                                                  width: 35,
+                                                    height: 35,
                                                   decoration: BoxDecoration(
                                                     color: PrincipalColors.blue,
                                                     border: Border.all(
@@ -373,6 +374,7 @@ class _ItemHomeState extends State<ItemHome> {
                                                     child: IconButton(
                                                       icon: const Icon(
                                                           Icons.remove,
+                                                          size: 14,
                                                           color: Colors.white),
                                                       onPressed: () {
                                                         if (quantities[
@@ -397,7 +399,8 @@ class _ItemHomeState extends State<ItemHome> {
                                                 ),
                                                 const SizedBox(width: 10),
                                                 Container(
-                                                  width: 40,
+                                                  width: 35,
+                                                    height: 35,
                                                   decoration: BoxDecoration(
                                                     color: PrincipalColors.blue,
                                                     border: Border.all(
@@ -412,6 +415,7 @@ class _ItemHomeState extends State<ItemHome> {
                                                     child: IconButton(
                                                       icon: const Icon(
                                                           Icons.add,
+                                                          size: 14,
                                                           color: Colors.white),
                                                       onPressed: () {
                                                         setStateModal(() {
@@ -502,8 +506,8 @@ class _ItemHomeState extends State<ItemHome> {
                                                 );
                                               },
                                               icon: const Icon(
-                                                  Icons.shopping_cart_outlined),
-                                              label: const Text('Agregar'),
+                                                  Icons.shopping_cart_outlined,size: 14,),
+                                              label: const Text('Agregar', style: TextStyle(fontSize: 13),),
                                               style: ElevatedButton.styleFrom(
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:

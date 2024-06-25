@@ -35,8 +35,6 @@ class _SeleccionFechaCitaState extends State<SeleccionFechaCita> {
       }
     };
 
-    print(updateSchdeule);
-
     API().updateScheduleById(widget.idSchedule, updateSchdeule);
   }
 

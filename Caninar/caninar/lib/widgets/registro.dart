@@ -7,9 +7,11 @@ import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/constants/url_api.dart';
 import 'package:caninar/models/distritos/model.dart';
 import 'package:caninar/navigation_pages/navigation_home.dart';
+import 'package:caninar/providers/index_provider.dart';
 import 'package:caninar/widgets/boton_custom.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
 import 'package:caninar/widgets/custom_drawer.dart';
+import 'package:caninar/widgets/editar_perfil.dart';
 import 'package:caninar/widgets/item_home.dart';
 import 'package:caninar/widgets/login.dart';
 import 'package:caninar/widgets/redireccion_atras.dart';
@@ -22,6 +24,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:google_places_autocomplete_text_field/model/prediction.dart';
+import 'package:provider/provider.dart';
 import 'package:snippet_coder_utils/multi_images_utils.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:aws_s3_upload/aws_s3_upload.dart';
@@ -157,14 +160,26 @@ class _RegistroState extends State<Registro> {
         String link = '${UrlApi.users}/users/verify/{email}';
         Response response = await dio.get(link);
 
-        if (response.statusCode == 200) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Home(),
-            ),
-          );
-        }
+       if (response.statusCode == 200) {
+  // Resetear el índice de navegación utilizando Provider (ejemplo ficticio)
+  Provider.of<IndexNavegacion>(context, listen: false).resetIndex();
+
+  // Primero, navegar a una página que no se quede en el historial
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (context) => Home(),
+    ),
+  );
+
+  // Luego, navegar a la página final deseada
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => Home(),
+    ),
+  );
+}
       }
     }).catchError((e) {
       print(e);
@@ -185,7 +200,6 @@ class _RegistroState extends State<Registro> {
         '$baseURL?input=$input&key=$kplacesApiKey&sessiontoken=$_sessionToken';
     Response response = await dio.get(request);
     if (response.statusCode == 200) {
-      print(response.data);
       setState(() {
         _placeList = response.data['predictions'];
       });

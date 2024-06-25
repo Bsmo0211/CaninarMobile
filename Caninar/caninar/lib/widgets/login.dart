@@ -6,7 +6,8 @@ import 'package:caninar/widgets/restaurar_contrasena.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatefulWidget {
-  Login({Key? key}) : super(key: key);
+  bool? perfil;
+  Login({Key? key, this.perfil}) : super(key: key, );
 
   @override
   _LoginState createState() => _LoginState();
@@ -17,6 +18,27 @@ class _LoginState extends State<Login> {
   bool _showPassword = true;
   TextEditingController correoCtrl = TextEditingController();
   TextEditingController contrasenaCtrl = TextEditingController();
+  bool? requerido;
+
+  validateCondition(){
+      if(widget.perfil == true){
+
+        setState(() {
+          requerido = true;
+        });
+      } else{
+        setState(() {
+          requerido = false;
+        });
+      }
+  }
+
+
+  @override
+  void initState() {
+   validateCondition();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +184,7 @@ class _LoginState extends State<Login> {
                 onPressed: () async {
                   if (validate()) {
                     await Shared()
-                        .login(correoCtrl.text, contrasenaCtrl.text, context);
+                        .login(correoCtrl.text, contrasenaCtrl.text, context , requerido);
                   }
                 },
               ),
