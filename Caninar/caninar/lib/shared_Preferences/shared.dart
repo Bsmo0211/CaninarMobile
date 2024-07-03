@@ -64,7 +64,6 @@ class Shared {
           Navigator.pop(context, true);
         }
          if ((userLoginModel?.type == 3 || userLoginModel?.type == 1) && requerido!) {
-          print('object');
           Provider.of<IndexNavegacion>(context, listen: false).resetIndex();
          Navigator.push(
             context,

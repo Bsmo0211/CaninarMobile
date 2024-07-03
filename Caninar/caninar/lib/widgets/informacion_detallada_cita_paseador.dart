@@ -227,7 +227,7 @@ class _InformacionDetalladaCitaPaseadorState
                     ],
                   ),
                 ),
-                const Padding(
+               /*  const Padding(
                   padding: EdgeInsets.only(top: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -262,7 +262,7 @@ class _InformacionDetalladaCitaPaseadorState
                       Expanded(child: Text(widget.direccion)),
                     ],
                   ),
-                ),
+                ), */
                 if (user?.type == 2 && widget.estado == false)
                   Padding(
                     padding: const EdgeInsets.only(top: 5),

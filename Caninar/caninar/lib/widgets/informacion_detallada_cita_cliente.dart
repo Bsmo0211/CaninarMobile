@@ -177,7 +177,7 @@ class _InformacionDetalladaCitaClienteState
                     ],
                   ),
                 ),
-                const Padding(
+              /*   const Padding(
                   padding: EdgeInsets.only(top: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -212,7 +212,7 @@ class _InformacionDetalladaCitaClienteState
                       Expanded(child: Text(widget.direccion)),
                     ],
                   ),
-                ),
+                ), */
               ],
             ),
           ],
