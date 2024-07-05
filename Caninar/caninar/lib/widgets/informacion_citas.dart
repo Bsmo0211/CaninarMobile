@@ -153,8 +153,7 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                   .entries
                                   .map((entry) {
                                 int index = entry.key;
-                                bool? terminado = false;
-
+                                bool? terminado = false;                        
                                 if (entry.value.status != null) {
                                   if (entry.value.status!
                                       .contains('terminated')) {
@@ -173,6 +172,7 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                       ? mascota.image
                                       : marca.image!,
                                   redireccion: () {
+                                    
                                     user?.type == 2
                                         ? entry.value.time!.date == ''
                                             ? Navigator.push(
@@ -190,6 +190,7 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                                 MaterialPageRoute(
                                                     builder: (context) =>
                                                         InformacionDetalladaCitaPaseador(
+                                                          formatoHora: entry.value.duration ?? '00:00:00',
                                                           estado: terminado!,
                                                           idSchedule:
                                                               entry.value.id!,
@@ -205,6 +206,8 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     InformacionDetalladaCitaCliente(
+                                                      formatoHora: entry.value.duration ?? '00:00:00',
+                                                          estadoTermiando: terminado!,
                                                       direccion: entry
                                                           .value.direccion!,
                                                       estado: widget.estado!,
