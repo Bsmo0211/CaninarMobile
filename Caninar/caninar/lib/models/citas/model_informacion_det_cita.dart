@@ -9,6 +9,7 @@ class InformacionDetalladaCitaModel {
   String? id;
   TimeModel? time;
   String? direccion;
+  String? duration;
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -18,6 +19,7 @@ class InformacionDetalladaCitaModel {
     data['supplier_id'] = supplierId;
     data['id_user'] = idUser;
     data['id'] = id;
+    data['duration_sh'] = duration;
     if (time != null) {
       data['time'] = time!.toJson();
     }
@@ -32,6 +34,7 @@ class InformacionDetalladaCitaModel {
     supplierId = json['supplier_id'];
     idUser = json['id_user'];
     id = json['id'];
+    duration = json['duration_sh'];
     if (json['time'] != null) {
       time = TimeModel.fromJson(json['time']);
     }
