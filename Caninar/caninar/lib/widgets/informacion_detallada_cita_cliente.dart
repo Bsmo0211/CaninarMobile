@@ -22,13 +22,18 @@ class InformacionDetalladaCitaCliente extends StatefulWidget {
   MascotasModel mascota;
   String idSchedule;
   String direccion;
+  String formatoHora;
+  bool estadoTermiando;
+
   InformacionDetalladaCitaCliente(
       {super.key,
       required this.nombreRedireccion,
       required this.mascota,
       required this.idSchedule,
       required this.estado,
-      required this.direccion});
+      required this.direccion,
+      required this.estadoTermiando,
+      required this.formatoHora});
 
   @override
   State<InformacionDetalladaCitaCliente> createState() =>
@@ -91,6 +96,7 @@ class _InformacionDetalladaCitaClienteState
 
   @override
   void initState() {
+    print(widget.formatoHora);
     getLocationPaseador();
     getCurrentUser();
     getLocation();
@@ -112,6 +118,7 @@ class _InformacionDetalladaCitaClienteState
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: const CustomAppBar(),
       drawer: CustomDrawer(),
@@ -120,7 +127,7 @@ class _InformacionDetalladaCitaClienteState
           children: [
             RedireccionAtras(nombre: widget.nombreRedireccion),
             SizedBox(
-              height: 400,
+              height: 370,
               child: _isLocationLoaded
                   ? GoogleMap(
                       initialCameraPosition: CameraPosition(
@@ -150,71 +157,94 @@ class _InformacionDetalladaCitaClienteState
                       child: CircularProgressIndicator(),
                     ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Nombre: '),
-                      const SizedBox(
-                        width: 10,
+            Center(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20, left: 40),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 7),
+                            child: Icon(Icons.access_time,
+                                color: PrincipalColors.orange),
+                          ),
+                          const Text('Duración: '),
+                          Expanded(
+                            child: Text(
+                              widget.estadoTermiando == true
+                                  ? widget.formatoHora
+                                  : "00:00:00",
+                              overflow: TextOverflow
+                                  .ellipsis, // Opcional: añade esto para manejar textos muy largos
+                            ),
+                          ),
+                        ],
                       ),
-                      ClipOval(
-                        child: ImageNetworkPropio(
-                          imagen: '${widget.mascota.image}',
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                        ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10, left: 40),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 7),
+                            child: Icon(Icons.home_filled,
+                                color: PrincipalColors.orange),
+                          ),
+                          const Text('Dirección de rocojo: '),
+                          const SizedBox(width: 40),
+                          Expanded(
+                            child: Text(
+                              widget.direccion,
+                              overflow: TextOverflow
+                                  .ellipsis, // Opcional: añade esto para manejar textos muy largos
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 10),
-                      Text('${widget.mascota.name}'),
-                    ],
-                  ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10, left: 40),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 7),
+                            child: Icon(
+                              Icons.pets_outlined,
+                              color: PrincipalColors.orange,
+                            ),
+                          ),
+                          const Text('Nombre: '),
+                          const SizedBox(width: 10),
+                          ClipOval(
+                            child: ImageNetworkPropio(
+                              imagen: '${widget.mascota.image}',
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              '${widget.mascota.name}',
+                              overflow: TextOverflow
+                                  .ellipsis, // Opcional: añade esto para manejar textos muy largos
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              /*   const Padding(
-                  padding: EdgeInsets.only(top: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Duración: '),
-                      SizedBox(width: 40),
-                      Text('Tiempo'),
-                    ],
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Distancia recorrida: '),
-                      SizedBox(width: 40),
-                      Text('Km'),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Dirección de rocojo: '),
-                      const SizedBox(width: 40),
-                      Expanded(child: Text(widget.direccion)),
-                    ],
-                  ),
-                ), */
-              ],
-            ),
+              ),
+            
           ],
         ),
       ),

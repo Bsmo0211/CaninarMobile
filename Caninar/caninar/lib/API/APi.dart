@@ -243,11 +243,11 @@ class API {
   }
 
   Future<void> updateFirstPointById(
-      List<Map<String, dynamic>> datosOrden, String id, String status) async {
+      List<Map<String, dynamic>> datosOrden, String id, String status, String duration) async {
     await dio
         .put(
           '${UrlApi.users}/users/tracking?schedule_id=$id',
-          data: {"coordinates": datosOrden, 'sh_status': status},
+          data: {"coordinates": datosOrden, 'sh_status': status, "duration_sh": duration},
         )
         .then((value) async {})
         .catchError((e) {

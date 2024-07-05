@@ -25,14 +25,16 @@ class InformacionDetalladaCitaPaseador extends StatefulWidget {
   String idSchedule;
   String direccion;
   bool estado;
-  InformacionDetalladaCitaPaseador({
-    super.key,
-    required this.nombreRedireccion,
-    required this.mascota,
-    required this.idSchedule,
-    required this.direccion,
-    required this.estado,
-  });
+  String formatoHora;
+
+  InformacionDetalladaCitaPaseador(
+      {super.key,
+      required this.nombreRedireccion,
+      required this.mascota,
+      required this.idSchedule,
+      required this.direccion,
+      required this.estado,
+      required this.formatoHora});
 
   @override
   State<InformacionDetalladaCitaPaseador> createState() =>
@@ -53,6 +55,9 @@ class _InformacionDetalladaCitaPaseadorState
   List<Map<String, String>> arrayEnvio = [];
   List<LatLng> polilineaPoints = [];
   Timer? _locationTimer;
+  int _start = 0;
+  Timer? _timer;
+  String tiempoFormateado = '00:00:00';
 
   getCurrentUser() async {
     UserLoginModel? userTemp = await Shared().currentUser();
@@ -60,6 +65,45 @@ class _InformacionDetalladaCitaPaseadorState
     setState(() {
       user = userTemp;
     });
+  }
+
+  startTimer() {
+    if (_timer != null) {
+      _timer!.cancel();
+    }
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _start++;
+      });
+      updateFormattedTime(_start);
+    });
+  }
+
+  stopTimer() {
+    if (_timer != null) {
+      _timer!.cancel();
+    }
+  }
+
+  String formattedTime(int seconds) {
+    String hours = (seconds ~/ 3600).toString().padLeft(2, '0');
+    String minutes = ((seconds % 3600) ~/ 60).toString().padLeft(2, '0');
+    String secondsStr = (seconds % 60).toString().padLeft(2, '0');
+
+    return '$hours:$minutes:$secondsStr';
+  }
+
+  updateFormattedTime(int seconds) {
+    setState(() {
+      tiempoFormateado = formattedTime(seconds);
+    });
+  }
+
+  @override
+  void dispose() {
+    _locationTimer?.cancel();
+    stopTimer();
+    super.dispose();
   }
 
   Future<void> getLocationPaseador() async {
@@ -133,8 +177,8 @@ class _InformacionDetalladaCitaPaseadorState
             {'lat': '${position.latitude}', 'long': '${position.longitude}'});
       });
 
-      await API()
-          .updateFirstPointById(arrayEnvio, widget.idSchedule, 'current');
+      await API().updateFirstPointById(
+          arrayEnvio, widget.idSchedule, 'current', tiempoFormateado);
     } catch (error) {
       print('Error getting location: $error');
     }
@@ -156,151 +200,183 @@ class _InformacionDetalladaCitaPaseadorState
     return Scaffold(
       appBar: const CustomAppBar(),
       drawer: CustomDrawer(),
-      body: Column(
-        children: [
-          RedireccionAtras(
-            nombre: 'Paseo de ${widget.nombreRedireccion}',
-          ),
-          SizedBox(
-            height: 370,
-            child: _isLocationLoaded
-                ? GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: _initialCameraPosition,
-                      zoom: 17,
-                    ),
-                    markers: {
-                      Marker(
-                          markerId: const MarkerId('Punto incial'),
-                          position: _cameraPositionInicio,
-                          icon: BitmapDescriptor.defaultMarkerWithHue(
-                            BitmapDescriptor.hueCyan,
-                          )),
-                      if (polilineaPoints.isNotEmpty)
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            RedireccionAtras(
+              nombre: 'Paseo de ${widget.nombreRedireccion}',
+            ),
+            SizedBox(
+              height: 370,
+              child: _isLocationLoaded
+                  ? GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: _initialCameraPosition,
+                        zoom: 17,
+                      ),
+                      markers: {
                         Marker(
                             markerId: const MarkerId('Punto incial'),
-                            position: polilineaPoints.last,
+                            position: _cameraPositionInicio,
                             icon: BitmapDescriptor.defaultMarkerWithHue(
                               BitmapDescriptor.hueCyan,
-                            ))
-                    },
-                    polylines: {
-                      Polyline(
-                        polylineId: const PolylineId('ruta'),
-                        color: PrincipalColors.orange, // Color de la línea
-                        points: polilineaPoints,
+                            )),
+                        if (polilineaPoints.isNotEmpty)
+                          Marker(
+                              markerId: const MarkerId('Punto incial'),
+                              position: polilineaPoints.last,
+                              icon: BitmapDescriptor.defaultMarkerWithHue(
+                                BitmapDescriptor.hueCyan,
+                              ))
+                      },
+                      polylines: {
+                        Polyline(
+                          polylineId: const PolylineId('ruta'),
+                          color: PrincipalColors.orange, // Color de la línea
+                          points: polilineaPoints,
+                        ),
+                      },
+                      mapType: MapType.normal,
+                      onMapCreated: (GoogleMapController controller) {
+                        _mapController = controller;
+                      },
+                      myLocationEnabled: true,
+                    )
+                  : const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+            ),
+            Expanded(
+              child: Center(
+                child: ListView(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20, left: 40),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 7),
+                            child: Icon(Icons.access_time,
+                                color: PrincipalColors.orange),
+                          ),
+                          const Text('Duración: '),
+                          Expanded(
+                            child: Text(
+                              widget.estado == true
+                                  ? widget.formatoHora
+                                  : tiempoFormateado,
+                              overflow: TextOverflow
+                                  .ellipsis, // Opcional: añade esto para manejar textos muy largos
+                            ),
+                          ),
+                        ],
                       ),
-                    },
-                    mapType: MapType.normal,
-                    onMapCreated: (GoogleMapController controller) {
-                      _mapController = controller;
-                    },
-                    myLocationEnabled: true,
-                  )
-                : const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-          ),
-          Expanded(
-            child: ListView(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Nombre: '),
-                      const SizedBox(
-                        width: 10,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10, left: 40),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 7),
+                            child: Icon(Icons.home_filled,
+                                color: PrincipalColors.orange),
+                          ),
+                          const Text('Dirección de rocojo: '),
+                          const SizedBox(width: 40),
+                          Expanded(
+                            child: Text(
+                              widget.direccion,
+                              overflow: TextOverflow
+                                  .ellipsis, // Opcional: añade esto para manejar textos muy largos
+                            ),
+                          ),
+                        ],
                       ),
-                      ClipOval(
-                        child: ImageNetworkPropio(
-                          imagen: '${widget.mascota.image}',
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10, left: 40),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 7),
+                            child: Icon(
+                              Icons.pets_outlined,
+                              color: PrincipalColors.orange,
+                            ),
+                          ),
+                          const Text('Nombre: '),
+                          const SizedBox(width: 10),
+                          ClipOval(
+                            child: ImageNetworkPropio(
+                              imagen: '${widget.mascota.image}',
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              '${widget.mascota.name}',
+                              overflow: TextOverflow
+                                  .ellipsis, // Opcional: añade esto para manejar textos muy largos
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (user?.type == 2 && widget.estado == false)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5),
+                        child: BotonCustom(
+                          funcion: () async {
+                            if (!paseoIniciado) {
+                              await getLocationRecogida();
+                              _locationTimer = Timer.periodic(
+                                  const Duration(seconds: 15), (timer) async {
+                                await getLocationTimer();
+                              });
+                              startTimer();
+                              setState(() {
+                                paseoIniciado = true;
+                              });
+                            } else {
+                              _locationTimer?.cancel();
+                              stopTimer();
+                              print(tiempoFormateado);
+                              await API().updateFirstPointById(
+                                  arrayEnvio,
+                                  widget.idSchedule,
+                                  'terminated',
+                                  tiempoFormateado);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const PaseoTerminado(),
+                                ),
+                              );
+                              setState(() {
+                                paseoIniciado = false;
+                              });
+                            }
+                          },
+                          texto: paseoIniciado
+                              ? 'Finalizar Paseo'
+                              : 'Iniciar Paseo',
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      Text('${widget.mascota.name}'),
-                    ],
-                  ),
+                  ],
                 ),
-               /*  const Padding(
-                  padding: EdgeInsets.only(top: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Duración: '),
-                      SizedBox(width: 40),
-                      Text('Tiempo'),
-                    ],
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Distancia recorrida: '),
-                      SizedBox(width: 40),
-                      Text('Km'),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Dirección de rocojo: '),
-                      const SizedBox(width: 40),
-                      Expanded(child: Text(widget.direccion)),
-                    ],
-                  ),
-                ), */
-                if (user?.type == 2 && widget.estado == false)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 5),
-                    child: BotonCustom(
-                      funcion: () async {
-                        if (!paseoIniciado) {
-                          await getLocationRecogida();
-                          _locationTimer = Timer.periodic(
-                              const Duration(seconds: 15), (timer) async {
-                            await getLocationTimer();
-                          });
-
-                          setState(() {
-                            paseoIniciado = true;
-                          });
-                        } else {
-                          _locationTimer?.cancel();
-                          await API().updateFirstPointById(
-                              arrayEnvio, widget.idSchedule, 'terminated');
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const PaseoTerminado(),
-                            ),
-                          );
-                          setState(() {
-                            paseoIniciado = false;
-                          });
-                        }
-                      },
-                      texto:
-                          paseoIniciado ? 'Finalizar Paseo' : 'Iniciar Paseo',
-                    ),
-                  ),
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
