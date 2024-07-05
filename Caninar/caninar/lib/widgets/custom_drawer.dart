@@ -1,6 +1,7 @@
 import 'package:caninar/API/APi.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/user/model.dart';
+import 'package:caninar/navigation_pages/navigation_citas.dart';
 import 'package:caninar/navigation_pages/navigation_perfil.dart';
 import 'package:caninar/navigation_pages/navigator_mascotas.dart';
 import 'package:caninar/providers/index_provider.dart';
@@ -142,11 +143,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     ItemDrawer(
                       titulo: 'Mis Citas',
                       redireccion: () {
+                        Provider.of<IndexNavegacion>(context, listen: false)
+                            .Index = 3;
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const MisCitas(),
-                          ),
+                              builder: (context) => const NavigationCitas()),
                         );
                       },
                     ),
