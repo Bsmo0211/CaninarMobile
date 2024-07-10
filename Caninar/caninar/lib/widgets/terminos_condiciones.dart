@@ -50,15 +50,20 @@ class _TerminosYCondicionesState extends State<TerminosYCondiciones> {
     return Scaffold(
       appBar: const CustomAppBar(),
       drawer: CustomDrawer(),
-      body: Column(
-        children: [
-          RedireccionAtras(nombre: 'Términos y Condiciones'),
-          Center(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            RedireccionAtras(nombre: 'Términos y Condiciones'),
+            Center(
+                child: Padding(
+              padding: const EdgeInsets.fromLTRB(15, 5, 15, 10),
               child: Text(
-            widget.cliente ? '$contenidoCliente' : '$contenidoProovedor',
-            textAlign: TextAlign.justify,
-          ))
-        ],
+                widget.cliente ? '$contenidoCliente' : '$contenidoProovedor',
+                textAlign: TextAlign.justify,
+              ),
+            ))
+          ],
+        ),
       ),
     );
   }

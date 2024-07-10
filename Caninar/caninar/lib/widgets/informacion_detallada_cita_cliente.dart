@@ -118,7 +118,6 @@ class _InformacionDetalladaCitaClienteState
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: const CustomAppBar(),
       drawer: CustomDrawer(),
@@ -158,93 +157,91 @@ class _InformacionDetalladaCitaClienteState
                     ),
             ),
             Center(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20, left: 40),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 7),
-                            child: Icon(Icons.access_time,
-                                color: PrincipalColors.orange),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20, left: 40),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 7),
+                          child: Icon(Icons.access_time,
+                              color: PrincipalColors.orange),
+                        ),
+                        const Text('Duración: '),
+                        Expanded(
+                          child: Text(
+                            widget.estadoTermiando == true
+                                ? widget.formatoHora
+                                : "00:00:00",
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          const Text('Duración: '),
-                          Expanded(
-                            child: Text(
-                              widget.estadoTermiando == true
-                                  ? widget.formatoHora
-                                  : "00:00:00",
-                              overflow: TextOverflow
-                                  .ellipsis, // Opcional: añade esto para manejar textos muy largos
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10, left: 40),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 7),
-                            child: Icon(Icons.home_filled,
-                                color: PrincipalColors.orange),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10, left: 40),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 7),
+                          child: Icon(Icons.home_filled,
+                              color: PrincipalColors.orange),
+                        ),
+                        const Text('Dirección de rocojo: '),
+                        const SizedBox(width: 40),
+                        Expanded(
+                          child: Text(
+                            widget.direccion,
+                            overflow: TextOverflow
+                                .ellipsis, // Opcional: añade esto para manejar textos muy largos
                           ),
-                          const Text('Dirección de rocojo: '),
-                          const SizedBox(width: 40),
-                          Expanded(
-                            child: Text(
-                              widget.direccion,
-                              overflow: TextOverflow
-                                  .ellipsis, // Opcional: añade esto para manejar textos muy largos
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10, left: 40),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 7),
-                            child: Icon(
-                              Icons.pets_outlined,
-                              color: PrincipalColors.orange,
-                            ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10, left: 40),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 7),
+                          child: Icon(
+                            Icons.pets_outlined,
+                            color: PrincipalColors.orange,
                           ),
-                          const Text('Nombre: '),
-                          const SizedBox(width: 10),
-                          ClipOval(
-                            child: ImageNetworkPropio(
-                              imagen: '${widget.mascota.image}',
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            ),
+                        ),
+                        const Text('Nombre: '),
+                        const SizedBox(width: 10),
+                        ClipOval(
+                          child: ImageNetworkPropio(
+                            imagen: '${widget.mascota.image}',
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
                           ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              '${widget.mascota.name}',
-                              overflow: TextOverflow
-                                  .ellipsis, // Opcional: añade esto para manejar textos muy largos
-                            ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            '${widget.mascota.name}',
+                            overflow: TextOverflow
+                                .ellipsis, // Opcional: añade esto para manejar textos muy largos
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            
+            ),
           ],
         ),
       ),
