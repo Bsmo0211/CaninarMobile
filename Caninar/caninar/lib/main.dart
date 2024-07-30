@@ -11,6 +11,7 @@ import 'package:caninar/providers/index_provider.dart';
 import 'package:caninar/providers/orden_provider.dart';
 import 'package:caninar/providers/producto_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
+import 'package:caninar/widgets/404_page.dart';
 import 'package:caninar/widgets/about_us.dart';
 import 'package:caninar/navigation_pages/navigation_home.dart';
 import 'package:caninar/widgets/compra_finalizada.dart';
@@ -50,28 +51,23 @@ class MyApp extends StatelessWidget {
     routes: [
       GoRoute(
         path: '/',
-        builder: (_, __) => _defaultHome,
-        routes: [
-          GoRoute(
-            path: 'payment/success',
-            builder: (context, state) {
-              Map<String, String> queryParams = state.uri.queryParameters;
-              return CompraFinalizada(
-                queryParams: queryParams,
-              );
-            },
-          ),
-          GoRoute(
-            path: 'payment/error',
-            builder: (context, state) => const CompraRechazada(),
-          ),
-          GoRoute(
-            path: 'payment/error',
-            builder: (context, state) => const CompraRechazada(),
-          ),
-        ],
+        builder: (context, state) => _defaultHome,
+      ),
+      GoRoute(
+        path: '/payment/success',
+        builder: (context, state) {
+          Map<String, String> queryParams = state.uri.queryParameters;
+          return CompraFinalizada(
+            queryParams: queryParams,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/payment/error',
+        builder: (context, state) => const CompraRechazada(),
       ),
     ],
+    errorBuilder: (context, state) => _defaultHome,
   );
 
   @override
