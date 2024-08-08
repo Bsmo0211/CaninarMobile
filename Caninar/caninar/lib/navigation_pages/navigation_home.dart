@@ -70,9 +70,14 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     int index = Provider.of<IndexNavegacion>(context).Index;
+
+    bool shouldShowAppBar =
+        index != paginasNavegacion.indexWhere((widget) => widget is MisCitas);
     return PopScope(
       canPop: false,
       child: Scaffold(
+        appBar: CustomAppBar(),
+        drawer: CustomDrawer(),
         body: paginasNavegacion.isNotEmpty
             ? Center(
                 child: paginasNavegacion.elementAt(index),

@@ -120,7 +120,6 @@ class API {
     List<dynamic> productList = response.data['products'];
 
     for (Map<String, dynamic> producto in productList) {
-   
       productos.add(ProductoModel.fromJson(producto));
     }
 
@@ -160,7 +159,10 @@ class API {
         );
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Login()),
+          MaterialPageRoute(
+              builder: (context) => Login(
+                    navegacion: true,
+                  )),
         );
       }
     }).catchError((e) {
@@ -228,7 +230,6 @@ class API {
         .then((value) async {
       if (value.statusCode == 200) {
         idOrden = value.data['id_order'];
-    
       }
     }).catchError((e) {
       print(e);
@@ -242,12 +243,16 @@ class API {
     return idOrden;
   }
 
-  Future<void> updateFirstPointById(
-      List<Map<String, dynamic>> datosOrden, String id, String status, String duration) async {
+  Future<void> updateFirstPointById(List<Map<String, dynamic>> datosOrden,
+      String id, String status, String duration) async {
     await dio
         .put(
           '${UrlApi.users}/users/tracking?schedule_id=$id',
-          data: {"coordinates": datosOrden, 'sh_status': status, "duration_sh": duration},
+          data: {
+            "coordinates": datosOrden,
+            'sh_status': status,
+            "duration_sh": duration
+          },
         )
         .then((value) async {})
         .catchError((e) {

@@ -78,6 +78,7 @@ class _ItemHomeState extends State<ItemHome> {
       );
     }
 
+    if (!mounted) return;
     setState(() {
       distritos = temp;
     });
@@ -86,12 +87,14 @@ class _ItemHomeState extends State<ItemHome> {
   getProductos(String slug, String seaarch) async {
     List<Map<String, dynamic>> data = [];
 
+    if (!mounted) return;
     setState(() {
       isLoading = true;
     });
 
     Map<String, dynamic> search = await API().getProductsSearch(slug, seaarch);
 
+    if (!mounted) return;
     setState(() {
       if (search['data'] != null) {
         data = List<Map<String, dynamic>>.from(search['data']);
@@ -118,18 +121,19 @@ class _ItemHomeState extends State<ItemHome> {
   }
 
   getData() async {
+    if (!mounted) return;
     setState(() {
       isApiCallProcess = true;
     });
+
     List<CategoriasModel> result = await API().getCategorias();
     List<CarruselModel> imagenesTemp = await API().getImageCarrusel();
     imagenesTemp.sort((a, b) => a.order!.compareTo(b.order!));
 
+    if (!mounted) return;
     setState(() {
       categorias = result;
       imagenes = imagenesTemp;
-    });
-    setState(() {
       isApiCallProcess = false;
     });
   }
@@ -154,7 +158,6 @@ class _ItemHomeState extends State<ItemHome> {
                       alignment: Alignment.topRight,
                       child: IconButton(
                         onPressed: () {
-                          // Restablecer valores aquí
                           setState(() {
                             dropdownValueDistrito = null;
                             searchText = '';
@@ -184,7 +187,7 @@ class _ItemHomeState extends State<ItemHome> {
                       child: Center(
                         child: SizedBox(
                           width: 260,
-                          height: 60,
+                          height: 75,
                           child: DropdownButtonFormField<DistritosModel>(
                             decoration: InputDecoration(
                               enabledBorder: OutlineInputBorder(
@@ -316,9 +319,7 @@ class _ItemHomeState extends State<ItemHome> {
                                           width: 70,
                                         ),
                                       ),
-                                      const SizedBox(
-                                          width:
-                                              16.0), // Spacing between image and text
+                                      const SizedBox(width: 16.0),
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment
@@ -359,7 +360,7 @@ class _ItemHomeState extends State<ItemHome> {
                                               children: [
                                                 Container(
                                                   width: 35,
-                                                    height: 35,
+                                                  height: 35,
                                                   decoration: BoxDecoration(
                                                     color: PrincipalColors.blue,
                                                     border: Border.all(
@@ -393,14 +394,14 @@ class _ItemHomeState extends State<ItemHome> {
                                                 Text(
                                                   '${quantities[productIndex]}',
                                                   style: const TextStyle(
-                                                    fontSize: 16,
+                                                    fontSize: 14,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
                                                 const SizedBox(width: 10),
                                                 Container(
                                                   width: 35,
-                                                    height: 35,
+                                                  height: 35,
                                                   decoration: BoxDecoration(
                                                     color: PrincipalColors.blue,
                                                     border: Border.all(
@@ -506,8 +507,13 @@ class _ItemHomeState extends State<ItemHome> {
                                                 );
                                               },
                                               icon: const Icon(
-                                                  Icons.shopping_cart_outlined,size: 14,),
-                                              label: const Text('Agregar', style: TextStyle(fontSize: 13),),
+                                                Icons.shopping_cart_outlined,
+                                                size: 14,
+                                              ),
+                                              label: const Text(
+                                                'Agregar',
+                                                style: TextStyle(fontSize: 12),
+                                              ),
                                               style: ElevatedButton.styleFrom(
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
@@ -581,8 +587,6 @@ class _ItemHomeState extends State<ItemHome> {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        appBar: const CustomAppBar(),
-        drawer: CustomDrawer(),
         body: ListView(
           children: [
             const Padding(
@@ -644,6 +648,7 @@ class _ItemHomeState extends State<ItemHome> {
                     color: Colors.grey.shade800,
                     fontWeight: FontWeight.bold,
                   ),
+                  textAlign: TextAlign.justify,
                 ),
               ),
             ),

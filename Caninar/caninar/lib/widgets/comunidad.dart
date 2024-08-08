@@ -30,8 +30,6 @@ class _ComunidadState extends State<Comunidad> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(),
-      drawer: CustomDrawer(),
       body: ListView.builder(
         itemCount: jsonData.length,
         itemBuilder: (context, index) {

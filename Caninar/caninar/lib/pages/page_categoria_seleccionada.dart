@@ -84,7 +84,7 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
       EasyLoading.dismiss();
     }
     return Scaffold(
-      appBar: const CustomAppBar(),
+      appBar: CustomAppBar(),
       drawer: CustomDrawer(),
       body: ListView(
         children: [
@@ -92,7 +92,7 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
           Center(
             child: SizedBox(
               width: 260,
-              height: 60,
+              height: 75,
               child: DropdownButtonFormField(
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(

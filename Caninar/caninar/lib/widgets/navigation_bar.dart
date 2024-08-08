@@ -46,7 +46,6 @@ class _NavbigationBarWidgetState extends State<NavbigationBarWidget> {
   updateItems() {
     List<BottomBarItem> itemsTemp = [
       BottomBarItem(
-        itemLabel: 'Noticias',
         inActiveItem: Icon(
           Icons.people_alt_rounded,
           color: PrincipalColors.blue,
@@ -57,7 +56,6 @@ class _NavbigationBarWidgetState extends State<NavbigationBarWidget> {
         ),
       ),
       BottomBarItem(
-        itemLabel: 'Mascotas',
         inActiveItem: Icon(
           Icons.pets,
           color: PrincipalColors.blue,
@@ -68,7 +66,6 @@ class _NavbigationBarWidgetState extends State<NavbigationBarWidget> {
         ),
       ),
       BottomBarItem(
-        itemLabel: 'Inicio',
         inActiveItem: Icon(
           Icons.home,
           color: PrincipalColors.blue,
@@ -79,7 +76,6 @@ class _NavbigationBarWidgetState extends State<NavbigationBarWidget> {
         ),
       ),
       BottomBarItem(
-        itemLabel: 'Citas',
         inActiveItem: Icon(
           Icons.edit_calendar_rounded,
           color: PrincipalColors.blue,
@@ -90,7 +86,6 @@ class _NavbigationBarWidgetState extends State<NavbigationBarWidget> {
         ),
       ),
       BottomBarItem(
-        itemLabel: 'Perfil',
         inActiveItem: Icon(
           Icons.person,
           color: PrincipalColors.blue,

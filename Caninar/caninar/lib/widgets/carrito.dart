@@ -381,7 +381,9 @@ class _CarritoComprasState extends State<CarritoCompras> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => Login(),
+                            builder: (context) => Login(
+                              navegacion: true,
+                            ),
                           ),
                         ).then((isLoginSuccessful) {
                           if (isLoginSuccessful != null && isLoginSuccessful) {

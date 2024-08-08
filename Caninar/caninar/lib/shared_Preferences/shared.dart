@@ -30,7 +30,11 @@ class Shared {
   }
 
   Future<UserLoginModel?> login(
-      String email, String pass, BuildContext context , bool? requerido) async {
+    String email,
+    String pass,
+    BuildContext context,
+    bool? requerido,
+  ) async {
     UserLoginModel? userLoginModel;
     Map<String, dynamic> login = {
       "email": email,
@@ -60,22 +64,26 @@ class Shared {
           msg: 'Bienvenido ${userLoginModel?.firstName}',
           backgroundColor: Colors.green,
         );
-        if (userLoginModel?.type == 3 || userLoginModel?.type == 1) {
-          Navigator.pop(context, true);
-        }
-         if ((userLoginModel?.type == 3 || userLoginModel?.type == 1) && requerido!) {
-          Provider.of<IndexNavegacion>(context, listen: false).resetIndex();
-         Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const Home()),
-          );
-        }
-        if (userLoginModel?.type == 2) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeAdiestrador()),
-          );
-        }
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (userLoginModel?.type == 3 || userLoginModel?.type == 1) {
+            Navigator.maybePop(context, true);
+          }
+          if ((userLoginModel?.type == 3 || userLoginModel?.type == 1) &&
+              requerido!) {
+            Provider.of<IndexNavegacion>(context, listen: false).resetIndex();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Home()),
+            );
+          }
+          if (userLoginModel?.type == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeAdiestrador()),
+            );
+          }
+        });
       }
     }).catchError((e) {
       Fluttertoast.showToast(

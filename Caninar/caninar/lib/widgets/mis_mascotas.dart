@@ -74,8 +74,6 @@ class _MisMascotasState extends State<MisMascotas> {
     }
     return user != null
         ? Scaffold(
-            appBar: const CustomAppBar(),
-            drawer: CustomDrawer(),
             body: RefreshIndicator(
                 child: Column(
                   children: [

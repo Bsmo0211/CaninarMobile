@@ -97,8 +97,6 @@ class _EditarPerfilState extends State<EditarPerfil> {
   Widget build(BuildContext context) {
     return user != null
         ? Scaffold(
-            appBar: const CustomAppBar(),
-            drawer: CustomDrawer(),
             body: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -338,7 +336,7 @@ class _EditarPerfilState extends State<EditarPerfil> {
                         return null;
                       },
                     ),
-                  ),   
+                  ),
                   Center(
                     child: SizedBox(
                       child: BotonCustom(
@@ -395,7 +393,6 @@ class _EditarPerfilState extends State<EditarPerfil> {
                           }
                         },
                         texto: 'Guardar Cambios',
-                        
                       ),
                     ),
                   ),
@@ -403,6 +400,8 @@ class _EditarPerfilState extends State<EditarPerfil> {
               ),
             ),
           )
-        : Login(perfil: true,);
+        : Login(
+            perfil: true,
+          );
   }
 }

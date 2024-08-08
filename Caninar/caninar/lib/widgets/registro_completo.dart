@@ -83,7 +83,10 @@ class RegistroCompleto extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Login()),
+                  MaterialPageRoute(
+                      builder: (context) => Login(
+                            navegacion: true,
+                          )),
                 );
               },
               child: Text(

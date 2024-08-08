@@ -1,13 +1,18 @@
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/custom_appBar.dart';
+import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/registro.dart';
 import 'package:caninar/widgets/restaurar_contrasena.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatefulWidget {
   bool? perfil;
-  Login({Key? key, this.perfil}) : super(key: key, );
+  bool? navegacion;
+  Login({Key? key, this.perfil, this.navegacion})
+      : super(
+          key: key,
+        );
 
   @override
   _LoginState createState() => _LoginState();
@@ -20,30 +25,29 @@ class _LoginState extends State<Login> {
   TextEditingController contrasenaCtrl = TextEditingController();
   bool? requerido;
 
-  validateCondition(){
-      if(widget.perfil == true){
-
-        setState(() {
-          requerido = true;
-        });
-      } else{
-        setState(() {
-          requerido = false;
-        });
-      }
+  validateCondition() {
+    if (widget.perfil == true) {
+      setState(() {
+        requerido = true;
+      });
+    } else {
+      setState(() {
+        requerido = false;
+      });
+    }
   }
-
 
   @override
   void initState() {
-   validateCondition();
+    validateCondition();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(),
+      appBar: widget.navegacion != null ? CustomAppBar() : null,
+      drawer: widget.navegacion != null ? CustomDrawer() : null,
       body: Form(
         key: formKey,
         child: ListView(
@@ -60,7 +64,7 @@ class _LoginState extends State<Login> {
             const Padding(
               padding: EdgeInsets.only(left: 20, top: 50, bottom: 20),
               child: Text(
-                'Inciar Sesión',
+                'Iniciar Sesión',
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
@@ -183,8 +187,8 @@ class _LoginState extends State<Login> {
                 ),
                 onPressed: () async {
                   if (validate()) {
-                    await Shared()
-                        .login(correoCtrl.text, contrasenaCtrl.text, context , requerido);
+                    await Shared().login(correoCtrl.text, contrasenaCtrl.text,
+                        context, requerido);
                   }
                 },
               ),

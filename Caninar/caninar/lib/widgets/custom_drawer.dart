@@ -105,7 +105,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => Login(),
+                                builder: (context) => Login(
+                                  navegacion: true,
+                                ),
                               ),
                             ).then((isLoginSuccessful) {
                               if (isLoginSuccessful != null &&

@@ -148,215 +148,217 @@ class _MisCitasState extends State<MisCitas> {
     } else {
       EasyLoading.dismiss();
     }
-    return DefaultTabController(
+    return Scaffold(
+      body: DefaultTabController(
         length: 4,
-        child: Scaffold(
-            appBar: AppBar(
-              iconTheme: const IconThemeData(
-                color: Colors.white,
-              ),
-              backgroundColor: PrincipalColors.blue,
-              elevation: 0,
-              title: Image.asset(
-                'assets/images/logo.png',
-                width: 90,
-              ),
-              actions: [
-                Padding(
-                  padding: user?.type == 2
-                      ? const EdgeInsets.only(right: 10)
-                      : const EdgeInsets.all(0),
-                  child: GestureDetector(
-                    child: Image.asset(
-                      'assets/images/wpp.png',
-                      width: 30,
-                    ),
-                    onTap: () {
-                      API().launchWhatsApp('51919285667');
-                    },
-                  ),
-                ),
-                if (user?.type != 2)
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      right: 8,
-                    ),
-                    child: Badge.count(
-                      alignment: Alignment.bottomRight,
-                      count: productoProvider.productoList.length,
-                      backgroundColor: PrincipalColors.orange,
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.shopping_cart_outlined,
-                          size: 30,
+        child: Column(
+          children: [
+            TabBar(
+              isScrollable: true,
+              labelStyle: const TextStyle(color: Colors.black),
+              indicatorColor: PrincipalColors.orange,
+              tabs: [
+                Tab(
+                  child: Badge.count(
+                    alignment: Alignment.topRight,
+                    count: pendingModel?.dataCita != null
+                        ? pendingModel!.counter!
+                        : 0,
+                    backgroundColor: PrincipalColors.orange,
+                    child: const Padding(
+                      padding: EdgeInsets.all(7.0),
+                      child: Text(
+                        'Pendientes',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
                         ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CarritoCompras()),
-                          );
-                        },
                       ),
                     ),
                   ),
+                ),
+                const Tab(
+                  child: Text(
+                    'Historial',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const Tab(
+                  child: Text(
+                    'En curso',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const Tab(
+                  child: Text(
+                    'Próximas',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ),
               ],
-              bottom: PreferredSize(
-                preferredSize: _tabBar.preferredSize,
-                child: Material(color: Colors.white, child: _tabBar),
+            ),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  RefreshIndicator(
+                      child: ListView(children: [
+                        if (user?.type != 2)
+                          RedireccionAtras(nombre: 'Mis citas'),
+                        pendingModel != null
+                            ? Column(
+                                children: pendingModel!.dataCita.map((e) {
+                                return CardItemHome(
+                                    terminadoCitas: false,
+                                    imageCard: e.image,
+                                    titulo: e.name!,
+                                    redireccion: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              InformacionCitas(
+                                            estado: 'pending',
+                                            titulo: e.name,
+                                            informacionDetalle:
+                                                e.infoDetalladaCita,
+                                            proxima: true,
+                                          ),
+                                        ),
+                                      );
+                                    });
+                              }).toList())
+                            : const Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                      'No tiene citas pendientes en este momento ')
+                                ],
+                              ),
+                      ]),
+                      onRefresh: () async {
+                        await getCitas();
+                      }),
+                  RefreshIndicator(
+                      child: ListView(children: [
+                        if (user?.type != 2)
+                          RedireccionAtras(nombre: 'Mis citas'),
+                        historyModel != null
+                            ? Column(
+                                children: historyModel!.dataCita.map((e) {
+                                return CardItemHome(
+                                    terminadoCitas: false,
+                                    imageCard: e.image,
+                                    titulo: e.name!,
+                                    redireccion: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              InformacionCitas(
+                                            estado: 'history',
+                                            titulo: e.name,
+                                            informacionDetalle:
+                                                e.infoDetalladaCita,
+                                            proxima: false,
+                                          ),
+                                        ),
+                                      );
+                                    });
+                              }).toList())
+                            : const Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('No tiene un historial de citas ')
+                                ],
+                              ),
+                      ]),
+                      onRefresh: () async {
+                        await getCitas();
+                      }),
+                  RefreshIndicator(
+                      child: ListView(children: [
+                        if (user?.type != 2)
+                          RedireccionAtras(nombre: 'Mis citas'),
+                        currentModel != null
+                            ? Column(
+                                children: currentModel!.dataCita.map((e) {
+                                return CardItemHome(
+                                    terminadoCitas: false,
+                                    imageCard: e.image,
+                                    titulo: e.name!,
+                                    redireccion: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              InformacionCitas(
+                                            estado: 'current',
+                                            titulo: e.name,
+                                            informacionDetalle:
+                                                e.infoDetalladaCita,
+                                            proxima: false,
+                                          ),
+                                        ),
+                                      );
+                                    });
+                              }).toList())
+                            : const Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('No tiene ninguna cita en curso')
+                                ],
+                              ),
+                      ]),
+                      onRefresh: () async {
+                        await getCitas();
+                      }),
+                  RefreshIndicator(
+                      child: ListView(children: [
+                        if (user?.type != 2)
+                          RedireccionAtras(nombre: 'Mis citas'),
+                        comingModel != null
+                            ? Column(
+                                children: comingModel!.dataCita.map((e) {
+                                return CardItemHome(
+                                    terminadoCitas: false,
+                                    imageCard: e.image,
+                                    titulo: e.name!,
+                                    redireccion: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              InformacionCitas(
+                                            estado: 'coming',
+                                            titulo: e.name,
+                                            informacionDetalle:
+                                                e.infoDetalladaCita,
+                                            proxima: false,
+                                          ),
+                                        ),
+                                      );
+                                    });
+                              }).toList())
+                            : const Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('No tiene ninguna cita próxima')
+                                ],
+                              ),
+                      ]),
+                      onRefresh: () async {
+                        await getCitas();
+                      }),
+                ],
               ),
             ),
-            drawer: CustomDrawer(),
-            body: TabBarView(
-              children: [
-                RefreshIndicator(
-                    child: ListView(children: [
-                      if (user?.type != 2)
-                        RedireccionAtras(nombre: 'Mis citas'),
-                      pendingModel != null
-                          ? Column(
-                              children: pendingModel!.dataCita.map((e) {
-                              return CardItemHome(
-                                  terminadoCitas: false,
-                                  imageCard: e.image,
-                                  titulo: e.name!,
-                                  redireccion: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => InformacionCitas(
-                                          estado: 'pending',
-                                          titulo: e.name,
-                                          informacionDetalle:
-                                              e.infoDetalladaCita,
-                                          proxima: true,
-                                        ),
-                                      ),
-                                    );
-                                  });
-                            }).toList())
-                          : const Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                    'No tiene citas pendientes en este momento ')
-                              ],
-                            ),
-                    ]),
-                    onRefresh: () async {
-                      await getCitas();
-                    }),
-                RefreshIndicator(
-                    child: ListView(children: [
-                      if (user?.type != 2)
-                        RedireccionAtras(nombre: 'Mis citas'),
-                      historyModel != null
-                          ? Column(
-                              children: historyModel!.dataCita.map((e) {
-                              return CardItemHome(
-                                  terminadoCitas: false,
-                                  imageCard: e.image,
-                                  titulo: e.name!,
-                                  redireccion: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => InformacionCitas(
-                                          estado: 'history',
-                                          titulo: e.name,
-                                          informacionDetalle:
-                                              e.infoDetalladaCita,
-                                          proxima: false,
-                                        ),
-                                      ),
-                                    );
-                                  });
-                            }).toList())
-                          : const Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text('No tiene un historial de citas ')
-                              ],
-                            ),
-                    ]),
-                    onRefresh: () async {
-                      await getCitas();
-                    }),
-                RefreshIndicator(
-                    child: ListView(children: [
-                      if (user?.type != 2)
-                        RedireccionAtras(nombre: 'Mis citas'),
-                      currentModel != null
-                          ? Column(
-                              children: currentModel!.dataCita.map((e) {
-                              return CardItemHome(
-                                  terminadoCitas: false,
-                                  imageCard: e.image,
-                                  titulo: e.name!,
-                                  redireccion: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => InformacionCitas(
-                                          estado: 'current',
-                                          titulo: e.name,
-                                          informacionDetalle:
-                                              e.infoDetalladaCita,
-                                          proxima: false,
-                                        ),
-                                      ),
-                                    );
-                                  });
-                            }).toList())
-                          : const Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text('No tiene ninguna cita en curso')
-                              ],
-                            ),
-                    ]),
-                    onRefresh: () async {
-                      await getCitas();
-                    }),
-                RefreshIndicator(
-                    child: ListView(children: [
-                      if (user?.type != 2)
-                        RedireccionAtras(nombre: 'Mis citas'),
-                      comingModel != null
-                          ? Column(
-                              children: comingModel!.dataCita.map((e) {
-                              return CardItemHome(
-                                  terminadoCitas: false,
-                                  imageCard: e.image,
-                                  titulo: e.name!,
-                                  redireccion: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => InformacionCitas(
-                                          estado: 'coming',
-                                          titulo: e.name,
-                                          informacionDetalle:
-                                              e.infoDetalladaCita,
-                                          proxima: false,
-                                        ),
-                                      ),
-                                    );
-                                  });
-                            }).toList())
-                          : const Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [Text('No tiene ninguna cita próxima')],
-                            ),
-                    ]),
-                    onRefresh: () async {
-                      await getCitas();
-                    }),
-              ],
-            )));
+          ],
+        ),
+      ),
+    );
   }
 }
