@@ -35,11 +35,19 @@ class _NavegacionPerfilState extends State<NavegacionPerfil> {
   insertPaginas() {
     setState(() {
       paginasNavegacion = [
-        const Comunidad(),
-        MisMascotas(),
+        Comunidad(
+          drawer: true,
+        ),
+        MisMascotas(
+          drawer: true,
+        ),
         const ItemHome(),
-        const MisCitas(),
-        const EditarPerfil()
+        MisCitas(
+          drawer: true,
+        ),
+        EditarPerfil(
+          drawer: true,
+        )
       ];
     });
   }

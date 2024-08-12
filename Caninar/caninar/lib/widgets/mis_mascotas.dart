@@ -14,9 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class MisMascotas extends StatefulWidget {
-  MisMascotas({
-    super.key,
-  });
+  bool? drawer;
+  MisMascotas({super.key, this.drawer});
 
   @override
   State<MisMascotas> createState() => _MisMascotasState();
@@ -74,6 +73,8 @@ class _MisMascotasState extends State<MisMascotas> {
     }
     return user != null
         ? Scaffold(
+            appBar: widget.drawer != null ? const CustomAppBar() : null,
+            drawer: widget.drawer != null ? CustomDrawer() : null,
             body: RefreshIndicator(
                 child: Column(
                   children: [

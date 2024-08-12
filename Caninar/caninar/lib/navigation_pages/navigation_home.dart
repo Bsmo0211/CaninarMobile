@@ -51,11 +51,11 @@ class _HomeState extends State<Home> {
   insertPaginas() {
     setState(() {
       paginasNavegacion = [
-        const Comunidad(),
+        Comunidad(),
         MisMascotas(),
         const ItemHome(),
-        const MisCitas(),
-        const EditarPerfil()
+        MisCitas(),
+        EditarPerfil()
       ];
     });
   }

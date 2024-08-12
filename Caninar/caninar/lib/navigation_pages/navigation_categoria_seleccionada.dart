@@ -42,15 +42,23 @@ class _NavegacionCategoriaSeleccionadaState
   insertPaginas() {
     setState(() {
       paginasNavegacion = [
-        const Comunidad(),
-        MisMascotas(),
+        Comunidad(
+          drawer: true,
+        ),
+        MisMascotas(
+          drawer: true,
+        ),
         PageCategoriaSeleccionada(
           slugCategoria: widget.slugCategoria,
           name: widget.name,
           idCategoria: widget.idCategoria,
         ),
-        const MisCitas(),
-        const EditarPerfil()
+        MisCitas(
+          drawer: true,
+        ),
+        EditarPerfil(
+          drawer: true,
+        )
       ];
     });
   }

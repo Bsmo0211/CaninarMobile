@@ -49,8 +49,12 @@ class _NavegacionCompraProductosState extends State<NavegacionCompraProductos> {
   insertPaginas() {
     setState(() {
       paginasNavegacion = [
-        const Comunidad(),
-        MisMascotas(),
+        Comunidad(
+          drawer: true,
+        ),
+        MisMascotas(
+          drawer: true,
+        ),
         CompraProductos(
           marca: widget.marca,
           producto: widget.producto,
@@ -58,8 +62,12 @@ class _NavegacionCompraProductosState extends State<NavegacionCompraProductos> {
           idCategoria: widget.idCategoria,
           idDistrito: widget.idDistrito,
         ),
-        const MisCitas(),
-        const EditarPerfil()
+        MisCitas(
+          drawer: true,
+        ),
+        EditarPerfil(
+          drawer: true,
+        )
       ];
     });
   }

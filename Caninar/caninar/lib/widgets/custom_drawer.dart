@@ -154,12 +154,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         );
                       },
                     ),
-                  if (user != null && user?.type != 2)
+                  /*  if (user != null && user?.type != 2)
                     const Divider(
                       height: 2,
                       color: Colors.grey,
                     ),
-                  if (user != null && user?.type != 2)
+                  /*  if (user != null && user?.type != 2)
                     ItemDrawer(
                       titulo: 'Pedidos',
                       redireccion: () {
@@ -170,7 +170,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                           ),
                         ); */
                       },
-                    ),
+                    ), */ */
                   if (user != null && user?.type != 2)
                     const Divider(
                       height: 2,
@@ -207,11 +207,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   ItemDrawer(
                     titulo: 'Atención al Cliente',
                     redireccion: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AtencionCliente()),
-                      );
+                      API().launchWhatsApp('51919285667');
                     },
                   ),
                   const Divider(
@@ -281,7 +277,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               height: 2,
               color: Colors.grey,
             ),
-            ItemDrawer(
+            /* ItemDrawer(
                 titulo: 'Libro de reclamaciones',
                 redireccion: () {
                   Navigator.push(
@@ -289,7 +285,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     MaterialPageRoute(
                         builder: (context) => LibroReclamaciones()),
                   );
-                }),
+                }), */
             const Padding(
               padding: EdgeInsets.fromLTRB(15, 5, 15, 10),
               child: Column(

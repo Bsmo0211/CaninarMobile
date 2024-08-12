@@ -49,8 +49,12 @@ class _NavegacionInformacionDetalladaProdState
   insertPaginas() {
     setState(() {
       paginasNavegacion = [
-        const Comunidad(),
-        MisMascotas(),
+        Comunidad(
+          drawer: true,
+        ),
+        MisMascotas(
+          drawer: true,
+        ),
         InformacionDetalladaProductos(
           distrito: widget.distrito,
           categoria: widget.categoria,
@@ -58,8 +62,12 @@ class _NavegacionInformacionDetalladaProdState
           marca: widget.marca,
           certificados: widget.certificados,
         ),
-        const MisCitas(),
-        const EditarPerfil()
+        MisCitas(
+          drawer: true,
+        ),
+        EditarPerfil(
+          drawer: true,
+        )
       ];
     });
   }

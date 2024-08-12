@@ -211,7 +211,9 @@ class _SeleccionFechaCitaState extends State<SeleccionFechaCita> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      const MisCitas()),
+                                                      MisCitas(
+                                                        drawer: true,
+                                                      )),
                                             );
                                           },
                                           child: const Text(

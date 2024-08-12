@@ -20,7 +20,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 class MisCitas extends StatefulWidget {
-  const MisCitas({super.key});
+  bool? drawer;
+  MisCitas({super.key, this.drawer});
 
   @override
   State<MisCitas> createState() => _MisCitasState();
@@ -149,6 +150,8 @@ class _MisCitasState extends State<MisCitas> {
       EasyLoading.dismiss();
     }
     return Scaffold(
+      appBar: widget.drawer != null ? const CustomAppBar() : null,
+      drawer: widget.drawer != null ? CustomDrawer() : null,
       body: DefaultTabController(
         length: 4,
         child: Column(
