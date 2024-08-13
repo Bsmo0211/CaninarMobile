@@ -84,8 +84,6 @@ class _PageCategoriaSeleccionadaState extends State<PageCategoriaSeleccionada> {
       EasyLoading.dismiss();
     }
     return Scaffold(
-      appBar: CustomAppBar(),
-      drawer: CustomDrawer(),
       body: ListView(
         children: [
           RedireccionAtras(nombre: widget.name),

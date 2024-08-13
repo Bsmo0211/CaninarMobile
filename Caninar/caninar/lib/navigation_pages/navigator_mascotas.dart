@@ -3,6 +3,8 @@ import 'package:caninar/providers/index_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/compra_producto.dart';
 import 'package:caninar/widgets/comunidad.dart';
+import 'package:caninar/widgets/custom_appBar.dart';
+import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/editar_perfil.dart';
 import 'package:caninar/widgets/item_home.dart';
 import 'package:caninar/widgets/mis_citas.dart';
@@ -35,19 +37,11 @@ class _NavegacionMascotaState extends State<NavegacionMascota> {
   insertPaginas() {
     setState(() {
       paginasNavegacion = [
-        Comunidad(
-          drawer: true,
-        ),
-        MisMascotas(
-          drawer: true,
-        ),
+        Comunidad(),
+        MisMascotas(),
         const ItemHome(),
-        MisCitas(
-          drawer: true,
-        ),
-        EditarPerfil(
-          drawer: true,
-        )
+        MisCitas(),
+        EditarPerfil()
       ];
     });
   }
@@ -65,6 +59,8 @@ class _NavegacionMascotaState extends State<NavegacionMascota> {
     return PopScope(
       canPop: false,
       child: Scaffold(
+        appBar: CustomAppBar(),
+        drawer: CustomDrawer(),
         body: paginasNavegacion.isNotEmpty
             ? Center(
                 child: paginasNavegacion.elementAt(index),

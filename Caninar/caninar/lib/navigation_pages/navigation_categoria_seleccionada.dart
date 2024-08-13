@@ -3,6 +3,8 @@ import 'package:caninar/pages/page_categoria_seleccionada.dart';
 import 'package:caninar/providers/index_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/comunidad.dart';
+import 'package:caninar/widgets/custom_appBar.dart';
+import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/editar_perfil.dart';
 import 'package:caninar/widgets/mis_citas.dart';
 import 'package:caninar/widgets/mis_mascotas.dart';
@@ -42,23 +44,15 @@ class _NavegacionCategoriaSeleccionadaState
   insertPaginas() {
     setState(() {
       paginasNavegacion = [
-        Comunidad(
-          drawer: true,
-        ),
-        MisMascotas(
-          drawer: true,
-        ),
+        Comunidad(),
+        MisMascotas(),
         PageCategoriaSeleccionada(
           slugCategoria: widget.slugCategoria,
           name: widget.name,
           idCategoria: widget.idCategoria,
         ),
-        MisCitas(
-          drawer: true,
-        ),
-        EditarPerfil(
-          drawer: true,
-        )
+        MisCitas(),
+        EditarPerfil()
       ];
     });
   }
@@ -74,6 +68,8 @@ class _NavegacionCategoriaSeleccionadaState
   Widget build(BuildContext context) {
     int index = Provider.of<IndexNavegacion>(context).Index;
     return Scaffold(
+      appBar: CustomAppBar(),
+      drawer: CustomDrawer(),
       body: paginasNavegacion.isNotEmpty
           ? Center(
               child: paginasNavegacion.elementAt(index),

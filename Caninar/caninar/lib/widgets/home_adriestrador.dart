@@ -12,6 +12,8 @@ class HomeAdiestrador extends StatefulWidget {
 class _HomeAdiestradorState extends State<HomeAdiestrador> {
   @override
   Widget build(BuildContext context) {
-    return MisCitas();
+    return MisCitas(
+      drawer: true,
+    );
   }
 }

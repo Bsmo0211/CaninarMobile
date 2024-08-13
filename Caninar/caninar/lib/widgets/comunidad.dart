@@ -5,8 +5,9 @@ import 'package:caninar/widgets/redireccion_atras.dart';
 import 'package:flutter/material.dart';
 
 class Comunidad extends StatefulWidget {
-  bool? drawer;
-  Comunidad({super.key, this.drawer});
+  Comunidad({
+    super.key,
+  });
 
   @override
   State<Comunidad> createState() => _ComunidadState();
@@ -31,8 +32,6 @@ class _ComunidadState extends State<Comunidad> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: widget.drawer != null ? const CustomAppBar() : null,
-      drawer: widget.drawer != null ? CustomDrawer() : null,
       body: ListView.builder(
         itemCount: jsonData.length,
         itemBuilder: (context, index) {

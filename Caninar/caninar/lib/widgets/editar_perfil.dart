@@ -18,8 +18,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditarPerfil extends StatefulWidget {
-  bool? drawer;
-  EditarPerfil({super.key, this.drawer});
+  EditarPerfil({super.key});
 
   @override
   State<EditarPerfil> createState() => _EditarPerfilState();
@@ -98,8 +97,6 @@ class _EditarPerfilState extends State<EditarPerfil> {
   Widget build(BuildContext context) {
     return user != null
         ? Scaffold(
-            appBar: widget.drawer != null ? const CustomAppBar() : null,
-            drawer: widget.drawer != null ? CustomDrawer() : null,
             body: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

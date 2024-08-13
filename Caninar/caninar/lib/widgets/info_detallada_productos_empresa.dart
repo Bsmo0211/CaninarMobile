@@ -73,8 +73,6 @@ class _InformacionDetalladaProductosState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(),
-      drawer: CustomDrawer(),
       body: ListView(
         children: [
           RedireccionAtras(nombre: widget.marca.name!),

@@ -7,6 +7,8 @@ import 'package:caninar/providers/index_provider.dart';
 import 'package:caninar/shared_Preferences/shared.dart';
 import 'package:caninar/widgets/compra_producto.dart';
 import 'package:caninar/widgets/comunidad.dart';
+import 'package:caninar/widgets/custom_appBar.dart';
+import 'package:caninar/widgets/custom_drawer.dart';
 import 'package:caninar/widgets/editar_perfil.dart';
 import 'package:caninar/widgets/mis_citas.dart';
 import 'package:caninar/widgets/mis_mascotas.dart';
@@ -49,12 +51,8 @@ class _NavegacionCompraProductosState extends State<NavegacionCompraProductos> {
   insertPaginas() {
     setState(() {
       paginasNavegacion = [
-        Comunidad(
-          drawer: true,
-        ),
-        MisMascotas(
-          drawer: true,
-        ),
+        Comunidad(),
+        MisMascotas(),
         CompraProductos(
           marca: widget.marca,
           producto: widget.producto,
@@ -62,12 +60,8 @@ class _NavegacionCompraProductosState extends State<NavegacionCompraProductos> {
           idCategoria: widget.idCategoria,
           idDistrito: widget.idDistrito,
         ),
-        MisCitas(
-          drawer: true,
-        ),
-        EditarPerfil(
-          drawer: true,
-        )
+        MisCitas(),
+        EditarPerfil()
       ];
     });
   }
@@ -83,6 +77,8 @@ class _NavegacionCompraProductosState extends State<NavegacionCompraProductos> {
   Widget build(BuildContext context) {
     int index = Provider.of<IndexNavegacion>(context).Index;
     return Scaffold(
+      appBar: CustomAppBar(),
+      drawer: CustomDrawer(),
       body: paginasNavegacion.isNotEmpty
           ? Center(
               child: paginasNavegacion.elementAt(index),

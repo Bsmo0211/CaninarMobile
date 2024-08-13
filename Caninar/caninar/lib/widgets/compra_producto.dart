@@ -308,8 +308,6 @@ class _CompraProductosState extends State<CompraProductos> {
       EasyLoading.dismiss();
     }
     return Scaffold(
-      drawer: CustomDrawer(),
-      appBar: const CustomAppBar(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
