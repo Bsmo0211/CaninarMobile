@@ -169,10 +169,9 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                   List<dynamic> items = data['items'];
                   List<dynamic> schedules = data['schedule'] ?? [];
 
-                   setState(() {
-                   idSupplier = data['id'];
-                     
-                   }); 
+                  setState(() {
+                    idSupplier = data['id'];
+                  });
 
                   /* for (var schedule in schedules) {
                     setState(() {
@@ -255,10 +254,41 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                                       Padding(
                                         padding: const EdgeInsets.only(
                                             top: 5, bottom: 20),
-                                        child: Text(
-                                          '$nameProduct',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20.0), // Esquinas redondeadas
+                                                  ),
+                                                  title: const Text(
+                                                      "Nombre del Producto"),
+                                                  content: Text(nameProduct!),
+                                                  actions: [
+                                                    TextButton(
+                                                      child:
+                                                          const Text("Cerrar"),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          },
+                                          child: Text(
+                                            nameProduct!,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -313,13 +343,49 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
                                 Expanded(
                                   child: Padding(
                                     padding: const EdgeInsets.only(
-                                      left: 35,
+                                      left: 20,
                                       top: 5,
                                       bottom: 15,
+                                      right: 10,
                                     ),
-                                    child: Text(nombreDireccion == 'null'
-                                        ? nombreDireccionUsuario ?? ''
-                                        : nombreDireccion!),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(
+                                                    20.0), // Esquinas redondeadas
+                                              ),
+                                              title: const Text("Dirección"),
+                                              content: Text(nombreDireccion ==
+                                                      'null'
+                                                  ? nombreDireccionUsuario ?? ''
+                                                  : nombreDireccion!),
+                                              actions: [
+                                                TextButton(
+                                                  child: const Text("Cerrar"),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: Text(
+                                        nombreDireccion == 'null'
+                                            ? nombreDireccionUsuario ?? ''
+                                            : nombreDireccion!,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ), /* Text(), */
                                   ),
                                 )
                               ],
@@ -337,67 +403,110 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
               ),
               Align(
                 alignment: Alignment.center,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(10, 20, 40, 10),
-                          child: Text('Subtotal'),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(40, 20, 40, 10),
-                          child: Text('S/ ${widget.subTotal}'),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(10, 0, 40, 10),
-                          child: Text('Service Fee'),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(40, 0, 40, 10),
-                          child: Text('S/ ${widget.impuesto}'),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(10, 0, 40, 10),
-                          child: Text('Delivery'),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(40, 0, 40, 10),
-                          child: Text('S/ ${widget.deliveriFee}'),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(10, 10, 40, 10),
-                          child: Text(
-                            'Total',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 20), // Margen vertical opcional
+                  child: Table(
+                    columnWidths: const {
+                      0: IntrinsicColumnWidth(),
+                      1: IntrinsicColumnWidth(),
+                    },
+                    children: [
+                      TableRow(
+                        children: [
+                          const TableCell(
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                  top: 10, bottom: 10, right: 50),
+                              child: Text(
+                                'Subtotal',
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(40, 10, 40, 10),
-                          child: Text(
-                            'S/ ${widget.total}',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          TableCell(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                'S/ ${widget.subTotal}',
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          const TableCell(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                'Service Fee',
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                'S/ ${widget.impuesto} ',
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          const TableCell(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                'Delivery',
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                'S/ ${widget.deliveriFee}',
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          const TableCell(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                'Total',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                'S/  ${widget.total}',
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
               BotonCustom(
@@ -408,7 +517,7 @@ class _FinalizarCompraState extends State<FinalizarCompra> {
 
                     String? idOrden =
                         await idOrdenProvider.crearOrden(ordenList);
-                      
+
                     String? idMp = await MercadoPago().ejecutarMercadoPago(
                         context,
                         idSupplier ?? '',

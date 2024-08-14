@@ -208,10 +208,43 @@ class _CarritoComprasState extends State<CarritoCompras> {
                                             top: 5,
                                             bottom: 20,
                                           ),
-                                          child: Text(
-                                            '$nameProduct',
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20.0), // Esquinas redondeadas
+                                                    ),
+                                                    title: const Text(
+                                                        "Nombre del Producto"),
+                                                    content: Text(nameProduct!),
+                                                    actions: [
+                                                      TextButton(
+                                                        child: const Text(
+                                                            "Cerrar"),
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            child: Text(
+                                              nameProduct!,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -284,73 +317,118 @@ class _CarritoComprasState extends State<CarritoCompras> {
                 productoList.isNotEmpty
                     ? Align(
                         alignment: Alignment.center,
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.fromLTRB(10, 20, 40, 10),
-                                  child: Text('Subtotal'),
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(40, 20, 40, 10),
-                                  child: Text('S/ $subtotal'),
-                                ),
-                              ],
-                            ),
-                            const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.fromLTRB(10, 0, 40, 10),
-                                  child: Text('Service Fee'),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.fromLTRB(40, 0, 40, 10),
-                                  child: Text('S/ 0'),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.fromLTRB(10, 0, 40, 10),
-                                  child: Text('Delivery'),
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(40, 0, 40, 10),
-                                  child: Text('S/ $deliveryCost'),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.fromLTRB(10, 10, 40, 10),
-                                  child: Text(
-                                    'Total',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(40, 10, 40, 10),
-                                  child: Text(
-                                    'S/ $totalGeneral',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 20), // Margen vertical opcional
+                          child: Table(
+                            columnWidths: const {
+                              0: IntrinsicColumnWidth(),
+                              1: IntrinsicColumnWidth(),
+                            },
+                            children: [
+                              TableRow(
+                                children: [
+                                  const TableCell(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                          top: 10, bottom: 10, right: 50),
+                                      child: Text(
+                                        'Subtotal',
+                                        textAlign: TextAlign.left,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                  TableCell(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10),
+                                      child: Text(
+                                        'S/ $subtotal',
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const TableRow(
+                                children: [
+                                  TableCell(
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10),
+                                      child: Text(
+                                        'Service Fee',
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ),
+                                  ),
+                                  TableCell(
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10),
+                                      child: Text(
+                                        'S/ 0',
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  const TableCell(
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10),
+                                      child: Text(
+                                        'Delivery',
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ),
+                                  ),
+                                  TableCell(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10),
+                                      child: Text(
+                                        'S/ $deliveryCost',
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  const TableCell(
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10),
+                                      child: Text(
+                                        'Total',
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
+                                  TableCell(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10),
+                                      child: Text(
+                                        'S/ $totalGeneral',
+                                        textAlign: TextAlign.left,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     : const Center(
