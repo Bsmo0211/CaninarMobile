@@ -1,4 +1,5 @@
 import 'package:caninar/API/APi.dart';
+
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/citas/model_informacion_det_cita.dart';
 import 'package:caninar/models/marcas/model.dart';
@@ -153,7 +154,7 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                   .entries
                                   .map((entry) {
                                 int index = entry.key;
-                                bool? terminado = false;                        
+                                bool? terminado = false;
                                 if (entry.value.status != null) {
                                   if (entry.value.status!
                                       .contains('terminated')) {
@@ -172,7 +173,6 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                       ? mascota.image
                                       : marca.image!,
                                   redireccion: () {
-                                    
                                     user?.type == 2
                                         ? entry.value.time!.date == ''
                                             ? Navigator.push(
@@ -190,7 +190,10 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                                 MaterialPageRoute(
                                                     builder: (context) =>
                                                         InformacionDetalladaCitaPaseador(
-                                                          formatoHora: entry.value.duration ?? '00:00:00',
+                                                          formatoHora: entry
+                                                                  .value
+                                                                  .duration ??
+                                                              '00:00:00',
                                                           estado: terminado!,
                                                           idSchedule:
                                                               entry.value.id!,
@@ -206,8 +209,11 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     InformacionDetalladaCitaCliente(
-                                                      formatoHora: entry.value.duration ?? '00:00:00',
-                                                          estadoTermiando: terminado!,
+                                                      formatoHora: entry
+                                                              .value.duration ??
+                                                          '00:00:00',
+                                                      estadoTermiando:
+                                                          terminado!,
                                                       direccion: entry
                                                           .value.direccion!,
                                                       estado: widget.estado!,
@@ -251,12 +257,12 @@ class _InformacionCitasState extends State<InformacionCitas> {
                                                                     userById?.telephone !=
                                                                             null
                                                                         ? '51${userById?.telephone}'
-                                                                        : '51919285667')
+                                                                        : null)
                                                                 : API().launchWhatsApp(
                                                                     marca.telephone !=
                                                                             null
                                                                         ? '51${marca.telephone}'
-                                                                        : '51919285667');
+                                                                        : null);
                                                             Navigator.pop(
                                                                 contextDialog); // Cierra el diálogo
                                                           },

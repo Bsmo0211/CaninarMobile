@@ -1,4 +1,5 @@
 import 'package:caninar/API/APi.dart';
+
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/providers/cart_provider.dart';
@@ -29,9 +30,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    // Obtener el estado global del usuario
-
-    // Obtener el proveedor de productos
     ProductoProvider productoProvider = Provider.of<ProductoProvider>(context);
 
     return AppBar(
@@ -53,7 +51,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               width: 30,
             ),
             onTap: () {
-              API().launchWhatsApp('51919285667');
+              API().launchWhatsApp(null);
             },
           ),
         ),

@@ -24,9 +24,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 class API {
   static Dio dio = Dio();
 
-  Future<void> launchWhatsApp(String phoneNumber, {String message = ""}) async {
+  Future<void> launchWhatsApp(String? phoneNumber,
+      {String message = ""}) async {
     try {
-      String whatsappUrl = getWhatsAppUrl(phoneNumber, message);
+      String whatsappUrl = '';
+      if (phoneNumber != null) {
+        whatsappUrl = getWhatsAppUrl(phoneNumber, message);
+      } else {
+        Map<String, dynamic> info = await API().getInfoComunidad();
+        String numeroWhat = info['contact'];
+        whatsappUrl = getWhatsAppUrl(numeroWhat, message);
+      }
+
       await launchUrl(Uri.parse(whatsappUrl));
     } catch (e) {
       print('Error al abrir el enlace de WhatsApp: $e');
