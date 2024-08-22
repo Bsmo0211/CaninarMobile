@@ -66,9 +66,7 @@ class _NavegacionPerfilState extends State<NavegacionPerfil> {
                 child: paginasNavegacion.elementAt(index),
               )
             : const Center(child: Text("Cargando")),
-        bottomNavigationBar: NavbigationBarWidget(
-          paginasNavegacion: paginasNavegacion,
-        ),
+        bottomNavigationBar: NavbigationBarWidget(),
       ),
     );
   }

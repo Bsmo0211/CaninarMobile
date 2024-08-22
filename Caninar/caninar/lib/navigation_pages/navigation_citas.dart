@@ -66,9 +66,7 @@ class _NavigationCitasState extends State<NavigationCitas> {
                 child: paginasNavegacion.elementAt(index),
               )
             : const Center(child: Text("Cargando")),
-        bottomNavigationBar: NavbigationBarWidget(
-          paginasNavegacion: paginasNavegacion,
-        ),
+        bottomNavigationBar: NavbigationBarWidget(),
       ),
     );
   }

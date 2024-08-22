@@ -23,10 +23,19 @@ class _ComunidadState extends State<Comunidad> {
   }
 
   getInformacion() async {
-    Map<String, dynamic> info = await API().getInfoComunidad();
-    setState(() {
-      jsonData = List<Map<String, dynamic>>.from(info['comunity']);
-    });
+    try {
+      Map<String, dynamic> info = await API().getInfoComunidad();
+
+      // Verificar si el widget está montado antes de llamar a setState
+      if (mounted) {
+        setState(() {
+          jsonData = List<Map<String, dynamic>>.from(info['comunity']);
+        });
+      }
+    } catch (e) {
+      // Manejo de errores
+      print('Error al obtener la información de la comunidad: $e');
+    }
   }
 
   @override

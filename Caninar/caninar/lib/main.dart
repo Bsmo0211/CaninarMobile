@@ -25,22 +25,7 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_localizations/syncfusion_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-Widget _defaultHome = const Home();
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  UserLoginModel? user = await Shared().currentUser();
-
-  if (user != null) {
-    if (user.type == 1 || user.type == 3) {
-      _defaultHome = const Home();
-    } else {
-      _defaultHome = const HomeAdiestrador();
-    }
-  } else {
-    _defaultHome = const Home();
-  }
-
+void main() {
   runApp(MyApp());
 }
 
@@ -51,7 +36,29 @@ class MyApp extends StatelessWidget {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => _defaultHome,
+        builder: (context, state) => FutureBuilder<UserLoginModel?>(
+          future: Shared().currentUser(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // Mostrar un indicador de carga mientras se espera
+              return const CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              // Manejar errores
+              return const Center(child: Text('Error al cargar'));
+            } else {
+              final user = snapshot.data;
+              if (user != null) {
+                if (user.type == 1 || user.type == 3) {
+                  return const Home();
+                } else {
+                  return const HomeAdiestrador();
+                }
+              } else {
+                return const Home();
+              }
+            }
+          },
+        ),
       ),
       GoRoute(
         path: '/payment/success',
@@ -67,37 +74,21 @@ class MyApp extends StatelessWidget {
         builder: (context, state) => const CompraRechazada(),
       ),
     ],
-    errorBuilder: (context, state) => _defaultHome,
+    errorBuilder: (context, state) => const Home(),
   );
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (context) => (CartProvider()),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => (ProductoProvider()),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => (OrdenProvider()),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => (DireccionProvider()),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => (CalendarioProvider()),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => (IndexNavegacion()),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => (IdOrdenProvider()),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => (CobroProvider()),
-        ),
+        ChangeNotifierProvider(create: (context) => CartProvider()),
+        ChangeNotifierProvider(create: (context) => ProductoProvider()),
+        ChangeNotifierProvider(create: (context) => OrdenProvider()),
+        ChangeNotifierProvider(create: (context) => DireccionProvider()),
+        ChangeNotifierProvider(create: (context) => CalendarioProvider()),
+        ChangeNotifierProvider(create: (context) => IndexNavegacion()),
+        ChangeNotifierProvider(create: (context) => IdOrdenProvider()),
+        ChangeNotifierProvider(create: (context) => CobroProvider()),
       ],
       child: MaterialApp.router(
         routerConfig: router,
@@ -113,16 +104,7 @@ class MyApp extends StatelessWidget {
           Locale('es'),
         ],
         title: 'Caninar',
-        theme: ThemeData().copyWith(
-          cardTheme: const CardTheme(
-            surfaceTintColor: Colors.white,
-          ),
-          useMaterial3: false,
-          colorScheme: ThemeData().colorScheme.copyWith(
-                primary: PrincipalColors.blue,
-              ),
-          brightness: Brightness.light,
-        ),
+        theme: ThemeData(useMaterial3: false),
         debugShowCheckedModeBanner: false,
         locale: const Locale('es'),
       ),

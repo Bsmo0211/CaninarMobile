@@ -37,26 +37,33 @@ class _MisCitasState extends State<MisCitas> {
 
   getCurrentUser() async {
     setState(() {
-      isApiCallProcess == true;
+      isApiCallProcess = true; // Usar = para asignar valores
     });
 
     UserLoginModel? userTemp = await Shared().currentUser();
 
-    setState(() {
-      user = userTemp;
-    });
+    // Verificar si el widget está montado antes de llamar a setState
+    if (mounted) {
+      setState(() {
+        user = userTemp;
+      });
 
-    if (user != null) {
-      await getCitas();
+      if (user != null) {
+        await getCitas();
+      }
+
+      // Verificar si el widget está montado antes de llamar a setState
+      if (mounted) {
+        setState(() {
+          isApiCallProcess = false; // Usar = para asignar valores
+        });
+      }
     }
-
-    setState(() {
-      isApiCallProcess == false;
-    });
   }
 
   getCitas() async {
     Map<String, dynamic> citasData = {};
+
     if (user?.type == 2) {
       citasData = await API().getCitas(user?.idSupplier, user?.type);
     } else {
@@ -83,12 +90,14 @@ class _MisCitasState extends State<MisCitas> {
       comingTemp = ComingModel.fromJson(citasData['coming']);
     }
 
-    setState(() {
-      pendingModel = pendingModelTemp;
-      historyModel = historyModelTemp;
-      currentModel = currentModelTemp;
-      comingModel = comingTemp;
-    });
+    if (mounted) {
+      setState(() {
+        pendingModel = pendingModelTemp;
+        historyModel = historyModelTemp;
+        currentModel = currentModelTemp;
+        comingModel = comingTemp;
+      });
+    }
   }
 
   @override

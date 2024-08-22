@@ -84,9 +84,7 @@ class _NavegacionInformacionDetalladaProdState
               child: paginasNavegacion.elementAt(index),
             )
           : const Center(child: Text("Cargando")),
-      bottomNavigationBar: NavbigationBarWidget(
-        paginasNavegacion: paginasNavegacion,
-      ),
+      bottomNavigationBar: NavbigationBarWidget(),
     );
   }
 }

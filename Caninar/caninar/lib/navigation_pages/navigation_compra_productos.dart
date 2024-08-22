@@ -84,9 +84,7 @@ class _NavegacionCompraProductosState extends State<NavegacionCompraProductos> {
               child: paginasNavegacion.elementAt(index),
             )
           : const Center(child: Text("Cargando")),
-      bottomNavigationBar: NavbigationBarWidget(
-        paginasNavegacion: paginasNavegacion,
-      ),
+      bottomNavigationBar: NavbigationBarWidget(),
     );
   }
 }

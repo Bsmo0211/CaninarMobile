@@ -12,11 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class NavbigationBarWidget extends StatefulWidget {
-  List<Widget> paginasNavegacion;
-
   NavbigationBarWidget({
     super.key,
-    required this.paginasNavegacion,
   });
 
   @override
@@ -110,6 +107,7 @@ class _NavbigationBarWidgetState extends State<NavbigationBarWidget> {
     );
 
     return AnimatedNotchBottomBar(
+      bottomBarWidth: 800,
       kBottomRadius: 15.0,
       kIconSize: 20.0,
       notchBottomBarController: controller,

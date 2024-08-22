@@ -49,10 +49,11 @@ class _MisMascotasState extends State<MisMascotas> {
     if (user != null) {
       List<MascotasModel> mascotasTemp =
           await API().getMascotasByUser(user!.id!);
-
-      setState(() {
-        mascotas = mascotasTemp;
-      });
+      if (mounted) {
+        setState(() {
+          mascotas = mascotasTemp;
+        });
+      }
     }
   }
 
