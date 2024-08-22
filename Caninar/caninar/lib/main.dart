@@ -40,10 +40,8 @@ class MyApp extends StatelessWidget {
           future: Shared().currentUser(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              // Mostrar un indicador de carga mientras se espera
               return const CircularProgressIndicator();
             } else if (snapshot.hasError) {
-              // Manejar errores
               return const Center(child: Text('Error al cargar'));
             } else {
               final user = snapshot.data;

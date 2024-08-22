@@ -41,8 +41,6 @@ class _MisCitasState extends State<MisCitas> {
     });
 
     UserLoginModel? userTemp = await Shared().currentUser();
-
-    // Verificar si el widget está montado antes de llamar a setState
     if (mounted) {
       setState(() {
         user = userTemp;
@@ -51,11 +49,9 @@ class _MisCitasState extends State<MisCitas> {
       if (user != null) {
         await getCitas();
       }
-
-      // Verificar si el widget está montado antes de llamar a setState
       if (mounted) {
         setState(() {
-          isApiCallProcess = false; // Usar = para asignar valores
+          isApiCallProcess = false;
         });
       }
     }
