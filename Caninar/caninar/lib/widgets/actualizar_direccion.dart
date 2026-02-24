@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:caninar/API/APi.dart';
+import 'package:caninar/constants/access_keys.dart';
 import 'package:caninar/constants/principals_colors.dart';
 import 'package:caninar/models/user/model.dart';
 import 'package:caninar/widgets/boton_custom.dart';
@@ -53,7 +54,7 @@ class _ActualizarDireccionState extends State<ActualizarDireccion> {
   void getSuggestion(String input) async {
     Dio dio = Dio();
 
-    String kplacesApiKey = "AIzaSyCmDOgFduDJlMZhE7zFNV_0ATbxT170xjU";
+    String kplacesApiKey = Keys.kplacesApiKey;
     String type = '(regions)';
     String baseURL =
         'https://maps.googleapis.com/maps/api/place/autocomplete/json';
